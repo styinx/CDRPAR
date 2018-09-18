@@ -1,0 +1,515 @@
+/**
+ *
+ */
+function range(start, end, step)
+{
+    let step_val = step;
+    let step_index = 0;
+    if(isNaN(start))
+    {
+        let el = start.split(/[:\-]/);
+        start = el[0];
+        end = el[1];
+        step = step || 1;
+        return range(parseInt(start), parseInt(end), parseInt(step));
+    }
+    else if(!isNaN(start) && !isNaN(end))
+    {
+        if(step.length > 1 && step_index < step.length)
+        {
+            step_val = step[Math.min(step.length, step_index)];
+        }
+        let range = [];
+        if(end < start)
+        {
+            for(let i = start; i > end; i -= step_val)
+            {
+                range.push(i);
+                if(step.length > 1 && step_index < step.length)
+                {
+                    step_val = step[Math.min(step.length, step_index++)];
+                }
+            }
+        }
+        else
+        {
+            for(let i = start; i < end; i += step_val)
+            {
+                range.push(i);
+                if(step.length > 1 && step_index < step.length)
+                {
+                    step_val = step[Math.min(step.length, step_index++)];
+                }
+            }
+        }
+        return range;
+    }
+
+    return [];
+}
+
+/**
+ * Reads the contents from a URL and saves it into a dictionary.
+ * @param url
+ * @returns Object
+ *          The object contains the values of the URL as key value pair.
+ */
+function parseURL(url)
+{
+    let parameters = {};
+    url = url.substr(url.indexOf("?") + 1);
+    if(url !== "")
+    {
+        let args = url.split("&");
+
+        for(let i = 0; i < args.length; ++i)
+        {
+            let pair = args[i].split("=");
+            parameters[pair[0]] = pair[1];
+        }
+    }
+    return parameters;
+}
+
+/**
+ * Reads a given text and converts it into json format.
+ *
+ * @param text: The CSV contents as string.
+ * @param separator: The separator sign as string (default: ',').
+ * @param header: Signs that the CSV contents contain a header line (default: true).
+ * @returns Object
+ *          A JSON object with indices. Index 0 contains the name of the headers.
+ *          Indices 1-n contain the values of each line from the CSV,
+ *          as key value pair (header1 : value1, header2 : value2, ...).
+ */
+function parseCSV(text, separator, header)
+{
+    separator = separator || ',';
+    header = header || true;
+
+    let lines = text.split('\n');
+    let headers = [];
+    let data = {};
+
+    if(header)
+    {
+        headers = lines[0].split(separator);
+    }
+    else
+    {
+        headers = range(0, lines[0].length, 1);
+    }
+
+    data["headers"] = headers;
+
+    for(let i = 0; i < lines.length - 1; ++i)
+    {
+        if(lines[i + 1] !== "")
+        {
+            let entry = lines[i + 1].split(separator);
+            let vals = {};
+            for(let j = 0; j < headers.length; ++j)
+            {
+                vals[headers[j]] = entry[j];
+            }
+            data[i] = vals;
+        }
+    }
+
+    return data;
+}
+
+/**
+ * Checks if a string contains valid JSON syntax. If the string is parseable, the parsed content is assigned to it.
+ * @param str
+ * @returns {boolean}
+ */
+function isJsonString(str)
+{
+    try
+    {
+        str = JSON.parse(str);
+    }
+    catch(e)
+    {
+        return false;
+    }
+    return true;
+}
+
+/**
+ * TODO: Bubblesort
+ * Sorts an object by a given key.
+ * @param obj
+ * @param key
+ * @return Object
+ *         The returned object will be sorted by the given key.
+ */
+function objSort(obj, key)
+{
+    let length = objLength(obj);
+    for(let index = 0; index < length; ++index)
+    {
+        if(obj[index].hasOwnProperty(key) && obj[index][key] !== undefined)
+        {
+            for(let search = 0; search < length; ++search)
+            {
+                if(index !== search)
+                {
+                    if(obj[search].hasOwnProperty(key) && obj[search][key] !== undefined)
+                    {
+                        if(obj[index][key] < obj[search][key])
+                        {
+                            let temp = obj[index];
+                            obj[index] = obj[search];
+                            obj[search] = temp;
+                        }
+                    }
+                }
+            }
+        }
+        else
+        {
+            index++;
+        }
+    }
+    return obj;
+}
+
+/**
+ * Detects an objects length.
+ * @param obj
+ * @returns {number}
+ */
+function objLength(obj)
+{
+    let length = 0;
+    for(let key in obj)
+    {
+        if(obj.hasOwnProperty(key))
+        {
+            length++;
+        }
+    }
+    return length;
+}
+
+/**
+ * Collects all values from a object with nested objects. If only key is chosen, an array is returned.
+ * If both, key and value are set an object of pairs is returned.
+ * @param obj
+ * @param key
+ * @param value
+ * @param numbers
+ */
+function objValues(obj, numbers, key, value)
+{
+    let result = value ? {} : [];
+    for(let i = 0; i < objLength(obj); ++i)
+    {
+        if(value !== undefined)
+        {
+            let k = numbers ? parseFloat(obj[i][key]) : obj[i][key];
+            let v = numbers ? parseFloat(obj[i][value]) : obj[i][value];
+            result[k] = v;
+        }
+        else
+        {
+            result.push(numbers ? parseFloat(obj[i][key]) : obj[i][key]);
+        }
+    }
+    return result;
+}
+
+/**
+ * Returns the objects maximum value. If key is true the maximum key is returned otherwise the maximum value.
+ * @param obj
+ * @param has_key
+ * @param want_key
+ */
+function objMax(obj, has_key, want_key)
+{
+    let max = -Infinity;
+    has_key = has_key || false;
+    want_key = want_key || false;
+    if(has_key)
+    {
+        for(let key in obj)
+        {
+            if(!want_key)
+            {
+                if(obj[key] > max)
+                {
+                    max = obj[key];
+                }
+            }
+            else
+            {
+                if(key > max)
+                {
+                    max = key;
+                }
+            }
+        }
+    }
+    else
+    {
+        max = Math.max.apply(Math, obj);
+    }
+    return max;
+}
+
+/**
+ * Returns the average value. If key is true the average key is returned otherwise the average value.
+ * @param obj
+ * @param has_key
+ * @param want_key
+ */
+function objAvg(obj, has_key, want_key)
+{
+    let sum = 0, avg = 0;
+    has_key = has_key || false;
+    want_key = want_key || false;
+    if(has_key)
+    {
+        for(let key in obj)
+        {
+            if(!want_key)
+            {
+                sum += obj[key] * 1;
+            }
+            else
+            {
+                sum += key * 1;
+            }
+        }
+        avg = sum / objLength(obj);
+    }
+    else
+    {
+        avg = obj.reduce(function(a, b) { return a + b; }) / obj.length;
+    }
+    return parseInt(avg);
+}
+
+/**
+ * Returns the objects maximum value. If key is true the minimum key is returned otherwise the minimum value.
+ * @param obj
+ * @param has_key
+ * @param want_key
+ */
+function objMin(obj, has_key, want_key)
+{
+    let min = Infinity;
+    has_key = has_key || false;
+    want_key = want_key || false;
+    if(has_key)
+    {
+        for(let key in obj)
+        {
+            if(!want_key)
+            {
+                if(obj[key] < min)
+                {
+                    min = obj[key];
+                }
+            }
+            else
+            {
+                if(key < min)
+                {
+                    min = key;
+                }
+            }
+        }
+    }
+    else
+    {
+        min = Math.min.apply(Math, obj);
+    }
+    return min;
+}
+
+function date(val, format)
+{
+    format = format || "%d.%m %H:%M:%S";
+    let d = new Date(parseInt(val));
+
+    format = format.replace("%d", d.getDate())
+                   .replace("%m", d.getMonth() + 1)
+                   .replace("%H", d.getHours())
+                   .replace("%M", d.getMinutes())
+                   .replace("%S", d.getSeconds());
+    return format;
+}
+
+/**
+ * Collects all checked values from a checkbox group and returns them as array.
+ * @param id
+ * @return {Array}
+ */
+function valuesCheckbox(id)
+{
+    let values = [];
+
+    $("#" + id + " :checked").each(function()
+                                   {
+                                       values.push($(this).val());
+                                   });
+
+    return values;
+}
+
+/**
+ * Downloads the content of a elements value to the given filename.
+ * @param element
+ * @param filename
+ */
+function download(element, filename)
+{
+    let text_value = $(element).val();
+    let blob = new Blob([text_value], {type: 'text/plain'});
+
+    let link = document.createElement("a");
+    link.download = filename;
+    link.innerHTML = "";
+    link.href = window.URL.createObjectURL(blob);
+    link.style.display = "none";
+    if(window.URL != null)
+    {
+        link.href = window.URL.createObjectURL(blob);
+    }
+    document.body.appendChild(link);
+    link.click();
+}
+
+function upload(element, callback)
+{
+    let container = $("#" + element);
+
+    container.on("input", function(e)
+    {
+        let file = e.target.files[0];
+
+        if(file && file.type.match(".*"))
+        {
+            let r = new FileReader();
+            r.onload = function(ev)
+            {
+                callback(ev.target.result);
+            };
+            r.readAsText(file);
+        }
+    });
+}
+
+function allowDrop(ev)
+{
+    ev.preventDefault();
+}
+
+function drag(ev)
+{
+    ev.dataTransfer.setData("id", ev.target.id);
+    ev.dataTransfer.setData("type", ev.target.className.split(' ')[1].split('-')[0]);
+}
+
+function drop(ev)
+{
+    ev.preventDefault();
+    let target = ev.target;
+    let id = ev.dataTransfer.getData("id");
+    let type = ev.dataTransfer.getData("type");
+    let dropped = document.getElementById(id);
+    let badge_pool = $(".badge-pool")[0];
+    let duplicate = dropped.cloneNode();
+    duplicate.id = duplicate.id + "-d";
+    duplicate.innerHTML = dropped.innerHTML;
+
+    // Replace a badge
+    if(target.className.split(' ').includes('badge'))
+    {
+        if(target.className.split(' ').includes(type + "-badge"))
+        {
+            let parent = target.parentNode;
+            target.outerText = "";
+            parent.innerHTML = "";
+            parent.appendChild(dropped);
+            badge_pool.insertBefore(duplicate, badge_pool.children[0]);
+        }
+    }
+    // Insert a badge
+    else
+    {
+        if(target.className.split(' ').includes(type + "-target"))
+        {
+            if(target.children.length !== 0)
+            {
+                badge_pool.append(target.children[0]);
+                target.innerHTML = "";
+            }
+            target.appendChild(dropped);
+            badge_pool.insertBefore(duplicate, badge_pool.children[0]);
+        }
+    }
+}
+
+function dropPool(ev)
+{
+    ev.preventDefault();
+    let target = ev.target;
+    let id = ev.dataTransfer.getData("id");
+
+    document.getElementById(id).outerHTML = "";
+}
+
+function chartContainer(title, id)
+{
+    return '' +
+    '<div class="card">\n' +
+    '<div class="card-header" id="' + id + '-heading">\n' +
+    '  <h5 class="mb-0">\n' +
+    '    <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#' + id + '-content" aria-expanded="true" aria-controls="collapseOne">\n' +
+    '    ' + title + '\n' +
+    '    </button>\n' +
+    '  </h5>\n' +
+    '</div>\n' +
+    '<div id="' + id + '-content" class="collapse show" aria-labelledby="' + id + '-heading">\n' +
+    '  <div class="card-body">\n' +
+    '    <div id="' + title.toLowerCase() + '-' + id + '"></div>\n' +
+    '  </div>\n' +
+    '</div>\n' +
+    '</div>';
+}
+
+function addSidebarLink(link)
+{
+    el_sidebar.html('<iframe src="' + link + '" width="100%" height="100%"></iframe>');
+}
+
+function refSidebar(what)
+{
+    let el = document.createElement("div");
+    el.innerHTML += what;
+    return "<a onclick='addSidebarLink(\"" + LINKS[what] + "\")'>" + what + "</a>";
+}
+function link(what) { return '<a>' + what + '</a>'; }
+function id(what, id) { return '<span id="' + id + '">' + what + '</span>'; }
+
+function bold(what) { return "<b>" + what + "</b>"; }
+function underline(what) { return "<u>" + what + "</u>"; }
+function color(what, color) { return "<span style='color: " + color + "'>" + what + "</span>"; }
+function bcolor(what, color) { return "<span style='color: " + color + "'>" + bold(what) + "</span>"; }
+
+function good(what) { return color(what, "green");}
+function bgood(what) { return bold(good(what));}
+function ugood(what) { return underline(good(what));}
+function bugood(what) { return underline(bgood(what));}
+function bad(what) { return color(what, "red");}
+function bbad(what) { return bold(bad(what));}
+function ubad(what) { return underline(what, "red");}
+function bubad(what) { return underline(bbad(what));}
+function neutral(what) { return color(what, "dodgerblue");}
+function bneutral(what) { return bold(neutral(what));}
+function uneutral(what) { return underline(neutral(what));}
+function buneutral(what) { return underline(bneutral(what));}

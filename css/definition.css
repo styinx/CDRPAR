@@ -1,0 +1,270 @@
+body
+{
+    margin:  0;
+    padding: 0;
+}
+
+.form-control
+{
+    width:   auto;
+    display: inline-block;
+}
+
+.main-container
+{
+    position:  fixed;
+    top:       0;
+    left:      0;
+    margin:    100px 200px 100px 200px;
+    min-width: 1000px;
+    width:     calc(100% - 400px);
+}
+
+.main-container-decoration
+{
+    position:     fixed;
+    top:          0;
+    left:         0;
+    margin:       0 298px 0 298px;
+    min-width:    804px;
+    width:        calc(100% - 596px);
+    height:       100%;
+    border-left:  2px solid #999999;
+    border-right: 2px solid #999999;
+}
+
+.carousel
+{
+    height: calc(100vh - 300px);
+    width:  100%;
+}
+
+.carousel-inner
+{
+    margin:        0 100px 0 100px;
+    height:        100%;
+    width:         calc(100% - 200px);
+    overflow-y:    auto;
+    border-top:    2px solid #999999;
+    border-bottom: 2px solid #999999;
+}
+
+.carousel .carousel-item
+{
+    padding: 2em;
+}
+
+.carousel-item p
+{
+    padding: 20px 50px 0 50px;
+}
+
+.nav-item
+{
+    padding: 10px;
+}
+
+.carousel-indicators
+{
+    padding-top: 20px;
+    margin:      0 100px -60px 100px;
+}
+
+.carousel-indicators li
+{
+    height:        auto;
+    width:         auto;
+    padding:       1px 5px 1px 5px;
+    cursor:        pointer;
+    background:    #FFFFFF;
+    font-size:     12px;
+    font-weight:   bold;
+    border-radius: 2px;
+    text-indent:   0;
+    transition:    500ms;
+    border:        1px solid #999999;
+}
+
+.carousel-indicators li:hover
+{
+    background-color: #0099FF;
+}
+
+.carousel-indicators .active
+{
+    color:            white;
+    background-color: #0099FF;
+    border:           1px solid #333333;
+}
+
+.carousel-control-icon
+{
+    width: 100px;
+}
+
+.carousel-control-prev-icon
+{
+    background: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='%2309F' viewBox='0 0 8 8'%3E%3Cpath d='M5.25 0l-4 4 4 4 1.5-1.5-2.5-2.5 2.5-2.5-1.5-1.5z'/%3E%3C/svg%3E");
+}
+
+.carousel-control-disabled
+{
+    background: transparent;
+}
+
+.carousel-control-next-icon
+{
+    background: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='%2309F' viewBox='0 0 8 8'%3E%3Cpath d='M2.75 0l-1.5 1.5 2.5 2.5-2.5 2.5 1.5 1.5 4-4-4-4z'/%3E%3C/svg%3E");
+}
+
+.btn-file
+{
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-file input[type=file]
+{
+    position:   absolute;
+    top:        0;
+    right:      0;
+    min-width:  100%;
+    min-height: 100%;
+    font-size:  100px;
+    text-align: right;
+    filter:     alpha(opacity=0);
+    opacity:    0;
+    background: red;
+    cursor:     inherit;
+    display:    block;
+}
+
+/*
+ *  Important stuff
+ */
+
+#query-configuration, #analysis-method, #analysis-configuration, #parameter-selection,
+#tab-Limits, #tab-Metrics, #tab-Conditions, #tab-Services, #tab-Timestamps, #tab-Status,
+#jmeter-configuration
+{
+    display: none;
+}
+
+.badge
+{
+    margin:         0 3px 0 3px;
+    border-radius:  5px;
+    font-size:      14px;
+    line-height:    14px;
+    text-align:     center;
+    vertical-align: middle;
+}
+
+.badge-target
+{
+    width:          auto;
+    height:         auto;
+    padding:        0 4px 0 4px;
+    min-width:      30px;
+    min-height:     28px;
+    border-radius:  5px;
+    text-align:     center;
+    vertical-align: middle;
+}
+
+.badge-pool
+{
+    border:         2px dashed #000000;
+    background:     rgba(0, 0, 0, 0.2);
+    width:          auto;
+    height:         auto;
+    overflow:       auto;
+    min-width:      100px;
+    max-width:      50%;
+    min-height:     30px;
+    max-height:     200px;
+    text-align:     center;
+    vertical-align: middle;
+}
+
+.metric-target
+{
+    border:     2px dashed #009900;
+    background: rgba(0, 153, 0, 0.3);
+
+}
+
+.metric-badge
+{
+    color:      white;
+    background: #009900;
+}
+
+.limit-target
+{
+    border:     2px dashed #999999;
+    background: rgba(153, 153, 153, 0.3);
+}
+
+.limit-badge
+{
+    background: #999999;
+}
+
+.unit-target
+{
+    border:     2px dashed #FF3300;
+    background: rgba(255, 51, 0, 0.3);
+}
+
+.unit-badge
+{
+    background: #FF3300;
+}
+
+.service-target
+{
+    border:     2px dashed #0055FF;
+    background: rgba(0, 85, 255, 0.3);
+}
+
+.service-badge
+{
+    color:      white;
+    background: #0055FF;
+}
+
+/*.time-target*/
+/*{*/
+/*border: 2px dashed #FA0;*/
+/*background: rgba(255, 170, 0, 0.3);*/
+/*}*/
+
+/*.time-badge*/
+/*{*/
+/*background: #FA0;*/
+/*}*/
+
+.condition-target
+{
+    border:     2px dashed #AA00AA;
+    background: rgba(170, 0, 170, 0.3);
+}
+
+.condition-badge
+{
+    color:      white;
+    background: #AA00AA;
+}
+
+.value-target
+{
+    border:     2px dashed #663300;
+    background: rgba(102, 51, 0, 0.3);
+}
+
+.value-badge
+{
+    color:      white;
+    background: #663300;
+}

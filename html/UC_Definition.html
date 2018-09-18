@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>User Concern Selection</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+  <script src="../js/jquery/jquery.min.js"></script>
+  <script src="../js/bootstrap/bootstrap.bundle.min.js"></script>
+
+  <script src="../js/util.js"></script>
+  <script src="../js/settings.js"></script>
+  <script src="../js/query.js"></script>
+  <script src="../js/definition.js"></script>
+
+
+  <link rel="stylesheet" href="../css/bootstrap/bootstrap.min.css">
+
+  <link rel="stylesheet" href="../css/definition.css">
+</head>
+<body>
+
+<script>
+  let el_type;
+  let el_parameters;
+
+  let el_query;
+
+  let el_limits;
+  let el_metrics;
+  let el_conditions_metric;
+  let el_conditions_limit;
+  let el_conditions_value;
+
+  let el_analysis_method;
+
+  let el_loadtest_domain;
+  let el_loadtest_load;
+  let el_loadtest_ramp_up;
+  let el_loadtest_ramp_down;
+
+  let el_jmeter_experiment;
+  let el_jmeter_properties;
+
+  let el_user_concern;
+
+  $(document).ready(function() {
+
+      el_type = $("#filter_type");
+      el_parameters = $("#filter_parameters");
+
+      el_query = $("#query");
+
+      el_limits = $("#parameter_limits");
+      el_metrics = $("#parameter_metrics");
+      el_conditions_metric = $("#parameter_conditions_metric");
+      el_conditions_limit = $("#parameter_conditions_limit");
+      el_conditions_value = $("#parameter_conditions_value");
+
+      el_analysis_method = $("#analysis_method");
+
+      el_loadtest_domain = $("#loadtest_domain");
+      el_loadtest_load = $("#loadtest_load");
+      el_loadtest_ramp_up = $("#loadtest_ramp_up");
+      el_loadtest_ramp_down = $("#loadtest_ramp_down");
+
+      el_jmeter_experiment = $("#jmeter_experiment");
+      el_jmeter_properties = $("#jmeter_properties");
+
+      el_user_concern = $("#user_concern");
+
+      $("#jmeter_experiment").val(JMETER.simple);
+
+      loadModel();
+      updateUI();
+
+      $("#main-carousel").find("input, select").each(function() {
+          $(this).on("change", function() {
+              saveModel();
+              updateUI();
+          });
+
+          $(this).on("input", function() {
+              saveModel();
+              updateUI();
+          });
+      });
+  });
+</script>
+
+<div class="main-container-decoration"></div>
+<div class="main-container">
+  <div id="main-carousel" class="carousel slide" data-ride="carousel" data-interval="false">
+
+    <ul class="carousel-indicators">
+      <li data-target="#main-carousel" data-slide-to="0" class="active">Start</li>
+      <li data-target="#main-carousel" data-slide-to="1" >Filters</li>
+      <li data-target="#main-carousel" data-slide-to="2" >Query</li>
+      <li data-target="#main-carousel" data-slide-to="3" >Analysis Method</li>
+      <li data-target="#main-carousel" data-slide-to="4" >Analysis Configuration</li>
+      <li data-target="#main-carousel" data-slide-to="5" >Finish</li>
+    </ul>
+
+    <div class="carousel-inner">
+
+      <div class="carousel-item active">
+        <h1>User Concern Definition</h1>
+        <hr>
+        <p>
+          This is the User Interface to configure a User Concern which helps you
+          to configure an analysis and create automatic performance Reports.
+          In the following steps you will be asked to fill out settings.
+          This helps us to define a useful User Concern.
+          If you are ready, then proceed by either clicking the navigation arrows
+          or using the control buttons on the bottom.
+        </p>
+
+
+        <br>
+        <br>
+        <br>
+        <h2>Playground:</h2>
+        <div>
+          <div class="d-inline-block badge-pool" ondrop="dropPool(event);" ondragover="allowDrop(event);">
+          <div class="badge metric-badge" id="metric-response-time" draggable="true" ondragstart="drag(event);">response time</div>
+          <div class="badge metric-badge" id="metric-number-of-users" draggable="true" ondragstart="drag(event);">number of users</div>
+          <div class="badge limit-badge" id="limit-average" draggable="true" ondragstart="drag(event);">average</div>
+          <div class="badge limit-badge" id="limit-minimum" draggable="true" ondragstart="drag(event);">minimum</div>
+          <div class="badge limit-badge" id="limit-maximum" draggable="true" ondragstart="drag(event);">maximum</div>
+          <div class="badge service-badge" id="service-database" draggable="true" ondragstart="drag(event);">database</div>
+          <div class="badge service-badge" id="service-frontend" draggable="true" ondragstart="drag(event);">frontend</div>
+          <div class="badge unit-badge" id="unit-min" draggable="true" ondragstart="drag(event);">min</div>
+          <div class="badge unit-badge" id="unit-s" draggable="true" ondragstart="drag(event);">s</div>
+          <div class="badge unit-badge" id="unit-h" draggable="true" ondragstart="drag(event);">h</div>
+          <div class="badge unit-badge" id="unit-ms" draggable="true" ondragstart="drag(event);">ms</div>
+          <div class="badge condition-badge" id="condition-<" draggable="true" ondragstart="drag(event);"><</div>
+          <div class="badge condition-badge" id="condition-=" draggable="true" ondragstart="drag(event);">=</div>
+          <div class="badge condition-badge" id="condition->" draggable="true" ondragstart="drag(event);">></div>
+          <div class="badge value-badge" id="value-0" draggable="true" ondragstart="drag(event);">0</div>
+          <div class="badge value-badge" id="value-10" draggable="true" ondragstart="drag(event);">10</div>
+          <div class="badge value-badge" id="value-100" draggable="true" ondragstart="drag(event);">100</div>
+        </div>
+
+          <br>
+          <br>
+          <div class="test-query">
+            Given a load of
+            <div class="d-inline-block value-target badge-target" ondrop="drop(event);" ondragover="allowDrop(event);"></div>
+            , what is the
+            <div class="d-inline-block limit-target badge-target" ondrop="drop(event);" ondragover="allowDrop(event);"></div>
+            <div class="d-inline-block metric-target badge-target" ondrop="drop(event);" ondragover="allowDrop(event);"></div>
+            of Service
+            <div class="d-inline-block service-target badge-target" ondrop="drop(event);" ondragover="allowDrop(event);"></div>
+            at
+            <div class="d-inline-block value-target badge-target" ondrop="drop(event);" ondragover="allowDrop(event);"></div>
+            <div class="d-inline-block unit-target badge-target" ondrop="drop(event);" ondragover="allowDrop(event);"></div>
+            ?
+          </div>
+        </div>
+      </div>
+
+      <div class="carousel-item">
+        <h1>Filters</h1>
+        <hr>
+        <br>
+
+        <h4>Do you want to perform an analysis or generate a report from existing data?</h4>
+        <hr>
+        <br>
+        <div class="input-group">
+
+          <div id="filter_type">
+            <div class="custom-control custom-radio">
+              <input type="radio" class="custom-control-input" id="filter_type_Analysis" name="filter_type" value="Analysis" checked>
+              <label class="custom-control-label" for="filter_type_Analysis">Analysis</label>
+            </div>
+
+            <div class="custom-control custom-radio">
+              <input type="radio" class="custom-control-input" id="filter_type_Report" name="filter_type" value="Report">
+              <label class="custom-control-label" for="filter_type_Report">Report</label>
+            </div>
+          </div>
+
+        </div>
+
+        <br>
+        <br>
+        <h4>Which parameters should your concern cover?</h4>
+        <hr>
+        <br>
+        <div class="input-group">
+
+          <div id="filter_parameters">
+            <div class="custom-control custom-checkbox">
+              <input type="checkbox" class="custom-control-input" id="filter_parameter_Limits" value="Limits">
+              <label class="custom-control-label" for="filter_parameter_Limits">Limits</label>
+            </div>
+
+            <div class="custom-control custom-checkbox">
+              <input type="checkbox" class="custom-control-input" id="filter_parameter_Metrics" value="Metrics">
+              <label class="custom-control-label" for="filter_parameter_Metrics">Metrics</label>
+            </div>
+
+            <div class="custom-control custom-checkbox">
+              <input type="checkbox" class="custom-control-input" id="filter_parameter_Conditions" value="Conditions">
+              <label class="custom-control-label" for="filter_parameter_Conditions">Conditions</label>
+            </div>
+
+            <div class="custom-control custom-checkbox">
+              <input type="checkbox" class="custom-control-input" id="filter_parameter_Services" value="Services">
+              <label class="custom-control-label" for="filter_parameter_Services">Services</label>
+            </div>
+
+            <div class="custom-control custom-checkbox">
+              <input type="checkbox" class="custom-control-input" id="filter_parameter_Timestamps" value="Timestamps">
+              <label class="custom-control-label" for="filter_parameter_Timestamps">Timestamps</label>
+            </div>
+
+            <div class="custom-control custom-checkbox">
+              <input type="checkbox" class="custom-control-input" id="filter_parameter_Status" value="Status">
+              <label class="custom-control-label" for="filter_parameter_Status">Status</label>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="carousel-item">
+
+        <div id="query-configuration">
+          <h1>Query</h1>
+          <hr>
+          <br>
+
+          <h4>Choose a query that suits your needs the most?</h4>
+          <hr>
+          <br>
+
+          <select class="custom-select" id="query">
+            <option value="" selected disabled>Select a query.</option>
+            <option value="What is the $Limit $Metric1 of Service $Service1 when the $Metric2 is $Condition $Value?">What is the $Limit $Metric1 of Service $Service1 when the $Metric2 is $Condition $Value?</option>
+            <option value="What is the $Limit $Metric of Service $Service at $Value $Unit?">What is the $Limit $Metric of Service $Service at $Value $Unit?</option>
+          </select>
+
+          <div id="parameter-selection">
+            <br>
+            <br>
+            <h1>Parameters</h1>
+            <hr>
+            <br>
+
+            <ul class="nav nav-tabs">
+                <li class="nav-item"><a class="nav-link" data-toggle="tab" id="tab-Limits" href="#limits">Limits</a></li>
+                <li class="nav-item"><a class="nav-link" data-toggle="tab" id="tab-Metrics" href="#metrics">Metrics</a></li>
+                <li class="nav-item"><a class="nav-link" data-toggle="tab" id="tab-Conditions" href="#conditions">Conditions</a></li>
+                <li class="nav-item"><a class="nav-link" data-toggle="tab" id="tab-Services" href="#services">Services</a></li>
+                <li class="nav-item"><a class="nav-link" data-toggle="tab" id="tab-Timestamps" href="#timestamps">Timestamps</a></li>
+                <li class="nav-item"><a class="nav-link" data-toggle="tab" id="tab-Status" href="#status">Status</a></li>
+            </ul>
+
+            <div class="tab-content">
+              <div id="limits" class="tab-pane">
+                <select class="custom-select" id="parameter_limits">
+                  <option value="" selected disabled>Select a limit.</option>
+                  <option value="minimum">minimum</option>
+                  <option value="average">average</option>
+                  <option value="maximum">maximum</option>
+                </select>
+              </div>
+              <div id="metrics" class="tab-pane">
+                <select class="custom-select" id="parameter_metrics">
+                  <option value="" selected disabled>Select a metric.</option>
+                  <option value="Latency">Latency</option>
+                  <option value="Response Time">Response Time</option>
+                  <option value="number of users">number of users</option>
+                </select>
+              </div>
+              <div id="conditions" class="tab-pane">
+                <select class="custom-select" id="parameter_conditions_metric">
+                  <option value="" selected disabled>Select a metric for the condition.</option>
+                  <option value="Latency">Latency</option>
+                </select>
+                <select class="custom-select" id="parameter_conditions_limit">
+                  <option value="" selected disabled>Select a limit for the condition.</option>
+                  <option value="is below">is below</option>
+                  <option value="is equal to">is equal to</option>
+                </select>
+                <select class="custom-select" id="parameter_conditions_value">
+                  <option value="" selected disabled>Select a value for the condition.</option>
+                  <option value="0">0</option>
+                  <option value="1">1</option>
+                  <option value="2">2</option>
+                  <option value="3">3</option>
+                </select>
+              </div>
+              <div id="services" class="tab-pane">
+                <select class="custom-select" id="parameter_services">
+                </select>
+                <div class="custom-file">
+                  <input type="file" class="custom-file-input" id="parameter_services_docker">
+                  <label class="custom-file-label" for="parameter_services_docker">Choose Docker file...</label>
+                </div>
+              </div>
+              <div id="timestamps" class="tab-pane">
+                <select class="custom-select" id="parameter_timestamps_value">
+                  <option value="" selected disabled>Select a timestamp value.</option>
+                  <option value="0">0</option>
+                  <option value="1">1</option>
+                  <option value="2">2</option>
+                  <option value="3">3</option>
+                </select>
+                <select class="custom-select" id="parameter_timestamps_unit">
+                  <option value="" selected disabled>Select a timestamp unit.</option>
+                  <option value="ms">ms</option>
+                  <option value="s">s</option>
+                  <option value="m">m</option>
+                </select>
+              </div>
+              <div id="status" class="tab-pane">
+                <select class="custom-select" id="parameter_status">
+                  <option value="" selected disabled>Select a status.</option>
+                  <option value="offline">offline</option>
+                  <option value="online">online</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="carousel-item">
+
+        <div id="analysis-method">
+          <h1>Analysis Method</h1>
+          <hr>
+          <br>
+
+          <h4>Select a Analysis Method.</h4>
+          <hr>
+          <br>
+
+          <select class="custom-select" id="analysis_method">
+            <option value="" selected disabled>Select a analysis method.</option>
+            <option value="JMeter">JMeter</option>
+          </select>
+
+        </div>
+
+      </div>
+
+      <div class="carousel-item">
+
+        <div id="analysis-configuration">
+          <h1>Analysis Configuration</h1>
+          <hr>
+          <br>
+
+          <div id="loadtest-configuration">
+            <div id="jmeter-configuration">
+              <div class="form-group">
+
+                <h4>Select the location your system.</h4>
+                <hr>
+
+                <input type="url" id="loadtest_domain" placeholder="www.example.com"/>
+                <br>
+                <br>
+
+                <h4>Specify the loadtest values.</h4>
+                <hr>
+
+                <label>
+                  Load (number of users) *:<br>
+                  <select class="custom-select d-inline-block" id="loadtest_load">
+                    <option value="" selected disabled>Select the amount of load.</option>
+                    <option value="0">0</option>
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="10">10</option>
+                    <option value="100">100</option>
+                  </select>
+                </label>
+
+                <label>
+                  Ramp up time (s):<br>
+                  <input type="number" id="loadtest_ramp_up" placeholder="1">
+                </label>
+
+                <label>
+                  Ramp down time (s):<br>
+                  <input type="number" id="loadtest_ramp_down" placeholder="1">
+                </label>
+
+              </div>
+              <br>
+              <div class="form-group d-inline-block">
+
+                <label for="jmeter-experiment">JMeter Experiment:</label>
+                <textarea class="form-control" rows="10" cols="100" id="jmeter_experiment" readonly></textarea>
+
+              </div>
+               <div class="form-group d-inline-block">
+
+                <label for="jmeter-properties">JMeter Properties:</label>
+                <textarea class="form-control" rows="10" cols="100" id="jmeter_properties" readonly></textarea>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="carousel-item">
+        <h1>Closing Steps</h1>
+        <hr>
+        <br>
+
+        <h4>Analysis</h4>
+        <hr>
+
+        <p>
+          JMeter will be your analysis tool. Download the following two files, then proceed with the next steps.<br>
+          <button class="d-inline-block btn-primary" onclick="download('#jmeter_experiment', 'jmeter_experiment.jmx')">Download JMeter Test File</button>
+          <button class="d-inline-block btn-primary" onclick="download('#jmeter_properties', 'jmeter_properties.prop')">Download JMeter Properties File</button>
+        </p>
+
+        <p>
+          If you have downloaded the two files you are ready to perform a loadtest evaluation of your system.
+          Open a terminal, then type one of the following commands into the terminal (they have the same effect).
+          <pre>
+          <code>
+            jmeter -p [...] -t [...] -l [...]
+
+            jmeter --propfile [...] -testfile [...] -logfile [...]
+          </code>
+          </pre>
+        </p>
+
+        <h4>User Concern</h4>
+        <hr>
+
+        <p>
+          For the last step you have to get the User Concern by downloading it.
+          If you don't mind to keep your User Concern, you can continue by clicking <a id="redirect" href="">here</a>.
+          <br>
+          <button class="btn-primary" onclick="download('#user_concern', 'user_concern.json')">Download the User Concern</button>
+          <textarea id="user_concern" class="d-none"></textarea>
+        </p>
+
+      </div>
+
+    </div>
+
+    <div class="carousel-control">
+      <a class="carousel-control-prev carousel-control-icon" href="#main-carousel" data-slide="prev">
+        <span class="carousel-control-prev-icon"></span>
+      </a>
+      <a class="carousel-control-next carousel-control-icon" href="#main-carousel" data-slide="next">
+        <span class="carousel-control-next-icon"></span>
+      </a>
+    </div>
+
+  </div>
+</div>
+
+</body>
+</html>

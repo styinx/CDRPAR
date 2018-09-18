@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>User Concern Report</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+  <script src="../js/jquery/jquery.min.js"></script>
+  <script src="../js/highcharts/highstock.js"></script>
+  <script src="../js/splitter/split.min.js"></script>
+  <script src="../js/bootstrap/bootstrap.bundle.min.js"></script>
+
+  <script src="../js/util.js"></script>
+  <script src="../js/query.js"></script>
+  <script src="../js/settings.js"></script>
+
+
+  <link rel="stylesheet" href="../css/bootstrap/bootstrap.min.css">
+  <link rel="stylesheet" href="../css/definition.css">
+  <link rel="stylesheet" href="../css/report.css">
+</head>
+<body>
+<script>
+  let query;
+  let content;
+  let sidebar;
+  let report;
+
+  let el_content;
+  let el_sidebar;
+
+  $(document).ready(function() {
+
+      Split(['#query-input', '#user-input'], {
+          sizes: [75, 25],
+          gutterSize: 8,
+          minSize: [800, 0],
+          cursor: 'col-resize'
+      });
+
+      Split(['#content', '#sidebar'], {
+          sizes: [75, 25],
+          gutterSize: 8,
+          minSize: [800, 0],
+          cursor: 'col-resize'
+      });
+
+      query = new Query($("#query"), $(".badge-pool"), "");
+      content = new Content($("#content"));
+      sidebar = new Sidebar($("#sidebar"));
+      report = new Report();
+
+      el_content = $('#content');
+      el_sidebar = $('#sidebar');
+
+      let url = window.location.href;
+      if(url.indexOf('concern=') > -1)
+      {
+          USER_CONCERN = JSON.parse(decodeURI(url.substr(url.indexOf('concern=') + 8)));
+          $("#query").html(Object.keys(USER_CONCERN.query)[0]);
+          query.setQuery(Object.keys(USER_CONCERN.query)[0]);
+      }
+  });
+</script>
+  <div class="main">
+    <div class="query-container">
+
+      <div id="query-input" class="split split-horizontal">
+        <div id="query">Here comes the query.</div>
+        <div id="badge-pool" class="d-inline-block badge-pool" ondrop="dropPool(event);" ondragover="allowDrop(event);"></div>
+      </div>
+
+      <div id="user-input" class="split split-horizontal">
+        <div class="form-group">
+          <label for="concern_input" class="file-input btn btn-primary btn-file">
+            Load a User Concern<input id="concern_input" type="file" class="d-none" onclick="upload(this.id, loadUserConcern);">
+          </label>
+        </div>
+
+        <div class="form-group">
+          <label for="data_input" class="file-input btn btn-primary btn-file">
+            Load a analysis result<input id="data_input" type="file" class="d-none" onclick="upload(this.id, loadAnalysisData);">
+          </label>
+        </div>
+      </div>
+    </div>
+    <div class="wrap">
+      <div id="content" class="split split-horizontal"></div>
+      <div id="sidebar" class="split split-horizontal"></div>
+    </div>
+  </div>
+<script src="../js/report.js"></script>
+</body>
+</html>
