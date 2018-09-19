@@ -361,6 +361,19 @@ function valuesCheckbox(id)
 }
 
 /**
+ * Fills a select with the given values.
+ */
+function fillSelect(id, values)
+{
+    let select = $("#" + id);
+
+    for(let key in values)
+    {
+        select.append("<option value='" + values[key] + "'>" + values[key] + "</option>")
+    }
+}
+
+/**
  * Downloads the content of a elements value to the given filename.
  * @param element
  * @param filename
@@ -403,66 +416,6 @@ function upload(element, callback)
     });
 }
 
-function allowDrop(ev)
-{
-    ev.preventDefault();
-}
-
-function drag(ev)
-{
-    ev.dataTransfer.setData("id", ev.target.id);
-    ev.dataTransfer.setData("type", ev.target.className.split(' ')[1].split('-')[0]);
-}
-
-function drop(ev)
-{
-    ev.preventDefault();
-    let target = ev.target;
-    let id = ev.dataTransfer.getData("id");
-    let type = ev.dataTransfer.getData("type");
-    let dropped = document.getElementById(id);
-    let badge_pool = $(".badge-pool")[0];
-    let duplicate = dropped.cloneNode();
-    duplicate.id = duplicate.id + "-d";
-    duplicate.innerHTML = dropped.innerHTML;
-
-    // Replace a badge
-    if(target.className.split(' ').includes('badge'))
-    {
-        if(target.className.split(' ').includes(type + "-badge"))
-        {
-            let parent = target.parentNode;
-            target.outerText = "";
-            parent.innerHTML = "";
-            parent.appendChild(dropped);
-            badge_pool.insertBefore(duplicate, badge_pool.children[0]);
-        }
-    }
-    // Insert a badge
-    else
-    {
-        if(target.className.split(' ').includes(type + "-target"))
-        {
-            if(target.children.length !== 0)
-            {
-                badge_pool.append(target.children[0]);
-                target.innerHTML = "";
-            }
-            target.appendChild(dropped);
-            badge_pool.insertBefore(duplicate, badge_pool.children[0]);
-        }
-    }
-}
-
-function dropPool(ev)
-{
-    ev.preventDefault();
-    let target = ev.target;
-    let id = ev.dataTransfer.getData("id");
-
-    document.getElementById(id).outerHTML = "";
-}
-
 function chartContainer(title, id)
 {
     return '' +
@@ -476,7 +429,7 @@ function chartContainer(title, id)
     '</div>\n' +
     '<div id="' + id + '-content" class="collapse show" aria-labelledby="' + id + '-heading">\n' +
     '  <div class="card-body">\n' +
-    '    <div id="' + title.toLowerCase() + '-' + id + '"></div>\n' +
+    '    <div id="' + title.toLowerCase() + '-' + id + '" class="chart"></div>\n' +
     '  </div>\n' +
     '</div>\n' +
     '</div>';
@@ -487,12 +440,25 @@ function addSidebarLink(link)
     el_sidebar.html('<iframe src="' + link + '" width="100%" height="100%"></iframe>');
 }
 
+function addSidebarRef(ref)
+{
+    el_sidebar.html(ref);
+}
+
+function linkSidebar(what)
+{
+    let el = document.createElement("div");
+    el.innerHTML += what;
+    return bneutral("<a onclick='addSidebarLink(\"" + LINKS[what] + "\")'>" + what + "</a>");
+}
+
 function refSidebar(what)
 {
     let el = document.createElement("div");
     el.innerHTML += what;
-    return "<a onclick='addSidebarLink(\"" + LINKS[what] + "\")'>" + what + "</a>";
+    return bneutral("<a onclick='addSidebarRef(\"" + REFS[what] + "\")'>" + what + "</a>");
 }
+
 function link(what) { return '<a>' + what + '</a>'; }
 function id(what, id) { return '<span id="' + id + '">' + what + '</span>'; }
 

@@ -2,22 +2,27 @@
  * The USER_CONCERN saves the session related information a user made in the UC selection.
  * The contents of this variable are saved when a user changes it's selection.
  *
- * query : Contains the query string with placeholders.
- * concern : TODO: maybe remove
- * type: Contains the type of the query.
- * parameters: Holds the parameters and their associated values.
+ * query : Contains the query information.
+ *     text : Contains the query pattern as string.
+ *     type : Contains the type of the query.
+ *     parameters : Contains the variable values of the query.
+ * type: Contains the type of the query (Analysis or Report).
  * analysis:
  *     tool: The name of the analysis tool.
+ *     expert: Tells if the user is an expert.
  *     meta: Specific information about the analysis tool.
  */
 let USER_CONCERN = {
-    query:      {},
-    concern:    "",
+    query:      {
+        text:       "",
+        type:       "",
+        parameters: {},
+    },
     type:       "",
-    parameters: {},
     analysis:   {
-        tool: "",
-        meta: {}
+        tool:   "",
+        expert: false,
+        meta:   {}
     }
 };
 
@@ -28,11 +33,13 @@ let USER_CONCERN = {
  * type : type of the analysis
  */
 let QUERIES = {
-    "What is the $Limit $Metric1 of Service $Service1 when the $Metric2 is $Condition $Value?": {
-        type: "loadtest"
+    "What is the $Limit $Metric1 of Service $Service when the $Metric2 is $Condition $Value?": {
+        type:       "loadtest",
+        parameters: {"Limit": "", "Metric1": "", "Service": "", "Metric2": "", "Condition": "", "Value": ""}
     },
-    "What is the $Limit $Metric of Service $Service at $Value $Unit?":                          {
-        type: "loadtest"
+    "What is the $Limit $Metric of Service $Service at $Value $Unit?":                         {
+        type:       "loadtest",
+        parameters: {"Limit": "", "Metric": "", "Service": "", "Value": "", "Unit": ""}
     }
 };
 
@@ -65,7 +72,12 @@ let DEFAULT = {
  * Aimed to use for sidebar reference.
  */
 let LINKS = {
-    "JMeter" : "https://en.wikipedia.org/wiki/Apache_JMeter?printable=yes"
+    "JMeter": "https://en.wikipedia.org/wiki/Apache_JMeter?printable=yes",
+    "loadtest": "https://en.wikipedia.org/wiki/Load_testing?printable=yes"
+};
+
+let REFS = {
+
 };
 
 /**
@@ -73,6 +85,10 @@ let LINKS = {
  */
 let DATA = {};
 
+/**
+ * JMETER holds different configurations for JMeter. Variable inputs are marked with '$JM_' prefix.
+ *
+ */
 let JMETER = {
     "simple": '' +
               '<?xml version="1.0" encoding="UTF-8"?>\n' +

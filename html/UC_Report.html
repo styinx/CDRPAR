@@ -17,7 +17,7 @@
 
 
   <link rel="stylesheet" href="../css/bootstrap/bootstrap.min.css">
-  <link rel="stylesheet" href="../css/definition.css">
+  <link rel="stylesheet" href="../css/query.css">
   <link rel="stylesheet" href="../css/report.css">
 </head>
 <body>
@@ -29,6 +29,8 @@
 
   let el_content;
   let el_sidebar;
+
+  function asd(){console.log("asd")}
 
   $(document).ready(function() {
 
@@ -58,8 +60,9 @@
       if(url.indexOf('concern=') > -1)
       {
           USER_CONCERN = JSON.parse(decodeURI(url.substr(url.indexOf('concern=') + 8)));
-          $("#query").html(Object.keys(USER_CONCERN.query)[0]);
-          query.setQuery(Object.keys(USER_CONCERN.query)[0]);
+          $("#query").html(USER_CONCERN.query.text);
+          query.setQuery(USER_CONCERN.query.text);
+          query.setQueryValues();
       }
   });
 </script>
@@ -86,7 +89,7 @@
       </div>
     </div>
     <div class="wrap">
-      <div id="content" class="split split-horizontal"></div>
+      <div id="content" onresize="asd();" class="split split-horizontal"></div>
       <div id="sidebar" class="split split-horizontal"></div>
     </div>
   </div>

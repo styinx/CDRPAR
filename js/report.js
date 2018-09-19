@@ -23,7 +23,7 @@ class Report
 
     experimentDescription()
     {
-        if(USER_CONCERN.query[query.query].type === "loadtest")
+        if(USER_CONCERN.query.type === "loadtest")
         {
             let ANALYSIS = USER_CONCERN.analysis;
             el_content.append($(document.createElement("div"))
@@ -31,9 +31,9 @@ class Report
                               .append("<hr><br>")
                               .append("<h3>Configuration</h3>")
                               .append("<hr>")
-                              .append("<p>The chosen Analysis tool was " + refSidebar(ANALYSIS.tool) + "</p>")
+                              .append("<p>The chosen Analysis tool was " + linkSidebar(ANALYSIS.tool) + "</p>")
                               .append("<p>The experiment was performed on " + bold(ANALYSIS.meta.domain) + "</p>")
-                              .append("<p>The " + refSidebar("loadtest") + " was done with a load of " + bold(ANALYSIS.meta.load) + " users."));
+                              .append("<p>The " + linkSidebar("loadtest") + " was done with a load of " + bold(ANALYSIS.meta.load) + " users."));
 
         }
     }
@@ -222,7 +222,8 @@ class BenchFlowResult
 function loadUserConcern(json)
 {
     USER_CONCERN = JSON.parse(json);
-    query.setQuery(Object.keys(USER_CONCERN.query)[0]);
+    query.setQuery(USER_CONCERN.query.text);
+    query.setQueryValues();
 
     el_content.html("");
     el_sidebar.html("");

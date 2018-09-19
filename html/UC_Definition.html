@@ -16,15 +16,18 @@
 
 
   <link rel="stylesheet" href="../css/bootstrap/bootstrap.min.css">
-
+  <link rel="stylesheet" href="../css/query.css">
   <link rel="stylesheet" href="../css/definition.css">
 </head>
 <body>
 
 <script>
+  let query;
+
   let el_type;
   let el_parameters;
 
+  let el_query_pattern;
   let el_query;
 
   let el_limits;
@@ -46,47 +49,53 @@
   let el_user_concern;
 
   $(document).ready(function() {
+    query = new Query($("#query"), $(".badge-pool"));
 
-      el_type = $("#filter_type");
-      el_parameters = $("#filter_parameters");
+    el_type = $("#filter_type");
+    el_parameters = $("#filter_parameters");
 
-      el_query = $("#query");
+    el_query_pattern = $("#query_pattern");
+    el_query = $("#query");
 
-      el_limits = $("#parameter_limits");
-      el_metrics = $("#parameter_metrics");
-      el_conditions_metric = $("#parameter_conditions_metric");
-      el_conditions_limit = $("#parameter_conditions_limit");
-      el_conditions_value = $("#parameter_conditions_value");
+    el_limits = $("#parameter_limits");
+    el_metrics = $("#parameter_metrics");
+    el_conditions_metric = $("#parameter_conditions_metric");
+    el_conditions_limit = $("#parameter_conditions_limit");
+    el_conditions_value = $("#parameter_conditions_value");
 
-      el_analysis_method = $("#analysis_method");
+    el_analysis_method = $("#analysis_method");
 
-      el_loadtest_domain = $("#loadtest_domain");
-      el_loadtest_load = $("#loadtest_load");
-      el_loadtest_ramp_up = $("#loadtest_ramp_up");
-      el_loadtest_ramp_down = $("#loadtest_ramp_down");
+    el_loadtest_domain = $("#loadtest_domain");
+    el_loadtest_load = $("#loadtest_load");
+    el_loadtest_ramp_up = $("#loadtest_ramp_up");
+    el_loadtest_ramp_down = $("#loadtest_ramp_down");
 
-      el_jmeter_experiment = $("#jmeter_experiment");
-      el_jmeter_properties = $("#jmeter_properties");
+    el_jmeter_experiment = $("#jmeter_experiment");
+    el_jmeter_properties = $("#jmeter_properties");
 
-      el_user_concern = $("#user_concern");
+    el_user_concern = $("#user_concern");
 
-      $("#jmeter_experiment").val(JMETER.simple);
+    $("#jmeter_experiment").val(JMETER.simple);
+    $('[data-toggle="tooltip"]').tooltip();
 
-      loadModel();
-      updateUI();
+    fillSelect("query_pattern", Object.keys(QUERIES));
+    loadModel();
+    updateUI();
 
-      $("#main-carousel").find("input, select").each(function() {
-          $(this).on("change", function() {
-              saveModel();
-              updateUI();
-          });
+    $("#main-carousel").find("input, select").each(function() {
+       $(this).on("change", function()
+       {
+           saveModel();
+           updateUI();
+       });
 
-          $(this).on("input", function() {
-              saveModel();
-              updateUI();
-          });
-      });
-  });
+       $(this).on("input", function()
+       {
+           saveModel();
+           updateUI();
+       });
+   });
+});
 </script>
 
 <div class="main-container-decoration"></div>
@@ -94,12 +103,12 @@
   <div id="main-carousel" class="carousel slide" data-ride="carousel" data-interval="false">
 
     <ul class="carousel-indicators">
-      <li data-target="#main-carousel" data-slide-to="0" class="active">Start</li>
-      <li data-target="#main-carousel" data-slide-to="1" >Filters</li>
-      <li data-target="#main-carousel" data-slide-to="2" >Query</li>
-      <li data-target="#main-carousel" data-slide-to="3" >Analysis Method</li>
-      <li data-target="#main-carousel" data-slide-to="4" >Analysis Configuration</li>
-      <li data-target="#main-carousel" data-slide-to="5" >Finish</li>
+      <li data-target="#main-carousel" data-slide-to="0" class="active" id="indicator-0">Start</li>
+      <li data-target="#main-carousel" data-slide-to="1" id="indicator-1">Filters</li>
+      <li data-target="#main-carousel" data-slide-to="2" id="indicator-2">Query</li>
+      <li data-target="#main-carousel" data-slide-to="3" id="indicator-3">Analysis Method</li>
+      <li data-target="#main-carousel" data-slide-to="4" id="indicator-4">Analysis Configuration</li>
+      <li data-target="#main-carousel" data-slide-to="5" id="indicator-5">Finish</li>
     </ul>
 
     <div class="carousel-inner">
@@ -107,7 +116,7 @@
       <div class="carousel-item active">
         <h1>User Concern Definition</h1>
         <hr>
-        <p>
+        <p class="p-section">
           This is the User Interface to configure a User Concern which helps you
           to configure an analysis and create automatic performance Reports.
           In the following steps you will be asked to fill out settings.
@@ -115,111 +124,93 @@
           If you are ready, then proceed by either clicking the navigation arrows
           or using the control buttons on the bottom.
         </p>
-
-
-        <br>
-        <br>
-        <br>
-        <h2>Playground:</h2>
-        <div>
-          <div class="d-inline-block badge-pool" ondrop="dropPool(event);" ondragover="allowDrop(event);">
-          <div class="badge metric-badge" id="metric-response-time" draggable="true" ondragstart="drag(event);">response time</div>
-          <div class="badge metric-badge" id="metric-number-of-users" draggable="true" ondragstart="drag(event);">number of users</div>
-          <div class="badge limit-badge" id="limit-average" draggable="true" ondragstart="drag(event);">average</div>
-          <div class="badge limit-badge" id="limit-minimum" draggable="true" ondragstart="drag(event);">minimum</div>
-          <div class="badge limit-badge" id="limit-maximum" draggable="true" ondragstart="drag(event);">maximum</div>
-          <div class="badge service-badge" id="service-database" draggable="true" ondragstart="drag(event);">database</div>
-          <div class="badge service-badge" id="service-frontend" draggable="true" ondragstart="drag(event);">frontend</div>
-          <div class="badge unit-badge" id="unit-min" draggable="true" ondragstart="drag(event);">min</div>
-          <div class="badge unit-badge" id="unit-s" draggable="true" ondragstart="drag(event);">s</div>
-          <div class="badge unit-badge" id="unit-h" draggable="true" ondragstart="drag(event);">h</div>
-          <div class="badge unit-badge" id="unit-ms" draggable="true" ondragstart="drag(event);">ms</div>
-          <div class="badge condition-badge" id="condition-<" draggable="true" ondragstart="drag(event);"><</div>
-          <div class="badge condition-badge" id="condition-=" draggable="true" ondragstart="drag(event);">=</div>
-          <div class="badge condition-badge" id="condition->" draggable="true" ondragstart="drag(event);">></div>
-          <div class="badge value-badge" id="value-0" draggable="true" ondragstart="drag(event);">0</div>
-          <div class="badge value-badge" id="value-10" draggable="true" ondragstart="drag(event);">10</div>
-          <div class="badge value-badge" id="value-100" draggable="true" ondragstart="drag(event);">100</div>
-        </div>
-
-          <br>
-          <br>
-          <div class="test-query">
-            Given a load of
-            <div class="d-inline-block value-target badge-target" ondrop="drop(event);" ondragover="allowDrop(event);"></div>
-            , what is the
-            <div class="d-inline-block limit-target badge-target" ondrop="drop(event);" ondragover="allowDrop(event);"></div>
-            <div class="d-inline-block metric-target badge-target" ondrop="drop(event);" ondragover="allowDrop(event);"></div>
-            of Service
-            <div class="d-inline-block service-target badge-target" ondrop="drop(event);" ondragover="allowDrop(event);"></div>
-            at
-            <div class="d-inline-block value-target badge-target" ondrop="drop(event);" ondragover="allowDrop(event);"></div>
-            <div class="d-inline-block unit-target badge-target" ondrop="drop(event);" ondragover="allowDrop(event);"></div>
-            ?
-          </div>
-        </div>
       </div>
 
       <div class="carousel-item">
         <h1>Filters</h1>
         <hr>
-        <br>
 
-        <h4>Do you want to perform an analysis or generate a report from existing data?</h4>
-        <hr>
-        <br>
-        <div class="input-group">
+        <div class="p-section">
 
-          <div id="filter_type">
-            <div class="custom-control custom-radio">
-              <input type="radio" class="custom-control-input" id="filter_type_Analysis" name="filter_type" value="Analysis" checked>
-              <label class="custom-control-label" for="filter_type_Analysis">Analysis</label>
-            </div>
+          <h4>Are you a performance analysis expert?</h4>
+          <hr>
 
-            <div class="custom-control custom-radio">
-              <input type="radio" class="custom-control-input" id="filter_type_Report" name="filter_type" value="Report">
-              <label class="custom-control-label" for="filter_type_Report">Report</label>
-            </div>
+          <p>If you check this option you will see all available configurations.</p>
+
+          <div class="custom-control custom-checkbox">
+            <input type="checkbox" class="custom-control-input" id="expert" value="true">
+            <label class="custom-control-label" for="expert" data-toggle="tooltip" data-placement="right"
+                   title="Experts will have more options to configure a analysis.">
+              Expert
+            </label>
           </div>
 
+          <div class="filler"></div>
+
+          <h4>Do you want to perform an analysis or generate a report from existing data?</h4>
+          <hr>
+
+          <div class="input-group">
+
+            <div id="filter_type">
+              <div class="custom-control custom-radio">
+                <input type="radio" class="custom-control-input" id="filter_type_Analysis" name="filter_type" value="Analysis" checked>
+                <label class="custom-control-label" for="filter_type_Analysis" data-toggle="tooltip" data-placement="right"
+                       title="You can configure an analysis experiment.">
+                  Analysis
+                </label>
+              </div>
+
+              <div class="custom-control custom-radio">
+                <input type="radio" class="custom-control-input" id="filter_type_Report" name="filter_type" value="Report">
+                <label class="custom-control-label" for="filter_type_Report" data-toggle="tooltip" data-placement="right"
+                       title="If you only want to generate an report, ....">
+                  Report
+                </label>
+              </div>
+            </div>
+
+          </div>
         </div>
 
-        <br>
-        <br>
-        <h4>Which parameters should your concern cover?</h4>
-        <hr>
-        <br>
-        <div class="input-group">
+        <div class="p-section">
 
           <div id="filter_parameters">
-            <div class="custom-control custom-checkbox">
-              <input type="checkbox" class="custom-control-input" id="filter_parameter_Limits" value="Limits">
-              <label class="custom-control-label" for="filter_parameter_Limits">Limits</label>
-            </div>
 
-            <div class="custom-control custom-checkbox">
-              <input type="checkbox" class="custom-control-input" id="filter_parameter_Metrics" value="Metrics">
-              <label class="custom-control-label" for="filter_parameter_Metrics">Metrics</label>
-            </div>
+            <h4>Which parameters should your concern cover?</h4>
+            <hr>
 
-            <div class="custom-control custom-checkbox">
-              <input type="checkbox" class="custom-control-input" id="filter_parameter_Conditions" value="Conditions">
-              <label class="custom-control-label" for="filter_parameter_Conditions">Conditions</label>
-            </div>
+            <div class="input-group">
 
-            <div class="custom-control custom-checkbox">
-              <input type="checkbox" class="custom-control-input" id="filter_parameter_Services" value="Services">
-              <label class="custom-control-label" for="filter_parameter_Services">Services</label>
-            </div>
+              <div class="custom-control custom-checkbox">
+                <input type="checkbox" class="custom-control-input" id="filter_parameter_Limits" value="Limits">
+                <label class="custom-control-label" for="filter_parameter_Limits">Limits</label>
+              </div>
 
-            <div class="custom-control custom-checkbox">
-              <input type="checkbox" class="custom-control-input" id="filter_parameter_Timestamps" value="Timestamps">
-              <label class="custom-control-label" for="filter_parameter_Timestamps">Timestamps</label>
-            </div>
+              <div class="custom-control custom-checkbox">
+                <input type="checkbox" class="custom-control-input" id="filter_parameter_Metrics" value="Metrics">
+                <label class="custom-control-label" for="filter_parameter_Metrics">Metrics</label>
+              </div>
 
-            <div class="custom-control custom-checkbox">
-              <input type="checkbox" class="custom-control-input" id="filter_parameter_Status" value="Status">
-              <label class="custom-control-label" for="filter_parameter_Status">Status</label>
+              <div class="custom-control custom-checkbox">
+                <input type="checkbox" class="custom-control-input" id="filter_parameter_Conditions" value="Conditions">
+                <label class="custom-control-label" for="filter_parameter_Conditions">Conditions</label>
+              </div>
+
+              <div class="custom-control custom-checkbox">
+                <input type="checkbox" class="custom-control-input" id="filter_parameter_Services" value="Services">
+                <label class="custom-control-label" for="filter_parameter_Services">Services</label>
+              </div>
+
+              <div class="custom-control custom-checkbox">
+                <input type="checkbox" class="custom-control-input" id="filter_parameter_Timestamps" value="Timestamps">
+                <label class="custom-control-label" for="filter_parameter_Timestamps">Timestamps</label>
+              </div>
+
+              <div class="custom-control custom-checkbox">
+                <input type="checkbox" class="custom-control-input" id="filter_parameter_Status" value="Status">
+                <label class="custom-control-label" for="filter_parameter_Status">Status</label>
+              </div>
             </div>
           </div>
 
@@ -231,24 +222,29 @@
         <div id="query-configuration">
           <h1>Query</h1>
           <hr>
-          <br>
 
-          <h4>Choose a query that suits your needs the most?</h4>
-          <hr>
-          <br>
+          <div class="p-section">
 
-          <select class="custom-select" id="query">
-            <option value="" selected disabled>Select a query.</option>
-            <option value="What is the $Limit $Metric1 of Service $Service1 when the $Metric2 is $Condition $Value?">What is the $Limit $Metric1 of Service $Service1 when the $Metric2 is $Condition $Value?</option>
-            <option value="What is the $Limit $Metric of Service $Service at $Value $Unit?">What is the $Limit $Metric of Service $Service at $Value $Unit?</option>
-          </select>
-
-          <div id="parameter-selection">
-            <br>
-            <br>
-            <h1>Parameters</h1>
+            <h4>Choose a query that suits your needs the most?</h4>
             <hr>
-            <br>
+
+            <select class="custom-select" id="query_pattern">
+              <option value="" selected disabled>Select a query.</option>
+            </select>
+
+            <div class="query-wrapper">
+              <div id="query"></div>
+              <div id="badge-pool" class="d-inline-block badge-pool" ondrop="dropPool(event);" ondragover="allowDrop(event);"></div>
+            </div>
+          </div>
+        </div>
+
+        <div id="parameter-selection">
+
+          <h1>Parameters</h1>
+          <hr>
+
+          <div class="p-section">
 
             <ul class="nav nav-tabs">
                 <li class="nav-item"><a class="nav-link" data-toggle="tab" id="tab-Limits" href="#limits">Limits</a></li>
@@ -335,16 +331,19 @@
         <div id="analysis-method">
           <h1>Analysis Method</h1>
           <hr>
-          <br>
 
-          <h4>Select a Analysis Method.</h4>
-          <hr>
-          <br>
+          <div class="p-section">
 
-          <select class="custom-select" id="analysis_method">
-            <option value="" selected disabled>Select a analysis method.</option>
-            <option value="JMeter">JMeter</option>
-          </select>
+            <h4>Select a Analysis Method.</h4>
+            <hr>
+            <br>
+
+            <select class="custom-select" id="analysis_method">
+              <option value="" selected disabled>Select a analysis method.</option>
+              <option value="JMeter">JMeter</option>
+            </select>
+
+          </div>
 
         </div>
 
@@ -355,99 +354,128 @@
         <div id="analysis-configuration">
           <h1>Analysis Configuration</h1>
           <hr>
-          <br>
 
-          <div id="loadtest-configuration">
-            <div id="jmeter-configuration">
+          <div class="p-section">
+
+            <div id="loadtest-configuration">
+
+              <h3>Loadtest Configuration</h3>
+              <hr>
+
               <div class="form-group">
 
-                <h4>Select the location your system.</h4>
-                <hr>
+                <div class="p-section">
 
-                <input type="url" id="loadtest_domain" placeholder="www.example.com"/>
-                <br>
-                <br>
+                  <h4>Select the location your system.</h4>
+                  <hr>
 
-                <h4>Specify the loadtest values.</h4>
-                <hr>
+                  <input type="url" id="loadtest_domain" placeholder="www.example.com"/>
 
-                <label>
-                  Load (number of users) *:<br>
-                  <select class="custom-select d-inline-block" id="loadtest_load">
-                    <option value="" selected disabled>Select the amount of load.</option>
-                    <option value="0">0</option>
-                    <option value="1">1</option>
-                    <option value="2">2</option>
-                    <option value="10">10</option>
-                    <option value="100">100</option>
-                  </select>
-                </label>
+                  <div class="filler"></div>
 
-                <label>
-                  Ramp up time (s):<br>
-                  <input type="number" id="loadtest_ramp_up" placeholder="1">
-                </label>
+                  <h4>Specify the loadtest values.</h4>
+                  <hr>
 
-                <label>
-                  Ramp down time (s):<br>
-                  <input type="number" id="loadtest_ramp_down" placeholder="1">
-                </label>
+                  <label>
+                    Load (number of users) *:<br>
+                    <select class="custom-select d-inline-block" id="loadtest_load">
+                      <option value="" selected disabled>Select the amount of load.</option>
+                      <option value="0">0</option>
+                      <option value="1">1</option>
+                      <option value="2">2</option>
+                      <option value="10">10</option>
+                      <option value="100">100</option>
+                    </select>
+                  </label>
 
-              </div>
-              <br>
-              <div class="form-group d-inline-block">
+                  <label>
+                    Ramp up time (s):<br>
+                    <input type="number" id="loadtest_ramp_up" placeholder="1">
+                  </label>
 
-                <label for="jmeter-experiment">JMeter Experiment:</label>
-                <textarea class="form-control" rows="10" cols="100" id="jmeter_experiment" readonly></textarea>
+                  <label>
+                    Ramp down time (s):<br>
+                    <input type="number" id="loadtest_ramp_down" placeholder="1">
+                  </label>
+
+                </div>
 
               </div>
-               <div class="form-group d-inline-block">
 
-                <label for="jmeter-properties">JMeter Properties:</label>
-                <textarea class="form-control" rows="10" cols="100" id="jmeter_properties" readonly></textarea>
+              <div id="jmeter-configuration">
+
+                <h3>JMeter Configuration</h3>
+                <hr>
+
+                <div class="p-section">
+
+                  <h4>Analysis Experiment</h4>
+                  <hr>
+
+                  <div class="p-section">
+
+                    <div class="form-group d-inline-block">
+                      <label for="jmeter-experiment">JMeter experiment configuration:</label><br>
+                      <textarea class="form-control" rows="10" cols="100" id="jmeter_experiment" readonly></textarea>
+                    </div>
+
+                  </div>
+
+                  <h4>Experiment Properties</h4>
+                  <hr>
+
+                  <div class="p-section">
+
+                    <div class="form-group d-inline-block">
+                      <label for="jmeter-properties">JMeter experiment properties:</label><br>
+                      <textarea class="form-control" rows="10" cols="100" id="jmeter_properties" readonly></textarea>
+                    </div>
+
+                  </div>
+                </div>
               </div>
             </div>
           </div>
         </div>
-
       </div>
 
       <div class="carousel-item">
         <h1>Closing Steps</h1>
         <hr>
-        <br>
 
-        <h4>Analysis</h4>
-        <hr>
+        <div class="p-section">
+          <h4>Analysis</h4>
+          <hr>
 
-        <p>
-          JMeter will be your analysis tool. Download the following two files, then proceed with the next steps.<br>
-          <button class="d-inline-block btn-primary" onclick="download('#jmeter_experiment', 'jmeter_experiment.jmx')">Download JMeter Test File</button>
-          <button class="d-inline-block btn-primary" onclick="download('#jmeter_properties', 'jmeter_properties.prop')">Download JMeter Properties File</button>
-        </p>
+          <p>
+            JMeter will be your analysis tool. Download the following two files, then proceed with the next steps.<br>
+            <button class="d-inline-block btn-primary" onclick="download('#jmeter_experiment', 'jmeter_experiment.jmx')">Download JMeter Test File</button>
+            <button class="d-inline-block btn-primary" onclick="download('#jmeter_properties', 'jmeter_properties.prop')">Download JMeter Properties File</button>
+          </p>
 
-        <p>
-          If you have downloaded the two files you are ready to perform a loadtest evaluation of your system.
-          Open a terminal, then type one of the following commands into the terminal (they have the same effect).
-          <pre>
-          <code>
-            jmeter -p [...] -t [...] -l [...]
+          <p>
+            If you have downloaded the two files you are ready to perform a loadtest evaluation of your system.
+            Open a terminal, then type one of the following commands into the terminal (they have the same effect).
+            <pre>
+            <code>
+              jmeter -p [...] -t [...] -l [...]
 
-            jmeter --propfile [...] -testfile [...] -logfile [...]
-          </code>
-          </pre>
-        </p>
+              jmeter --propfile [...] -testfile [...] -logfile [...]
+            </code>
+            </pre>
+          </p>
 
-        <h4>User Concern</h4>
-        <hr>
+          <h4>User Concern</h4>
+          <hr>
 
-        <p>
-          For the last step you have to get the User Concern by downloading it.
-          If you don't mind to keep your User Concern, you can continue by clicking <a id="redirect" href="">here</a>.
-          <br>
-          <button class="btn-primary" onclick="download('#user_concern', 'user_concern.json')">Download the User Concern</button>
-          <textarea id="user_concern" class="d-none"></textarea>
-        </p>
+          <p>
+            For the last step you have to get the User Concern by downloading it.
+            If you don't mind to keep your User Concern, you can continue by clicking <a id="redirect" href="">here</a>.
+            <br>
+            <button class="btn-primary" onclick="download('#user_concern', 'user_concern.json')">Download the User Concern</button>
+            <textarea id="user_concern" class="d-none"></textarea>
+          </p>
+        </div>
 
       </div>
 

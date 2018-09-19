@@ -9,27 +9,34 @@ function saveModel()
      * Set the query.
      */
     USER_CONCERN.query = {};
-    USER_CONCERN.query[el_query.val()] = QUERIES[el_query.val()];
+    if(el_query_pattern.val() !== null)
+    {
+        USER_CONCERN.query.text = el_query_pattern.val();
+        USER_CONCERN.query.type = QUERIES[el_query_pattern.val()].type;
+        USER_CONCERN.query.parameters = QUERIES[el_query_pattern.val()].parameters;
+        query.setQuery(el_query_pattern.val());
+    }
 
     /*
      * Set Parameters and corresponding values.
      */
-    let parameters = valuesCheckbox("filter_parameters");
-
-    if(parameters.includes("Limits"))
-    {
-        USER_CONCERN.parameters["Limits"] = el_limits.val();
-    }
-    if(parameters.includes("Metrics"))
-    {
-        USER_CONCERN.parameters["Metrics"] = el_metrics.val();
-    }
-    if(parameters.includes("Conditions"))
-    {
-        USER_CONCERN.parameters["Conditions"] = el_conditions_metric.val() + " " +
-        el_conditions_limit.val() + " " +
-        el_conditions_value.val();
-    }
+    // TODO unused, maybe remove this
+    // let parameters = valuesCheckbox("filter_parameters");
+    //
+    // if(parameters.includes("Limits"))
+    // {
+    //     USER_CONCERN.query.parameters["Limits"] = el_limits.val();
+    // }
+    // if(parameters.includes("Metrics"))
+    // {
+    //     USER_CONCERN.query.parameters["Metrics"] = el_metrics.val();
+    // }
+    // if(parameters.includes("Conditions"))
+    // {
+    //     USER_CONCERN.query.parameters["Conditions"] = el_conditions_metric.val() + " " +
+    //     el_conditions_limit.val() + " " +
+    //     el_conditions_value.val();
+    // }
 
     /*
      * Set the analysis method.
@@ -39,8 +46,7 @@ function saveModel()
     /*
      * Set analysis meta data.
      */
-    // if(USER_CONCERN.query.type === "loadtest")
-    if(1)
+    if(USER_CONCERN.query.type === "loadtest")
     {
         USER_CONCERN.analysis.meta.domain = el_loadtest_domain.val() || DEFAULT.loadtest_domain;
         USER_CONCERN.analysis.meta.load = el_loadtest_load.val() || DEFAULT.loadtest_load;
@@ -92,33 +98,36 @@ function loadModel()
     /*
      * Set the query.
      */
-    el_query.find(":selected").removeAttr("selected");
-    el_query.find("option[value='" + Object.keys(USER_CONCERN.query).toString() + "']").prop("selected", "selected");
+    el_query_pattern.find(":selected").removeAttr("selected");
+    el_query_pattern.find("option[value='" + USER_CONCERN.query.text + "']").prop("selected", "selected");
+    query.setQuery(el_query_pattern.val());
+    query.setQueryValues();
 
     /*
      * Set Parameters and corresponding values.
      */
-    let parameters = Object.keys(USER_CONCERN.parameters);
-
-    for(let key in parameters)
-    {
-        el_parameters.find("#filter_parameter_" + parameters[key]).prop("checked", true);
-    }
-
-    if(parameters.includes("Limits"))
-    {
-        el_limits.val(USER_CONCERN.parameters["Limits"]);
-    }
-    if(parameters.includes("Metrics"))
-    {
-        USER_CONCERN.parameters["Metrics"] = el_metrics.val();
-    }
-    if(parameters.includes("Conditions"))
-    {
-        USER_CONCERN.parameters["Conditions"] = el_conditions_metric.val() + " " +
-        el_conditions_limit.val() + " " +
-        el_conditions_value.val();
-    }
+    // TODO unused, maybe remove
+    // let parameters = Object.keys(USER_CONCERN.parameters);
+    //
+    // for(let key in parameters)
+    // {
+    //     el_parameters.find("#filter_parameter_" + parameters[key]).prop("checked", true);
+    // }
+    //
+    // if(parameters.includes("Limits"))
+    // {
+    //     el_limits.val(USER_CONCERN.parameters["Limits"]);
+    // }
+    // if(parameters.includes("Metrics"))
+    // {
+    //     USER_CONCERN.parameters["Metrics"] = el_metrics.val();
+    // }
+    // if(parameters.includes("Conditions"))
+    // {
+    //     USER_CONCERN.parameters["Conditions"] = el_conditions_metric.val() + " " +
+    //     el_conditions_limit.val() + " " +
+    //     el_conditions_value.val();
+    // }
 
     /*
      * Set the analysis method.
@@ -143,53 +152,49 @@ function loadModel()
 
 function updateUI()
 {
-    let parameters = valuesCheckbox("filter_parameters");
-    let query = el_query.val();
+    let query_pattern = el_query_pattern.val();
     let analysis_method = el_analysis_method.val();
 
-    /*
-     * Show query configuration only if at least one parameter is chosen.
-     */
-    if(parameters.length > 0)
-    {
-        $("#query-configuration").show();
-    }
-    else
-    {
-        $("#query-configuration").hide();
-        $("#parameter-selection").hide();
-    }
+    $("#query-configuration").show();
 
     /*
      * Show parameter selection and analysis method only if a query is chosen.
      */
-    if(query !== null)
+    if(query_pattern !== null)
     {
-        $("#parameter-selection").show();
         $("#analysis-method").show();
+        // if(el_type.val() === "Analysis")
+        // {
+        //     $("#indicator-3").show();
+        // }
+        // else
+        // {
+        //     $("#indicator-3").hide();
+        // }
     }
     else
     {
-        $("#parameter-selection").hide();
         $("#analysis-method").hide();
+        //$("#indicator-3").hide();
     }
 
-    let parameter_values = ["Limits", "Metrics", "Conditions", "Services", "Timestamps", "Status"];
-
-    /*
-     * Show only parameters that were selected in the filter menu.
-     */
-    for(let key in parameter_values)
-    {
-        if(parameters.includes(parameter_values[key]))
-        {
-            $("#tab-" + parameter_values[key]).show();
-        }
-        else
-        {
-            $("#tab-" + parameter_values[key]).hide();
-        }
-    }
+    // TODO unused, maybe remove
+    // let parameter_values = ["Limits", "Metrics", "Conditions", "Services", "Timestamps", "Status"];
+    //
+    // /*
+    //  * Show only parameters that were selected in the filter menu.
+    //  */
+    // for(let key in parameter_values)
+    // {
+    //     if(parameters.includes(parameter_values[key]))
+    //     {
+    //         $("#tab-" + parameter_values[key]).show();
+    //     }
+    //     else
+    //     {
+    //         $("#tab-" + parameter_values[key]).hide();
+    //     }
+    // }
 
     /*
      * Show JMeter configuration only if the analysis method is JMeter.
