@@ -33,11 +33,11 @@ let USER_CONCERN = {
  * type : type of the analysis
  */
 let QUERIES = {
-    "What is the $Limit $Metric1 of Service $Service when the $Metric2 is $Condition $Value?": {
+    "What is the $Limit $Metric1 of service $Service when the $Metric2 is $Condition $Value?": {
         type:       "loadtest",
         parameters: {"Limit": "", "Metric1": "", "Service": "", "Metric2": "", "Condition": "", "Value": ""}
     },
-    "What is the $Limit $Metric of Service $Service at $Value $Unit?":                         {
+    "What is the $Limit $Metric of service $Service at $Value $Unit?":                         {
         type:       "loadtest",
         parameters: {"Limit": "", "Metric": "", "Service": "", "Value": "", "Unit": ""}
     }
@@ -47,7 +47,7 @@ let QUERIES = {
  * BADGES contains the element available to configure a user concern.
  * Each group of badges can only be used on a target of the same type ('limit-minimum' -> 'limit-target').
  */
-let BADGES = {
+let DEFAULT_BADGES = {
     metric:    ["response time", "latency", "number of users"],
     limit:     ["minimum", "average", "maximum"],
     condition: ["<", "<=", "=", ">=", ">"],
@@ -55,6 +55,15 @@ let BADGES = {
     unit:      ["milliseconds", "seconds", "minutes", "hours", "days"],
     value:     range(0, 11, [1, 1, 1, 2, 3, 2]).concat(range(15, 101, [5, 5, 5, 10, 10, 25, 25]))
                                                .concat(range(200, 1001, [50, 50, 100, 100]))
+};
+
+/**
+ * TODO unused:
+ *      A badge pool should only have badges that make sense to use.
+ *      A loadtest shouldn't have the CPU Utilization as metric.
+ */
+let LOADTEST_BADGES = {
+
 };
 
 /**

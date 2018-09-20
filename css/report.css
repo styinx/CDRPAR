@@ -41,6 +41,7 @@ h3
     min-width:      66%;
     text-align:     center;
     vertical-align: middle;
+    padding: 20px;
 }
 
 #query
@@ -61,6 +62,19 @@ h3
     max-height:  22px;
     line-height: 16px;
     font-size:   16px;
+}
+
+.badge-pool
+{
+    width: auto;
+    max-width: 80%;
+}
+
+.badge-pool .badge
+{
+    max-height:  20px;
+    line-height: 14px;
+    font-size:   14px;
 }
 
 #user-input

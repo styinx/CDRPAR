@@ -100,28 +100,6 @@
     background: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='%2309F' viewBox='0 0 8 8'%3E%3Cpath d='M2.75 0l-1.5 1.5 2.5 2.5-2.5 2.5 1.5 1.5 4-4-4-4z'/%3E%3C/svg%3E");
 }
 
-.btn-file
-{
-    position: relative;
-    overflow: hidden;
-}
-
-.btn-file input[type=file]
-{
-    position:   absolute;
-    top:        0;
-    right:      0;
-    min-width:  100%;
-    min-height: 100%;
-    font-size:  100px;
-    text-align: right;
-    filter:     alpha(opacity=0);
-    opacity:    0;
-    background: red;
-    cursor:     inherit;
-    display:    block;
-}
-
 /*
  *  Important stuff
  */

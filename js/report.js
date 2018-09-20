@@ -49,7 +49,7 @@ class Report
 
         for(let key in analysis_tool.metrics)
         {
-            analysis_tool.getTopic(analysis_tool.metrics[key]);
+            analysis_tool.getTopic(key);
         }
     }
 
@@ -69,7 +69,7 @@ class Result
     {
         this.data = null;
         this.processed = {};
-        this.metrics = [];
+        this.metrics = {};
     }
 }
 
@@ -85,7 +85,7 @@ class JMeterResult extends Result
         this.headers = data.headers;
         delete data.headers;
         this.data = data;
-        this.metrics = ["Latency"];
+        this.metrics = {"Latency" : "Latency", "Connect" : "Connection Time"};
         this.process();
     }
 
@@ -93,20 +93,98 @@ class JMeterResult extends Result
     {
         for(let key in this.metrics)
         {
-            this.processed[this.metrics[key]] = {};
+            this.processed[key] = {};
+
+            let metric_vals = objValues(this.data, true, key, "timeStamp");
+            let min_metric_val = objMin(metric_vals, true, true);
+            let avg_metric_val = objAvg(metric_vals, true, true);
+            let max_metric_val = objMax(metric_vals, true, true);
+
+            this.processed[key]["min"] = min_metric_val;
+            this.processed[key]["min_time"] = metric_vals[min_metric_val];
+            this.processed[key]["avg"] = avg_metric_val;
+            this.processed[key]["max"] = max_metric_val;
+            this.processed[key]["max_time"] = metric_vals[max_metric_val];
+        }
+    }
+
+    getTopic(metric)
+    {
+        el_content.append($(document.createElement("div"))
+                          .append("<h3>" + metric + "</h3>")
+                          .append("<hr>"));
+
+        this.getDiagram(metric);
+        this.getText(metric);
+    }
+
+    getText(metric)
+    {
+        if(metric === "Latency")
+        {
+            let latency_min = this.processed["Latency"].min;
+            let latency_min_time = this.processed["Latency"].min_time;
+            let latency_avg = this.processed["Latency"].avg;
+            let latency_max = this.processed["Latency"].max;
+            let latency_max_time = this.processed["Latency"].max_time;
+            el_content.append("<p>The " + bgood("minimum") + " latency was " + bgood(latency_min) + " ms at " + bold(date(latency_min_time)) + ".</p>")
+                      .append("<p>The " + bcolor("average", "orange") + " latency was " + bcolor(latency_avg, "orange") + " ms.</p>")
+                      .append("<p>The " + bbad("maximum") + " latency was " + bbad(latency_max) + " ms at " + bold(date(latency_max_time)) + ".</p>");
+
+        }
+    }
+
+    getDiagram(metric)
+    {
+        let id = (this.metrics[metric] + USER_CONCERN.analysis.tool).toLowerCase().replace(" ", "-");
+        el_content.append(chartContainer(this.metrics[metric], id));
+
+        let series;
+        let extremes = [
+            {
+                value:     this.processed[metric].min,
+                color:     'green',
+                dashStyle: 'shortdash',
+                width:     2,
+                zIndex:    100,
+                label:     {text: 'minimum ' + this.metrics[metric], y: 10}
+            }, {
+                value:     this.processed[metric].avg,
+                color:     'orange',
+                dashStyle: 'shortdash',
+                width:     2,
+                zIndex:    100,
+                label:     {text: 'average ' + this.metrics[metric], y: 10}
+            }, {
+                value:     this.processed[metric].max,
+                color:     'red',
+                dashStyle: 'shortdash',
+                width:     2,
+                zIndex:    100,
+                label:     {text: 'maximum ' + this.metrics[metric]}
+            }
+        ];
+
+        if(metric === "Latency")
+        {
+            series = this.getSeries(metric, "timeStamp", USER_CONCERN.analysis.meta.domain);
+            Highcharts.setOptions(STOCK_OPTIONS);
+        }
+        else if(metric === "Connect")
+        {
+            series = this.getSeries("Connect", "timeStamp", USER_CONCERN.analysis.meta.domain);
+            Highcharts.setOptions(STOCK_OPTIONS);
         }
 
-        let latency = objValues(this.data, true, "Latency", "timeStamp");
-        let k = objValues(this.data, true, "Latency");
-        let min_latency_val = objMin(latency, true, true);
-        let avg_latency_val = objAvg(latency, true, true);
-        let max_latency_val = objMax(latency, true, true);
-
-        this.processed["Latency"]["min"] = min_latency_val;
-        this.processed["Latency"]["min_time"] = latency[min_latency_val];
-        this.processed["Latency"]["avg"] = avg_latency_val;
-        this.processed["Latency"]["max"] = max_latency_val;
-        this.processed["Latency"]["max_time"] = latency[max_latency_val];
+        Highcharts.stockChart(id,
+        {
+            series: [series],
+            yAxis:  {
+                title:     {text: metric},
+                plotLines: extremes
+            },
+            legend: {enabled: true}
+        });
     }
 
     getSeries(key, format, name)
@@ -130,84 +208,6 @@ class JMeterResult extends Result
             }
         }
         return series;
-    }
-
-    getTopic(metric)
-    {
-        el_content.append($(document.createElement("div"))
-                          .append("<h3>" + metric + "</h3>")
-                          .append("<hr>"));
-
-        this.getDiagram(metric);
-        this.getText(metric);
-    }
-
-    getDiagram(metric)
-    {
-        el_content.append(chartContainer(metric, "JMeter"));
-
-        if(metric === "Latency")
-        {
-            let series = this.getSeries(metric, "timeStamp", USER_CONCERN.analysis.meta.domain);
-            Highcharts.setOptions(STOCK_OPTIONS);
-            let minmax = [
-                {
-                    value:     this.processed[metric].min,
-                    color:     'green',
-                    dashStyle: 'shortdash',
-                    width:     2,
-                    zIndex:    100,
-                    label:     {
-                        text: 'minimum Latency',
-                        y:    10
-                    }
-                }, {
-                    value:     this.processed[metric].avg,
-                    color:     'orange',
-                    dashStyle: 'shortdash',
-                    width:     2,
-                    zIndex:    100,
-                    label:     {
-                        text: 'average Latency',
-                        y:    10
-                    }
-                }, {
-                    value:     this.processed[metric].max,
-                    color:     'red',
-                    dashStyle: 'shortdash',
-                    width:     2,
-                    zIndex:    100,
-                    label:     {
-                        text: 'maximum Latency'
-                    }
-                }
-            ];
-            Highcharts.stockChart(metric.toLowerCase() + "-JMeter",
-            {
-                series: [series],
-                yAxis:  {
-                    title:     {text: metric},
-                    plotLines: minmax
-                },
-                legend: {enabled: true}
-            });
-        }
-    }
-
-    getText(metric)
-    {
-        if(metric === "Latency")
-        {
-            let latency_min = this.processed["Latency"].min;
-            let latency_min_time = this.processed["Latency"].min_time;
-            let latency_avg = this.processed["Latency"].avg;
-            let latency_max = this.processed["Latency"].max;
-            let latency_max_time = this.processed["Latency"].max_time;
-            el_content.append("<p>The " + bgood("minimum") + " latency was " + bgood(latency_min) + " ms at " + bold(date(latency_min_time)) + ".</p>")
-                      .append("<p>The " + bcolor("average", "orange") + " latency was " + bcolor(latency_avg, "orange") + " ms.</p>")
-                      .append("<p>The " + bbad("maximum") + " latency was " + bbad(latency_max) + " ms at " + bold(date(latency_max_time)) + ".</p>");
-
-        }
     }
 }
 

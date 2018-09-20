@@ -26,11 +26,13 @@
   let content;
   let sidebar;
   let report;
+  let tooltip = true;
 
   let el_content;
   let el_sidebar;
+  let el_tooltip;
 
-  function asd(){console.log("asd")}
+  function toggleTooltip() { tooltip = !tooltip; el_tooltip.tooltip(tooltip ? 'enable' : 'disable'); }
 
   $(document).ready(function() {
 
@@ -53,8 +55,11 @@
       sidebar = new Sidebar($("#sidebar"));
       report = new Report();
 
+      el_tooltip = $('[data-toggle="tooltip"]');
       el_content = $('#content');
       el_sidebar = $('#sidebar');
+
+      el_tooltip.tooltip();
 
       let url = window.location.href;
       if(url.indexOf('concern=') > -1)
@@ -76,20 +81,29 @@
 
       <div id="user-input" class="split split-horizontal">
         <div class="form-group">
-          <label for="concern_input" class="file-input btn btn-primary btn-file">
+          <label for="concern_input" class="file-input btn btn-primary btn-file" data-toggle="tooltip" data-placement="bottom"
+                 title="Here you can load an existing User Concern into the reporting tool.">
             Load a User Concern<input id="concern_input" type="file" class="d-none" onclick="upload(this.id, loadUserConcern);">
           </label>
         </div>
 
         <div class="form-group">
-          <label for="data_input" class="file-input btn btn-primary btn-file">
+          <label for="data_input" class="file-input btn btn-primary btn-file" data-toggle="tooltip" data-placement="top"
+                 title="In order to show some data, the tool needs some performance data, which you can upload here.">
             Load a analysis result<input id="data_input" type="file" class="d-none" onclick="upload(this.id, loadAnalysisData);">
+          </label>
+        </div>
+
+        <div class="custom-control custom-checkbox d-inline-block">
+          <input type="checkbox" class="custom-control-input" id="tooltips" value="true" onchange="toggleTooltip();">
+          <label class="custom-control-label" for="tooltips" data-toggle="tooltip" data-placement="bottom" title="Hides all tooltips.">
+            Disable Tooltips
           </label>
         </div>
       </div>
     </div>
     <div class="wrap">
-      <div id="content" onresize="asd();" class="split split-horizontal"></div>
+      <div id="content" class="split split-horizontal"></div>
       <div id="sidebar" class="split split-horizontal"></div>
     </div>
   </div>

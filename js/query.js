@@ -1,3 +1,6 @@
+/**
+ * Handles all inputs from a badge-pool and a query with badge-targets. Should only be used once on a page.
+ */
 class Query
 {
     constructor(element, pool, query)
@@ -24,9 +27,12 @@ class Query
         }
 
         this.createTargets();
-        this.createBadges(BADGES);
+        this.createBadges(DEFAULT_BADGES);
     }
 
+    /**
+     * Load parameters from the query and set the values into the badge-targets.
+     */
     setQueryValues()
     {
         let metrics = USER_CONCERN.query.parameters;
@@ -40,6 +46,9 @@ class Query
         }
     }
 
+    /**
+     * Replaces the parameters with metric targets.
+     */
     createTargets()
     {
         let pattern = /\$([^\d \?,])+\d*/g;
@@ -55,6 +64,9 @@ class Query
         }
     }
 
+    /**
+     * Fills a badge-pool with elements from the given object. Only badges with the parameter type in the query will appear.
+     */
     createBadges(badges)
     {
         this.pool.html("");
@@ -62,18 +74,25 @@ class Query
         for(let type in badges)
         {
             let badge_type = type;
-            for(let value in badges[type])
+            if(Object.keys(USER_CONCERN.query.parameters).join('#').toLowerCase().replace(/\d/, "").split('#').includes(type))
             {
-                let badge_value = badges[type][value];
-                let badge = '<div class="badge ' + badge_type + '-badge" id="' + badge_type + '-' + badge_value +
-                '" draggable="true" ondragstart="drag(event);">' + badge_value + '</div>';
+                for(let value in badges[type])
+                {
+                    let badge_value = badges[type][value];
+                    let badge = '<div class="badge ' + badge_type + '-badge" id="' + badge_type + '-' + badge_value +
+                    '" draggable="true" ondragstart="drag(event);">' + badge_value + '</div>';
 
-                els.push(badge);
+                    els.push(badge);
+                }
             }
         }
         this.pool.append(els);
     }
 }
+
+/*
+ * Drag and drop events for the query and badges.
+ */
 
 function allowDrop(ev)
 {

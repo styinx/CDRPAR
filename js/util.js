@@ -429,7 +429,7 @@ function chartContainer(title, id)
     '</div>\n' +
     '<div id="' + id + '-content" class="collapse show" aria-labelledby="' + id + '-heading">\n' +
     '  <div class="card-body">\n' +
-    '    <div id="' + title.toLowerCase() + '-' + id + '" class="chart"></div>\n' +
+    '    <div id="' + id + '" class="chart"></div>\n' +
     '  </div>\n' +
     '</div>\n' +
     '</div>';
