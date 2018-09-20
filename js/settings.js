@@ -6,6 +6,7 @@
  *     text : Contains the query pattern as string.
  *     type : Contains the type of the query.
  *     parameters : Contains the variable values of the query.
+ *     format: Template sentence to answer the query.
  * type: Contains the type of the query (Analysis or Report).
  * analysis:
  *     tool: The name of the analysis tool.
@@ -13,13 +14,14 @@
  *     meta: Specific information about the analysis tool.
  */
 let USER_CONCERN = {
-    query:      {
+    query:    {
         text:       "",
         type:       "",
         parameters: {},
+        format:     ""
     },
-    type:       "",
-    analysis:   {
+    type:     "",
+    analysis: {
         tool:   "",
         expert: false,
         meta:   {}
@@ -33,13 +35,15 @@ let USER_CONCERN = {
  * type : type of the analysis
  */
 let QUERIES = {
-    "What is the $Limit $Metric1 of service $Service when the $Metric2 is $Condition $Value?": {
+    "What was the $Limit $Metric1 of service $Service when the $Metric2 is $Condition $Value?": {
         type:       "loadtest",
-        parameters: {"Limit": "", "Metric1": "", "Service": "", "Metric2": "", "Condition": "", "Value": ""}
+        parameters: {"Limit": "", "Metric1": "", "Service": "", "Metric2": "", "Condition": "", "Value": ""},
+        format:     "Metric2 -> Condition -> Value -> Limit -> Metric1 -> Service"
     },
-    "What is the $Limit $Metric of service $Service at $Value $Unit?":                         {
+    "What was the $Limit $Metric of service $Service, $Value $Unit after the experiment start?": {
         type:       "loadtest",
-        parameters: {"Limit": "", "Metric": "", "Service": "", "Value": "", "Unit": ""}
+        parameters: {"Limit": "", "Metric": "", "Service": "", "Value": "", "Unit": ""},
+        format:     "The Limit Metric of service Service was $1, Value Unit after the experiment start."
     }
 };
 
@@ -62,9 +66,7 @@ let DEFAULT_BADGES = {
  *      A badge pool should only have badges that make sense to use.
  *      A loadtest shouldn't have the CPU Utilization as metric.
  */
-let LOADTEST_BADGES = {
-
-};
+let LOADTEST_BADGES = {};
 
 /**
  * Default configuration for necessary element that cannot be empty.
@@ -81,18 +83,39 @@ let DEFAULT = {
  * Aimed to use for sidebar reference.
  */
 let LINKS = {
-    "JMeter": "https://en.wikipedia.org/wiki/Apache_JMeter?printable=yes",
+    "JMeter":   "https://en.wikipedia.org/wiki/Apache_JMeter?printable=yes",
     "loadtest": "https://en.wikipedia.org/wiki/Load_testing?printable=yes"
 };
 
-let REFS = {
-
-};
+let REFS = {};
 
 /**
- * DATA stores a set of analysis data as a string.
+ * ANALYSIS_DATA stores a set of analysis data as a string.
  */
-let DATA = {};
+let ANALYSIS_DATA = "";
+
+/**
+ * UNIT_CONVERSION converts query values to the analysis tool values.
+ */
+let CONVERSION = {
+    limit:  {
+        "minimum": "min",
+        "average": "avg",
+        "maximum": "max",
+    },
+    metric: {
+        "latency":         "Latency",
+        "response time":   "",
+        "number of users": ""
+    },
+    unit:   {
+        "milliseconds": 1,
+        "seconds":      1000,
+        "minutes":      60000,
+        "hours":        3600000,
+        "days":         86400000,
+    }
+};
 
 /**
  * JMETER holds different configurations for JMeter. Variable inputs are marked with '$JM_' prefix.

@@ -14,6 +14,11 @@ class Query
         }
     }
 
+    getQueryValue()
+    {
+
+    }
+
     setQuery(query)
     {
         this.query = query;
@@ -26,14 +31,14 @@ class Query
             window.history.pushState({path: new_url}, '', new_url);
         }
 
-        this.createTargets();
+        this.createBadgeTargets();
         this.createBadges(DEFAULT_BADGES);
     }
 
     /**
      * Load parameters from the query and set the values into the badge-targets.
      */
-    setQueryValues()
+    setQueryBadgeValues()
     {
         let metrics = USER_CONCERN.query.parameters;
         for(let metric in metrics)
@@ -49,7 +54,7 @@ class Query
     /**
      * Replaces the parameters with metric targets.
      */
-    createTargets()
+    createBadgeTargets()
     {
         let pattern = /\$([^\d \?,])+\d*/g;
         let match = pattern.exec(this.query);
@@ -128,6 +133,7 @@ function drop(ev)
             USER_CONCERN.query.parameters[parent.id] = dropped.innerText;
             parent.appendChild(dropped);
             badge_pool.insertBefore(duplicate, badge_pool.children[0]);
+            query.el.trigger("queryChanged");
         }
     }
     // Drop on target area
@@ -143,6 +149,7 @@ function drop(ev)
             USER_CONCERN.query.parameters[target.id] = dropped.innerText;
             target.appendChild(dropped);
             badge_pool.insertBefore(duplicate, badge_pool.children[0]);
+            query.el.trigger("queryChanged");
         }
     }
 
@@ -170,6 +177,7 @@ function dropPool(ev)
         if(value === $("#" + id).html())
         {
             USER_CONCERN.query.parameters[metric] = "";
+            query.el.trigger("queryChanged");
         }
     }
 

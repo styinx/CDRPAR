@@ -14,6 +14,7 @@ function saveModel()
         USER_CONCERN.query.text = el_query_pattern.val();
         USER_CONCERN.query.type = QUERIES[el_query_pattern.val()].type;
         USER_CONCERN.query.parameters = QUERIES[el_query_pattern.val()].parameters;
+        USER_CONCERN.query.format = QUERIES[el_query_pattern.val()].format;
         query.setQuery(el_query_pattern.val());
     }
 
@@ -101,7 +102,7 @@ function loadModel()
     el_query_pattern.find(":selected").removeAttr("selected");
     el_query_pattern.find("option[value='" + USER_CONCERN.query.text + "']").prop("selected", "selected");
     query.setQuery(el_query_pattern.val());
-    query.setQueryValues();
+    query.setQueryBadgeValues();
 
     /*
      * Set Parameters and corresponding values.

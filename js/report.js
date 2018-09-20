@@ -18,44 +18,96 @@ class Report
 {
     constructor()
     {
-
+        this.analysis_tool = null;
     }
 
+    configureAnalysisTool()
+    {
+        if(USER_CONCERN.analysis.tool === "JMeter")
+        {
+            this.analysis_tool = new JMeterResult(ANALYSIS_DATA);
+        }
+    }
+
+    /**
+     * Reads analysis meta data from the user concern and creates a section with general information.
+     */
     experimentDescription()
     {
         if(USER_CONCERN.query.type === "loadtest")
         {
-            let ANALYSIS = USER_CONCERN.analysis;
+            let start_time = parseFloat(this.analysis_tool.data[0]["timeStamp"]);
+            let stop_time = parseFloat(this.analysis_tool.data[objLength(this.analysis_tool.data) - 1]["timeStamp"]);
+            let start = date(start_time, "%d.%m %H:%M:%S");
+            let end = date(stop_time, "%d.%m %H:%M:%S");
+            let duration = time(stop_time - start_time, "%d days %H hours %M minutes and %S seconds");
             el_content.append($(document.createElement("div"))
                               .append("<h1>Experiment Result</h1>")
                               .append("<hr><br>")
-                              .append("<h3>Configuration</h3>")
+                              .append("<h3>Configuration and Analysis</h3>")
                               .append("<hr>")
-                              .append("<p>The chosen Analysis tool was " + linkSidebar(ANALYSIS.tool) + "</p>")
-                              .append("<p>The experiment was performed on " + bold(ANALYSIS.meta.domain) + "</p>")
-                              .append("<p>The " + linkSidebar("loadtest") + " was done with a load of " + bold(ANALYSIS.meta.load) + " users."));
+                              .append("<p>The chosen Analysis tool was " + linkSidebar(USER_CONCERN.analysis.tool) + "</p>")
+                              .append("<p>The experiment was performed on " + bold(USER_CONCERN.analysis.meta.domain) + "</p>")
+                              .append("<p>The experiment started at " + bold(start) + " and ended at " + bold(end) + ".</p>")
+                              .append("<p>The inspected metrics were recoreded over the course of " + bold(duration) + ".</p>")
+                              .append("<p>The " + linkSidebar("loadtest") + " was done with a load of " + bold(USER_CONCERN.analysis.meta.load) + " users."));
 
         }
     }
 
-    toolMetrics()
+    /**
+     * Tries to answer the query.
+     */
+    queryDescription()
     {
-        let analysis_tool;
-        let ANALYSIS = USER_CONCERN.analysis;
-        if(ANALYSIS.tool === "JMeter")
+        let query_desc = $(document.createElement("div"))
+                                   .append("<h4>" + $("#query").text() + "</h4>");
+
+        let format = USER_CONCERN.query.format;
+        let limit = USER_CONCERN.query.parameters["Limit"];
+        let metric = USER_CONCERN.query.parameters["Metric"];
+        let value = USER_CONCERN.query.parameters["Value"];
+        let unit = USER_CONCERN.query.parameters["Unit"];
+
+        format = format.replace("Limit", limit)
+                       .replace("Metric", metric)
+                       .replace("Service", USER_CONCERN.query.parameters["Service"])
+                       .replace("Value", value)
+                       .replace("Unit", unit);
+
+        if(CONVERSION.metric[metric] !== "")
         {
-            analysis_tool = new JMeterResult(DATA);
+            let answer = this.analysis_tool.getMetricAtTime(CONVERSION.metric[metric],
+                                                            value * CONVERSION.unit[unit],
+                                                            CONVERSION.limit[limit]);
+
+            format = bgood(format.replace("$1", underline(answer)));
+        }
+        else
+        {
+            format = bubad(USER_CONCERN.analysis.tool + " cannot tell anything about " + metric + ".");
         }
 
-        for(let key in analysis_tool.metrics)
+        query_desc.append(format);
+        el_content.append($(document.createElement("div"))
+                          .append("<h3>Query</h3>")
+                          .append("<hr>")
+                          .append("<div class='p-section'>" + query_desc.html() + "</div>"))
+        .append();
+    }
+
+    toolMetrics()
+    {
+        for(let key in this.analysis_tool.metrics)
         {
-            analysis_tool.getTopic(key);
+            this.analysis_tool.getTopic(key);
         }
     }
 
     createReport()
     {
         this.experimentDescription();
+        this.queryDescription();
         this.toolMetrics();
     }
 }
@@ -85,27 +137,65 @@ class JMeterResult extends Result
         this.headers = data.headers;
         delete data.headers;
         this.data = data;
-        this.metrics = {"Latency" : "Latency", "Connect" : "Connection Time"};
+        this.metrics = {"Latency": "Latency", "Connect": "Connection Time"};
         this.process();
     }
 
     process()
     {
-        for(let key in this.metrics)
+        for(let metric in this.metrics)
         {
-            this.processed[key] = {};
+            this.processed[metric] = {};
 
-            let metric_vals = objValues(this.data, true, key, "timeStamp");
-            let min_metric_val = objMin(metric_vals, true, true);
-            let avg_metric_val = objAvg(metric_vals, true, true);
-            let max_metric_val = objMax(metric_vals, true, true);
+            let metric_vals = objValues(this.data, true, "timeStamp", metric);
+            let series = this.getSeries("timeStamp", metric, "");
+            let min_metric_time = seriesMin(metric_vals, false, true);
+            let avg_metric_val = objAvg(metric_vals, true, false);
+            let max_metric_time = seriesMax(metric_vals, false, true);
 
-            this.processed[key]["min"] = min_metric_val;
-            this.processed[key]["min_time"] = metric_vals[min_metric_val];
-            this.processed[key]["avg"] = avg_metric_val;
-            this.processed[key]["max"] = max_metric_val;
-            this.processed[key]["max_time"] = metric_vals[max_metric_val];
+            this.processed[metric]["min"] = metric_vals[min_metric_time];
+            this.processed[metric]["min_time"] = min_metric_time;
+            this.processed[metric]["avg"] = avg_metric_val;
+            this.processed[metric]["max"] = metric_vals[max_metric_time];
+            this.processed[metric]["max_time"] = max_metric_time;
         }
+    }
+
+    getMetricAtTime(metric, time, what)
+    {
+        let data = objSort(this.data, "timeStamp");
+
+        let first = parseFloat(data[0]["timeStamp"]);
+        let last = first;
+        let values = [];
+        for(let i = 0; i < objLength(data); ++i)
+        {
+            last = parseFloat(data[i][metric]);
+
+            if(parseFloat(data[i]["timeStamp"]) - first > time || i === objLength(data) - 1)
+            {
+                if(i === objLength(data) - 1)
+                {
+                    values.push(parseFloat(data[i][metric]));
+                }
+
+                if(what === undefined)
+                {
+                    return parseFloat(data[Math.max(0, i - 1)][metric]);
+                }
+                else
+                {
+                    if(what === "min")
+                        return objMin(values, false, false);
+                    else if(what === "avg")
+                        return objAvg(values, false, false);
+                    else if(what === "max")
+                        return objMax(values, false, false);
+                }
+            }
+            values.push(parseFloat(data[i][metric]));
+        }
+        return parseFloat(data[0][metric]);
     }
 
     getTopic(metric)
@@ -120,18 +210,16 @@ class JMeterResult extends Result
 
     getText(metric)
     {
-        if(metric === "Latency")
-        {
-            let latency_min = this.processed["Latency"].min;
-            let latency_min_time = this.processed["Latency"].min_time;
-            let latency_avg = this.processed["Latency"].avg;
-            let latency_max = this.processed["Latency"].max;
-            let latency_max_time = this.processed["Latency"].max_time;
-            el_content.append("<p>The " + bgood("minimum") + " latency was " + bgood(latency_min) + " ms at " + bold(date(latency_min_time)) + ".</p>")
-                      .append("<p>The " + bcolor("average", "orange") + " latency was " + bcolor(latency_avg, "orange") + " ms.</p>")
-                      .append("<p>The " + bbad("maximum") + " latency was " + bbad(latency_max) + " ms at " + bold(date(latency_max_time)) + ".</p>");
+        let metric_name = this.metrics[metric];
+        let metric_min = this.processed[metric].min;
+        let metric_min_time = this.processed[metric].min_time;
+        let metric_avg = this.processed[metric].avg;
+        let metric_max = this.processed[metric].max;
+        let metric_max_time = this.processed[metric].max_time;
+        el_content.append("<p>The " + bgood("minimum") + " " + metric_name + " was " + bgood(metric_min) + " ms at " + bold(date(metric_min_time)) + ".</p>")
+                  .append("<p>The " + bcolor("average", "orange") + " " + metric_name + " was " + bcolor(metric_avg, "orange") + " ms.</p>")
+                  .append("<p>The " + bbad("maximum") + " " + metric_name + " was " + bbad(metric_max) + " ms at " + bold(date(metric_max_time)) + ".</p>");
 
-        }
     }
 
     getDiagram(metric)
@@ -165,26 +253,18 @@ class JMeterResult extends Result
             }
         ];
 
-        if(metric === "Latency")
-        {
-            series = this.getSeries(metric, "timeStamp", USER_CONCERN.analysis.meta.domain);
-            Highcharts.setOptions(STOCK_OPTIONS);
-        }
-        else if(metric === "Connect")
-        {
-            series = this.getSeries("Connect", "timeStamp", USER_CONCERN.analysis.meta.domain);
-            Highcharts.setOptions(STOCK_OPTIONS);
-        }
+        series = this.getSeries(metric, "timeStamp", USER_CONCERN.analysis.meta.domain);
+        Highcharts.setOptions(STOCK_OPTIONS);
 
         Highcharts.stockChart(id,
-        {
-            series: [series],
-            yAxis:  {
-                title:     {text: metric},
-                plotLines: extremes
-            },
-            legend: {enabled: true}
-        });
+                              {
+                                  series: [series],
+                                  yAxis:  {
+                                      title:     {text: metric},
+                                      plotLines: extremes
+                                  },
+                                  legend: {enabled: true}
+                              });
     }
 
     getSeries(key, format, name)
@@ -223,7 +303,7 @@ function loadUserConcern(json)
 {
     USER_CONCERN = JSON.parse(json);
     query.setQuery(USER_CONCERN.query.text);
-    query.setQueryValues();
+    query.setQueryBadgeValues();
 
     el_content.html("");
     el_sidebar.html("");
@@ -231,10 +311,28 @@ function loadUserConcern(json)
 
 function loadAnalysisData(format)
 {
-    DATA = format;
+    let first_load = ANALYSIS_DATA === "";
+
+    ANALYSIS_DATA = format;
+
+    if(first_load)
+    {
+        report.configureAnalysisTool();
+    }
 
     el_content.html("");
     el_sidebar.html("");
 
     report.createReport();
 }
+
+$(window).on("queryChanged", function()
+{
+    el_content.html("");
+    el_sidebar.html("");
+
+    if(report.analysis_tool !== null)
+    {
+        report.createReport();
+    }
+});

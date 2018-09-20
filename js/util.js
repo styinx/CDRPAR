@@ -17,7 +17,7 @@ function range(start, end, step)
     {
         if(step.length > 1 && step_index < step.length)
         {
-            step_val = step[Math.min(step.length, step_index)];
+            step_val = step[Math.max(step.length, step_index)];
         }
         let range = [];
         if(end < start)
@@ -27,7 +27,7 @@ function range(start, end, step)
                 range.push(i);
                 if(step.length > 1 && step_index < step.length)
                 {
-                    step_val = step[Math.min(step.length, step_index++)];
+                    step_val = step[Math.max(step.length, step_index++)];
                 }
             }
         }
@@ -38,7 +38,7 @@ function range(start, end, step)
                 range.push(i);
                 if(step.length > 1 && step_index < step.length)
                 {
-                    step_val = step[Math.min(step.length, step_index++)];
+                    step_val = step[Math.max(step.length, step_index++)];
                 }
             }
         }
@@ -207,7 +207,7 @@ function objValues(obj, numbers, key, value)
     let result = value ? {} : [];
     for(let i = 0; i < objLength(obj); ++i)
     {
-        if(value !== undefined)
+        if(value !== "" && value !== undefined)
         {
             let k = numbers ? parseFloat(obj[i][key]) : obj[i][key];
             let v = numbers ? parseFloat(obj[i][value]) : obj[i][value];
@@ -256,7 +256,7 @@ function objMax(obj, has_key, want_key)
     {
         max = Math.max.apply(Math, obj);
     }
-    return max;
+    return Math.round(max * 100) / 100;
 }
 
 /**
@@ -270,17 +270,18 @@ function objAvg(obj, has_key, want_key)
     let sum = 0, avg = 0;
     has_key = has_key || false;
     want_key = want_key || false;
+
     if(has_key)
     {
         for(let key in obj)
         {
             if(!want_key)
             {
-                sum += obj[key] * 1;
+                sum += parseFloat(obj[key]);
             }
             else
             {
-                sum += key * 1;
+                sum += parseFloat(key);
             }
         }
         avg = sum / objLength(obj);
@@ -289,18 +290,18 @@ function objAvg(obj, has_key, want_key)
     {
         avg = obj.reduce(function(a, b) { return a + b; }) / obj.length;
     }
-    return parseInt(avg);
+    return Math.round(avg * 100) / 100;
 }
 
 /**
- * Returns the objects maximum value. If key is true the minimum key is returned otherwise the minimum value.
+ * Returns the objects maximum value. If key is true the maximum key is returned otherwise the maximum value.
  * @param obj
  * @param has_key
  * @param want_key
  */
 function objMin(obj, has_key, want_key)
 {
-    let min = Infinity;
+    let max = Infinity;
     has_key = has_key || false;
     want_key = want_key || false;
     if(has_key)
@@ -309,37 +310,128 @@ function objMin(obj, has_key, want_key)
         {
             if(!want_key)
             {
-                if(obj[key] < min)
+                if(obj[key] < max)
                 {
-                    min = obj[key];
+                    max = obj[key];
                 }
             }
             else
             {
-                if(key < min)
+                if(key < max)
                 {
-                    min = key;
+                    max = key;
                 }
             }
         }
     }
     else
     {
-        min = Math.min.apply(Math, obj);
+        max = Math.max.apply(Math, obj);
     }
-    return min;
+    return Math.round(max * 100) / 100;
+}
+
+function seriesMin(series, max_key, want_key)
+{
+    let k = null;
+    let max = Infinity;
+    max_key = max_key || false;
+    want_key = want_key || false;
+
+    for(let key in series)
+    {
+        if(!max_key)
+        {
+            if(series[key] < max)
+            {
+                max = series[key];
+                k = key;
+            }
+        }
+        else
+        {
+            if(key < max)
+            {
+                max = key;
+                k = k;
+            }
+        }
+    }
+
+    if(want_key)
+    {
+        return k;
+    }
+    else
+    {
+        return max;
+    }
+}
+
+function seriesMax(series, max_key, want_key)
+{
+    let k = null;
+    let max = -Infinity;
+    max_key = max_key || false;
+    want_key = want_key || false;
+
+    for(let key in series)
+    {
+        if(!max_key)
+        {
+            if(series[key] > max)
+            {
+                max = series[key];
+                k = key;
+            }
+        }
+        else
+        {
+            if(key > max)
+            {
+                max = key;
+                k = k;
+            }
+        }
+    }
+
+    if(want_key)
+    {
+        return k;
+    }
+    else
+    {
+        return max;
+    }
 }
 
 function date(val, format)
 {
-    format = format || "%d.%m %H:%M:%S";
+    format = format || "%d.%m %H:%M:%S %f";
     let d = new Date(parseInt(val));
 
     format = format.replace("%d", d.getDate())
                    .replace("%m", d.getMonth() + 1)
                    .replace("%H", d.getHours())
                    .replace("%M", d.getMinutes())
-                   .replace("%S", d.getSeconds());
+                   .replace("%S", d.getSeconds())
+                   .replace("%f", d.getMilliseconds());
+    return format;
+}
+
+function time(val, format)
+{
+    format = format || "%dd %Hh:%Mm:%Ss %fms";
+    let seconds = Math.round(val / 1000);
+    let maxutes = Math.round(seconds / 60);
+    let hours = Math.round(seconds / 3600);
+    let days = Math.round(seconds / 86400);
+
+    format = format.replace("%d", days % 365)
+                   .replace("%H", hours % 24)
+                   .replace("%M", maxutes % 60)
+                   .replace("%S", seconds % 60)
+                   .replace("%f", val % 1000);
     return format;
 }
 
@@ -462,6 +554,7 @@ function refSidebar(what)
 function link(what) { return '<a>' + what + '</a>'; }
 function id(what, id) { return '<span id="' + id + '">' + what + '</span>'; }
 
+function s(val, word) { return val === 1 ? word : word + "s";}
 function bold(what) { return "<b>" + what + "</b>"; }
 function underline(what) { return "<u>" + what + "</u>"; }
 function color(what, color) { return "<span style='color: " + color + "'>" + what + "</span>"; }

@@ -67,7 +67,7 @@
           USER_CONCERN = JSON.parse(decodeURI(url.substr(url.indexOf('concern=') + 8)));
           $("#query").html(USER_CONCERN.query.text);
           query.setQuery(USER_CONCERN.query.text);
-          query.setQueryValues();
+          query.setQueryBadgeValues();
       }
   });
 </script>
