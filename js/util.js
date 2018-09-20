@@ -301,7 +301,7 @@ function objAvg(obj, has_key, want_key)
  */
 function objMin(obj, has_key, want_key)
 {
-    let max = Infinity;
+    let min = Infinity;
     has_key = has_key || false;
     want_key = want_key || false;
     if(has_key)
@@ -310,25 +310,25 @@ function objMin(obj, has_key, want_key)
         {
             if(!want_key)
             {
-                if(obj[key] < max)
+                if(obj[key] < min)
                 {
-                    max = obj[key];
+                    min = obj[key];
                 }
             }
             else
             {
-                if(key < max)
+                if(key < min)
                 {
-                    max = key;
+                    min = key;
                 }
             }
         }
     }
     else
     {
-        max = Math.max.apply(Math, obj);
+        min = Math.min.apply(Math, obj);
     }
-    return Math.round(max * 100) / 100;
+    return Math.round(min * 100) / 100;
 }
 
 function seriesMin(series, max_key, want_key)
