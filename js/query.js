@@ -27,7 +27,10 @@ class Query
         if(history.pushState)
         {
             let url = "?concern=" + JSON.stringify(USER_CONCERN);
-            let new_url = window.location.protocol + "/" + window.location.host + "/" + window.location.pathname + url;
+            let protocol = window.location.protocol;
+            let host = window.location.host;
+            let path = window.location.pathname.replace(host, "").replace(/^\//, "");
+            let new_url = protocol + "//" + host + "/" + path + url;
             window.history.pushState({path: new_url}, '', new_url);
         }
 
@@ -156,7 +159,10 @@ function drop(ev)
     if(history.pushState)
     {
         let url = "?concern=" + JSON.stringify(USER_CONCERN);
-        let new_url = window.location.protocol + "/" + window.location.host + "/" + window.location.pathname + url;
+        let protocol = window.location.protocol;
+        let host = window.location.host;
+        let path = window.location.pathname.replace(host, "").replace(/^\//, "");
+        let new_url = protocol + "//" + host + "/" + path + url;
         window.history.pushState({path: new_url}, '', new_url);
     }
     $("#redirect").attr("href", "UC_Report.html?concern=" + JSON.stringify(USER_CONCERN));
@@ -184,7 +190,10 @@ function dropPool(ev)
     if(history.pushState)
     {
         let url = "?concern=" + JSON.stringify(USER_CONCERN);
-        let new_url = window.location.protocol + "/" + window.location.host + "/" + window.location.pathname + url;
+        let protocol = window.location.protocol;
+        let host = window.location.host;
+        let path = window.location.pathname.replace(host, "").replace(/^\//, "");
+        let new_url = protocol + "//" + host + "/" + path + url;
         window.history.pushState({path: new_url}, '', new_url);
     }
     $("#redirect").attr("href", "UC_Report.html?concern=" + JSON.stringify(USER_CONCERN));

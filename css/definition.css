@@ -3,9 +3,9 @@
     position:  fixed;
     top:       0;
     left:      0;
-    margin:    100px 200px 100px 200px;
+    margin:    100px 100px 100px 100px;
     min-width: 1000px;
-    width:     calc(100% - 400px);
+    width:     calc(100% - 200px);
 }
 
 .main-container-decoration
@@ -13,9 +13,9 @@
     position:     fixed;
     top:          0;
     left:         0;
-    margin:       0 298px 0 298px;
+    margin:       0 198px 0 198px;
     min-width:    804px;
-    width:        calc(100% - 596px);
+    width:        calc(100% - 396px);
     height:       100%;
     border-left:  2px solid #999999;
     border-right: 2px solid #999999;

@@ -35,15 +35,15 @@ let USER_CONCERN = {
  * type : type of the analysis
  */
 let QUERIES = {
-    "What was the $Limit $Metric1 of service $Service when the $Metric2 is $Condition $Value?": {
-        type:       "loadtest",
-        parameters: {"Limit": "", "Metric1": "", "Service": "", "Metric2": "", "Condition": "", "Value": ""},
-        format:     "Metric2 -> Condition -> Value -> Limit -> Metric1 -> Service"
-    },
     "What was the $Limit $Metric of service $Service, $Value $Unit after the experiment start?": {
         type:       "loadtest",
         parameters: {"Limit": "", "Metric": "", "Service": "", "Value": "", "Unit": ""},
         format:     "The Limit Metric of service Service was $1, Value Unit after the experiment start."
+    },
+    "What was the $Limit $Metric1 of service $Service when the $Metric2 is $Condition $Value?": {
+        type:       "loadtest",
+        parameters: {"Limit": "", "Metric1": "", "Service": "", "Metric2": "", "Condition": "", "Value": ""},
+        format:     "Metric2 -> Condition -> Value -> Limit -> Metric1 -> Service"
     }
 };
 

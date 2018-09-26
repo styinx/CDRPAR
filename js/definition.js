@@ -18,26 +18,6 @@ function saveModel()
         query.setQuery(el_query_pattern.val());
     }
 
-    /*
-     * Set Parameters and corresponding values.
-     */
-    // TODO unused, maybe remove this
-    // let parameters = valuesCheckbox("filter_parameters");
-    //
-    // if(parameters.includes("Limits"))
-    // {
-    //     USER_CONCERN.query.parameters["Limits"] = el_limits.val();
-    // }
-    // if(parameters.includes("Metrics"))
-    // {
-    //     USER_CONCERN.query.parameters["Metrics"] = el_metrics.val();
-    // }
-    // if(parameters.includes("Conditions"))
-    // {
-    //     USER_CONCERN.query.parameters["Conditions"] = el_conditions_metric.val() + " " +
-    //     el_conditions_limit.val() + " " +
-    //     el_conditions_value.val();
-    // }
 
     /*
      * Set the analysis method.
@@ -77,7 +57,10 @@ function saveModel()
     if(history.pushState)
     {
         let url = "?concern=" + JSON.stringify(USER_CONCERN);
-        let new_url = window.location.protocol + "/" + window.location.host + "/" + window.location.pathname + url;
+        let protocol = window.location.protocol;
+        let host = window.location.host;
+        let path = window.location.pathname.replace(host, "").replace(/^\//, "");
+        let new_url = protocol + "//" + host + "/" + path + url;
         window.history.pushState({path: new_url}, '', new_url);
     }
     $("#redirect").attr("href", "UC_Report.html?concern=" + JSON.stringify(USER_CONCERN));
@@ -105,32 +88,6 @@ function loadModel()
     query.setQueryBadgeValues();
 
     /*
-     * Set Parameters and corresponding values.
-     */
-    // TODO unused, maybe remove
-    // let parameters = Object.keys(USER_CONCERN.parameters);
-    //
-    // for(let key in parameters)
-    // {
-    //     el_parameters.find("#filter_parameter_" + parameters[key]).prop("checked", true);
-    // }
-    //
-    // if(parameters.includes("Limits"))
-    // {
-    //     el_limits.val(USER_CONCERN.parameters["Limits"]);
-    // }
-    // if(parameters.includes("Metrics"))
-    // {
-    //     USER_CONCERN.parameters["Metrics"] = el_metrics.val();
-    // }
-    // if(parameters.includes("Conditions"))
-    // {
-    //     USER_CONCERN.parameters["Conditions"] = el_conditions_metric.val() + " " +
-    //     el_conditions_limit.val() + " " +
-    //     el_conditions_value.val();
-    // }
-
-    /*
      * Set the analysis method.
      */
     el_analysis_method.val(USER_CONCERN.analysis.tool);
@@ -153,67 +110,65 @@ function loadModel()
 
 function updateUI()
 {
-    let query_pattern = el_query_pattern.val();
-    let analysis_method = el_analysis_method.val();
+    let indicator_3 = $("#indicator-3");
+    let indicator_4 = $("#indicator-4");
+    let indicator_5 = $("#indicator-5");
+
+    let analysis_configuration = $("#analysis-configuration");
+    let analysis_method = $("#analysis-method");
+    let jmeter_configuration = $("#jmeter-configuration");
 
     $("#query-configuration").show();
 
-    /*
-     * Show parameter selection and analysis method only if a query is chosen.
-     */
-    if(query_pattern !== null)
+    if(USER_CONCERN.query.text !== "")
     {
-        $("#analysis-method").show();
-        // if(el_type.val() === "Analysis")
-        // {
-        //     $("#indicator-3").show();
-        // }
-        // else
-        // {
-        //     $("#indicator-3").hide();
-        // }
-    }
-    else
-    {
-        $("#analysis-method").hide();
-        //$("#indicator-3").hide();
-    }
-
-    // TODO unused, maybe remove
-    // let parameter_values = ["Limits", "Metrics", "Conditions", "Services", "Timestamps", "Status"];
-    //
-    // /*
-    //  * Show only parameters that were selected in the filter menu.
-    //  */
-    // for(let key in parameter_values)
-    // {
-    //     if(parameters.includes(parameter_values[key]))
-    //     {
-    //         $("#tab-" + parameter_values[key]).show();
-    //     }
-    //     else
-    //     {
-    //         $("#tab-" + parameter_values[key]).hide();
-    //     }
-    // }
-
-    /*
-     * Show JMeter configuration only if the analysis method is JMeter.
-     */
-    if(analysis_method !== null)
-    {
-        $("#analysis-configuration").show();
-        if(analysis_method === "JMeter")
+        if(USER_CONCERN.type === "Analysis" && USER_CONCERN.analysis.tool !== "")
         {
-            $("#jmeter-configuration").show();
+            indicator_3.show();
+            analysis_method.show();
         }
         else
         {
-            $("#jmeter-configuration").hide();
+            indicator_3.hide();
+            analysis_method.hide();
         }
     }
     else
     {
-        $("#analysis-configuration").hide();
+        indicator_3.hide();
+        indicator_4.hide();
+        indicator_5.hide();
+    }
+
+    if(USER_CONCERN.analysis.tool !== "" && USER_CONCERN.type === "Analysis")
+    {
+        indicator_4.show();
+
+        analysis_configuration.show();
+
+        if(USER_CONCERN.analysis.tool === "JMeter")
+        {
+            jmeter_configuration.show();
+        }
+        else
+        {
+            jmeter_configuration.hide();
+        }
+    }
+    else
+    {
+        indicator_4.hide();
+        indicator_5.hide();
+
+        analysis_configuration.hide();
+    }
+
+    if(USER_CONCERN.analysis.meta !== {})
+    {
+        indicator_5.show();
+    }
+    else
+    {
+        indicator_5.hide();
     }
 }

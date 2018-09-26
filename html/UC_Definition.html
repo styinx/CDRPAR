@@ -114,33 +114,45 @@
     <div class="carousel-inner">
 
       <div class="carousel-item active">
-        <h1>User Concern Definition</h1>
-        <hr>
-        <p class="p-section">
-          This is the User Interface to configure a User Concern which helps you
-          to configure an analysis and create automatic performance Reports.
-          In the following steps you will be asked to fill out settings.
-          This helps us to define a useful User Concern.
-          If you are ready, then proceed by either clicking the navigation arrows
-          or using the control buttons on the bottom.
-        </p>
+        <div class="p-section p-right">
+          <h1>User Concern Definition</h1>
+          <hr>
+          <div class="p-section p-right">
+            <p class="p-section p-right">
+              This is the User Interface to configure a User Concern which helps you
+              to configure an analysis and create automatic generated performance reports.
+              In the following steps you will be asked to fill out forms that match your situation.
+              This helps us to define a useful User Concern.
+              If you are ready, then proceed by either clicking the navigation arrows
+              or using the control buttons on the bottom.
+            </p>
+          </div>
+        </div>
       </div>
 
       <div class="carousel-item">
         <h1>Filters</h1>
         <hr>
 
+        <p>
+          Filters help to categorize the user concern. This way you will get a limited number of options.
+        </p>
+
         <div class="p-section">
 
           <h4>Are you a performance analysis expert?</h4>
           <hr>
 
-          <p>If you check this option you will see all available configurations.</p>
+          <p>
+            If you check this option you will see all available configurations.
+            <br>
+            As an expert you should have performed at least one performance analysis already.
+          </p>
 
           <div class="custom-control custom-checkbox">
             <input type="checkbox" class="custom-control-input" id="expert" value="true">
             <label class="custom-control-label" for="expert" data-toggle="tooltip" data-placement="right"
-                   title="Experts will have more options to configure a analysis.">
+                   title="Experts will have more options to configure a performance analysis.">
               Expert
             </label>
           </div>
@@ -149,6 +161,20 @@
 
           <h4>Do you want to perform an analysis or generate a report from existing data?</h4>
           <hr>
+
+          <p>
+            A User Concern can have one of two types.
+            <ul>
+              <li>
+                A User Concern from the type <i>Analysis</i> is able to configure a performance analysis tool.
+                <br>
+                If you choose this option you can still create a performance report.
+              </li>
+              <li>
+                A User Concern from the type <i>Report</i> needs existing data from an appropriate analysis tool.
+              </li>
+            </ul>
+          </p>
 
           <div class="input-group">
 
@@ -164,7 +190,7 @@
               <div class="custom-control custom-radio">
                 <input type="radio" class="custom-control-input" id="filter_type_Report" name="filter_type" value="Report">
                 <label class="custom-control-label" for="filter_type_Report" data-toggle="tooltip" data-placement="right"
-                       title="If you only want to generate an report, ....">
+                       title="You already have results from an analysis and want to create a performance report.">
                   Report
                 </label>
               </div>
@@ -173,48 +199,6 @@
           </div>
         </div>
 
-        <div class="p-section">
-
-          <div id="filter_parameters">
-
-            <h4>Which parameters should your concern cover?</h4>
-            <hr>
-
-            <div class="input-group">
-
-              <div class="custom-control custom-checkbox">
-                <input type="checkbox" class="custom-control-input" id="filter_parameter_Limits" value="Limits">
-                <label class="custom-control-label" for="filter_parameter_Limits">Limits</label>
-              </div>
-
-              <div class="custom-control custom-checkbox">
-                <input type="checkbox" class="custom-control-input" id="filter_parameter_Metrics" value="Metrics">
-                <label class="custom-control-label" for="filter_parameter_Metrics">Metrics</label>
-              </div>
-
-              <div class="custom-control custom-checkbox">
-                <input type="checkbox" class="custom-control-input" id="filter_parameter_Conditions" value="Conditions">
-                <label class="custom-control-label" for="filter_parameter_Conditions">Conditions</label>
-              </div>
-
-              <div class="custom-control custom-checkbox">
-                <input type="checkbox" class="custom-control-input" id="filter_parameter_Services" value="Services">
-                <label class="custom-control-label" for="filter_parameter_Services">Services</label>
-              </div>
-
-              <div class="custom-control custom-checkbox">
-                <input type="checkbox" class="custom-control-input" id="filter_parameter_Timestamps" value="Timestamps">
-                <label class="custom-control-label" for="filter_parameter_Timestamps">Timestamps</label>
-              </div>
-
-              <div class="custom-control custom-checkbox">
-                <input type="checkbox" class="custom-control-input" id="filter_parameter_Status" value="Status">
-                <label class="custom-control-label" for="filter_parameter_Status">Status</label>
-              </div>
-            </div>
-          </div>
-
-        </div>
       </div>
 
       <div class="carousel-item">
@@ -223,10 +207,20 @@
           <h1>Query</h1>
           <hr>
 
+          <p>
+            A query defines your interest in a metric with additional properties.
+            <br>
+            The query will represent the aim of a performance analysis.
+          </p>
+
           <div class="p-section">
 
             <h4>Choose a query that suits your needs the most?</h4>
             <hr>
+
+            <p>
+              The following queries are split into categories, where each category supports multiple analysis tools.
+            </p>
 
             <select class="custom-select" id="query_pattern">
               <option value="" selected disabled>Select a query.</option>
@@ -239,91 +233,6 @@
           </div>
         </div>
 
-        <div id="parameter-selection">
-
-          <h1>Parameters</h1>
-          <hr>
-
-          <div class="p-section">
-
-            <ul class="nav nav-tabs">
-                <li class="nav-item"><a class="nav-link" data-toggle="tab" id="tab-Limits" href="#limits">Limits</a></li>
-                <li class="nav-item"><a class="nav-link" data-toggle="tab" id="tab-Metrics" href="#metrics">Metrics</a></li>
-                <li class="nav-item"><a class="nav-link" data-toggle="tab" id="tab-Conditions" href="#conditions">Conditions</a></li>
-                <li class="nav-item"><a class="nav-link" data-toggle="tab" id="tab-Services" href="#services">Services</a></li>
-                <li class="nav-item"><a class="nav-link" data-toggle="tab" id="tab-Timestamps" href="#timestamps">Timestamps</a></li>
-                <li class="nav-item"><a class="nav-link" data-toggle="tab" id="tab-Status" href="#status">Status</a></li>
-            </ul>
-
-            <div class="tab-content">
-              <div id="limits" class="tab-pane">
-                <select class="custom-select" id="parameter_limits">
-                  <option value="" selected disabled>Select a limit.</option>
-                  <option value="minimum">minimum</option>
-                  <option value="average">average</option>
-                  <option value="maximum">maximum</option>
-                </select>
-              </div>
-              <div id="metrics" class="tab-pane">
-                <select class="custom-select" id="parameter_metrics">
-                  <option value="" selected disabled>Select a metric.</option>
-                  <option value="Latency">Latency</option>
-                  <option value="Response Time">Response Time</option>
-                  <option value="number of users">number of users</option>
-                </select>
-              </div>
-              <div id="conditions" class="tab-pane">
-                <select class="custom-select" id="parameter_conditions_metric">
-                  <option value="" selected disabled>Select a metric for the condition.</option>
-                  <option value="Latency">Latency</option>
-                </select>
-                <select class="custom-select" id="parameter_conditions_limit">
-                  <option value="" selected disabled>Select a limit for the condition.</option>
-                  <option value="is below">is below</option>
-                  <option value="is equal to">is equal to</option>
-                </select>
-                <select class="custom-select" id="parameter_conditions_value">
-                  <option value="" selected disabled>Select a value for the condition.</option>
-                  <option value="0">0</option>
-                  <option value="1">1</option>
-                  <option value="2">2</option>
-                  <option value="3">3</option>
-                </select>
-              </div>
-              <div id="services" class="tab-pane">
-                <select class="custom-select" id="parameter_services">
-                </select>
-                <div class="custom-file">
-                  <input type="file" class="custom-file-input" id="parameter_services_docker">
-                  <label class="custom-file-label" for="parameter_services_docker">Choose Docker file...</label>
-                </div>
-              </div>
-              <div id="timestamps" class="tab-pane">
-                <select class="custom-select" id="parameter_timestamps_value">
-                  <option value="" selected disabled>Select a timestamp value.</option>
-                  <option value="0">0</option>
-                  <option value="1">1</option>
-                  <option value="2">2</option>
-                  <option value="3">3</option>
-                </select>
-                <select class="custom-select" id="parameter_timestamps_unit">
-                  <option value="" selected disabled>Select a timestamp unit.</option>
-                  <option value="ms">ms</option>
-                  <option value="s">s</option>
-                  <option value="m">m</option>
-                </select>
-              </div>
-              <div id="status" class="tab-pane">
-                <select class="custom-select" id="parameter_status">
-                  <option value="" selected disabled>Select a status.</option>
-                  <option value="offline">offline</option>
-                  <option value="online">online</option>
-                </select>
-              </div>
-            </div>
-          </div>
-        </div>
-
       </div>
 
       <div class="carousel-item">
@@ -331,6 +240,12 @@
         <div id="analysis-method">
           <h1>Analysis Method</h1>
           <hr>
+
+          <p>
+            The analysis method is provided through the category of the queries user concern.
+            <br>
+            You will get a selection of analysis tool, that can be configured to execute your User Concern.
+          </p>
 
           <div class="p-section">
 
@@ -355,12 +270,20 @@
           <h1>Analysis Configuration</h1>
           <hr>
 
+          <p>
+            The analysis configuration will produce appropriate settings, which can be used to run an experiment with the analysis tool.
+          </p>
+
           <div class="p-section">
 
             <div id="loadtest-configuration">
 
               <h3>Loadtest Configuration</h3>
               <hr>
+
+              <p>
+                A loadtest produces a virual created number of users and sends requests to the given domain.
+              </p>
 
               <div class="form-group">
 
@@ -406,6 +329,12 @@
 
                 <h3>JMeter Configuration</h3>
                 <hr>
+
+                <p>
+                  Here you can see the settings for JMeter.
+                  These are updated automatically and you can not change them by hand.
+                  At the end of the User Concern Definition you will be able to get those files.
+                </p>
 
                 <div class="p-section">
 
