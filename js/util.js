@@ -17,7 +17,7 @@ function range(start, end, step)
     {
         if(step.length > 1 && step_index < step.length)
         {
-            step_val = step[Math.max(step.length, step_index)];
+            step_val = step[Math.min(step.length, step_index)];
         }
         let range = [];
         if(end < start)
@@ -27,7 +27,7 @@ function range(start, end, step)
                 range.push(i);
                 if(step.length > 1 && step_index < step.length)
                 {
-                    step_val = step[Math.max(step.length, step_index++)];
+                    step_val = step[Math.min(step.length, step_index++)];
                 }
             }
         }
@@ -38,7 +38,7 @@ function range(start, end, step)
                 range.push(i);
                 if(step.length > 1 && step_index < step.length)
                 {
-                    step_val = step[Math.max(step.length, step_index++)];
+                    step_val = step[Math.min(step.length, step_index++)];
                 }
             }
         }
