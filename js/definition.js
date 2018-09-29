@@ -1,6 +1,11 @@
 function saveModel()
 {
     /*
+     * Set expert knowledge.
+     */
+    USER_CONCERN.analysis.expert = el_expert.is(":checked");
+
+    /*
      * Set the concern type.
      */
     USER_CONCERN.type = el_type.find(":checked").val();
@@ -30,7 +35,10 @@ function saveModel()
     if(USER_CONCERN.query.type === "loadtest")
     {
         USER_CONCERN.analysis.meta.domain = el_loadtest_domain.val() || DEFAULT.loadtest_domain;
+        USER_CONCERN.analysis.meta.path =  DEFAULT.loadtest_path;
         USER_CONCERN.analysis.meta.load = el_loadtest_load.val() || DEFAULT.loadtest_load;
+        USER_CONCERN.analysis.meta.duration = DEFAULT.loadtest_duration;
+        USER_CONCERN.analysis.meta.delay = DEFAULT.loadtest_delay;
         USER_CONCERN.analysis.meta.ramp_up = el_loadtest_ramp_up.val() || DEFAULT.loadtest_ramp_up;
         USER_CONCERN.analysis.meta.ramp_down = el_loadtest_ramp_down.val() || DEFAULT.loadtest_ramp_down;
     }
@@ -38,11 +46,14 @@ function saveModel()
     /*
      * Configure analysis documents
      */
-    if(el_analysis_method.val() === "JMeter")
+    if(USER_CONCERN.analysis.tool === "JMeter")
     {
         let text = JMETER["simple"];
         text = text.replace(/\$JM_DOMAIN/g, USER_CONCERN.analysis.meta.domain)
+                   .replace(/\$JM_PATH/g, USER_CONCERN.analysis.meta.path)
                    .replace(/\$JM_LOAD/g, USER_CONCERN.analysis.meta.load)
+                   .replace(/\$JM_DURATION/g, USER_CONCERN.analysis.meta.duration)
+                   .replace(/\$JM_DELAY/g, USER_CONCERN.analysis.meta.delay)
                    .replace(/\$JM_RAMP_UP/g, USER_CONCERN.analysis.meta.ramp_up)
                    .replace(/\$JM_RAMP_DOWN/g, USER_CONCERN.analysis.meta.ramp_down);
 
@@ -73,6 +84,11 @@ function loadModel()
     {
         USER_CONCERN = JSON.parse(decodeURI(url.substr(url.indexOf('concern=') + 8)));
     }
+
+    /*
+     * Set the concern type.
+     */
+    el_expert.prop("checked", USER_CONCERN.analysis.expert);
 
     /*
      * Set the concern type.
@@ -119,6 +135,15 @@ function updateUI()
     let jmeter_configuration = $("#jmeter-configuration");
 
     $("#query-configuration").show();
+
+    if(USER_CONCERN.analysis.expert === true)
+    {
+        $(".expert").show();
+    }
+    else
+    {
+        $(".expert").hide();
+    }
 
     if(USER_CONCERN.query.text !== "")
     {

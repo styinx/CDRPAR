@@ -541,7 +541,7 @@ function linkSidebar(what)
 {
     let el = document.createElement("div");
     el.innerHTML += what;
-    return bneutral("<a onclick='addSidebarLink(\"" + LINKS[what] + "\")'>" + what + "</a>");
+    return className(bneutral("<a onclick='addSidebarLink(\"" + LINKS[what] + "\")'>" + what + "</a>"), "link");
 }
 
 function refSidebar(what)
@@ -553,6 +553,7 @@ function refSidebar(what)
 
 function link(what) { return '<a>' + what + '</a>'; }
 function id(what, id) { return '<span id="' + id + '">' + what + '</span>'; }
+function className(what, id) { return '<span class="' + id + '">' + what + '</span>'; }
 
 function s(val, word) { return val === 1 ? word : word + "s";}
 function bold(what) { return "<b>" + what + "</b>"; }

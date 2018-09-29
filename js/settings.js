@@ -40,7 +40,7 @@ let QUERIES = {
         parameters: {"Limit": "", "Metric": "", "Service": "", "Value": "", "Unit": ""},
         format:     "The Limit Metric of service Service was $1, Value Unit after the experiment start."
     },
-    "What was the $Limit $Metric1 of service $Service when the $Metric2 is $Condition $Value?": {
+    "What was the $Limit $Metric1 of service $Service when the $Metric2 is $Condition $Value?":  {
         type:       "loadtest",
         parameters: {"Limit": "", "Metric1": "", "Service": "", "Metric2": "", "Condition": "", "Value": ""},
         format:     "Metric2 -> Condition -> Value -> Limit -> Metric1 -> Service"
@@ -52,7 +52,7 @@ let QUERIES = {
  * Each group of badges can only be used on a target of the same type ('limit-minimum' -> 'limit-target').
  */
 let DEFAULT_BADGES = {
-    metric:    ["response time", "latency", "number of users"],
+    metric:    ["response time", "latency", "number of users", "connection time"],
     limit:     ["minimum", "average", "maximum"],
     condition: ["<", "<=", "=", ">=", ">"],
     service:   ["dummy1", "dummy2", "dummy3"],
@@ -73,7 +73,10 @@ let LOADTEST_BADGES = {};
  */
 let DEFAULT = {
     loadtest_domain:    "www.example.com",
+    loadtest_path:      "",
     loadtest_load:      "100",
+    loadtest_duration:  "10",
+    loadtest_delay:     "0",
     loadtest_ramp_up:   "0",
     loadtest_ramp_down: "0"
 };
@@ -106,7 +109,7 @@ let CONVERSION = {
     metric: {
         "latency":         "Latency",
         "response time":   "",
-        "number of users": ""
+        "number of users": "allThreads"
     },
     unit:   {
         "milliseconds": 1,
@@ -114,6 +117,37 @@ let CONVERSION = {
         "minutes":      60000,
         "hours":        3600000,
         "days":         86400000,
+    }
+};
+
+/**
+ * METRICS hold information about all available metrics.
+ */
+let METRICS = {
+    "Latency" : {
+        unit: "ms",
+        definition: "Latency is the amount of time a message takes to traverse a system." +
+                    "In a computer network, it is an expression of how much time it takes for " +
+                    "a packet of data to get from one designated point to another. " +
+                    "It is sometimes measured as the time required for a packet to be returned to its sender." +
+                    "Latency depends on the speed of the transmission medium (e.g., copper wire, optical fiber " +
+                    "or radio waves) and the delays in the transmission by devices along the way (e.g., routers and modems). " +
+                    "A low latency indicates a high network efficiency."
+    },
+    "Connect": {
+        unit: "ms",
+        definition: "Part of the latency [TODO]."
+    },
+    "allThreads": {
+        unit: "",
+        definition: "In computer science, the number of concurrent users for a resource in a location, with the " +
+                    "location being a computing network or a single computer, refers to the total number of people " +
+                    "using the resource within a predefined period of time. The resource can, for example, be a " +
+                    "computer program, a file, or the computer as a whole." +
+                    "A computer operating system that allows several users to access a resource on the computer " +
+                    "at the same time is a multiuser multitasking operating system, historically called a " +
+                    "time-sharing operating system. The capacity of a system can also be measured in terms of " +
+                    "maximum concurrent users, at which point system performance begins to degrade noticeably."
     }
 };
 
@@ -137,7 +171,7 @@ let JMETER = {
               '      <stringProp name="TestPlan.user_define_classpath"></stringProp>\n' +
               '    </TestPlan>\n' +
               '    <hashTree>\n' +
-              '      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Thread-Gruppe" enabled="true">\n' +
+              '      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="$JM_DOMAIN" enabled="true">\n' +
               '        <stringProp name="ThreadGroup.on_sample_error">stopthread</stringProp>\n' +
               '        <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Schleifen-Controller (Loop Controller)" enabled="true">\n' +
               '          <boolProp name="LoopController.continue_forever">false</boolProp>\n' +
@@ -146,8 +180,8 @@ let JMETER = {
               '        <stringProp name="ThreadGroup.num_threads">$JM_LOAD</stringProp>\n' +
               '        <stringProp name="ThreadGroup.ramp_time">$JM_RAMP_UP</stringProp>\n' +
               '        <boolProp name="ThreadGroup.scheduler">false</boolProp>\n' +
-              '        <stringProp name="ThreadGroup.duration"></stringProp>\n' +
-              '        <stringProp name="ThreadGroup.delay"></stringProp>\n' +
+              '        <stringProp name="ThreadGroup.duration">$JM_DURATION</stringProp>\n' +
+              '        <stringProp name="ThreadGroup.delay">$JM_DELAY</stringProp>\n' +
               '      </ThreadGroup>\n' +
               '      <hashTree>\n' +
               '        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="HTTP Request" enabled="true">\n' +
@@ -182,18 +216,18 @@ let JMETER = {
               '              <code>true</code>\n' +
               '              <message>true</message>\n' +
               '              <threadName>true</threadName>\n' +
-              '              <dataType>true</dataType>\n' +
+              '              <dataType>false</dataType>\n' +
               '              <encoding>false</encoding>\n' +
-              '              <assertions>true</assertions>\n' +
-              '              <subresults>true</subresults>\n' +
-              '              <responseData>false</responseData>\n' +
-              '              <samplerData>false</samplerData>\n' +
+              '              <assertions>false</assertions>\n' +
+              '              <subresults>false</subresults>\n' +
+              '              <responseData>true</responseData>\n' +
+              '              <samplerData>true</samplerData>\n' +
               '              <xml>false</xml>\n' +
               '              <fieldNames>true</fieldNames>\n' +
               '              <responseHeaders>false</responseHeaders>\n' +
               '              <requestHeaders>false</requestHeaders>\n' +
               '              <responseDataOnError>false</responseDataOnError>\n' +
-              '              <saveAssertionResultsFailureMessage>true</saveAssertionResultsFailureMessage>\n' +
+              '              <saveAssertionResultsFailureMessage>false</saveAssertionResultsFailureMessage>\n' +
               '              <assertionsResultsToSave>0</assertionsResultsToSave>\n' +
               '              <bytes>true</bytes>\n' +
               '              <sentBytes>true</sentBytes>\n' +
@@ -271,20 +305,6 @@ let STOCK_OPTIONS = {
         trackBorderWidth:      0,
         trackBorderRadius:     0,
         riffleColor:           'transparent'
-    },
-    tooltip:       {
-        formatter: function()
-                   {
-                       let d = new Date(this.x);
-                       let D = d.getDate();
-                       let M = d.getMonth() + 1;
-                       let h = d.getHours();
-                       let m = d.getMinutes();
-                       let s = d.getSeconds();
-                       let ms = Math.round(d.getMilliseconds() / 10);
-                       return "<b>Timestamp</b>: " + D + "." + M + " " + h + ":" + m + ":" + s + "." + ms +
-                       "<br><b>" + this.points[0].series.name + "</b>: " + this.y + "ms";
-                   }
     },
     rangeSelector: {
         enabled: false

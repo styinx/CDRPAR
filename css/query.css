@@ -9,6 +9,27 @@ h1, h2, h3, h4
     font-weight: bold;
 }
 
+select, input
+{
+    min-width: 200px;
+    padding-left: 10px;
+}
+
+.link
+{
+    cursor: pointer;
+}
+
+#analysis-configuration select, #analysis-configuration input
+{
+    max-width: 200px;
+}
+
+.expert
+{
+    display: none;
+}
+
 .btn-file
 {
     position: relative;

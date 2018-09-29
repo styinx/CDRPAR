@@ -137,7 +137,7 @@ class JMeterResult extends Result
         this.headers = data.headers;
         delete data.headers;
         this.data = data;
-        this.metrics = {"Latency": "Latency", "Connect": "Connection Time"};
+        this.metrics = {"Latency": "Latency", "allThreads": "number of Threads (Users)", "Connect": "Connection Time"};
         this.process();
     }
 
@@ -148,7 +148,6 @@ class JMeterResult extends Result
             this.processed[metric] = {};
 
             let metric_vals = objValues(this.data, true, "timeStamp", metric);
-            let series = this.getSeries("timeStamp", metric, "");
             let min_metric_time = seriesMin(metric_vals, false, true);
             let avg_metric_val = objAvg(metric_vals, true, false);
             let max_metric_time = seriesMax(metric_vals, false, true);
@@ -201,11 +200,17 @@ class JMeterResult extends Result
     getTopic(metric)
     {
         el_content.append($(document.createElement("div"))
-                          .append("<h3>" + metric + "</h3>")
+                          .append("<h3>" + this.metrics[metric] + "</h3>")
                           .append("<hr>"));
 
         this.getDiagram(metric);
+        this.getDefinition(metric);
         this.getText(metric);
+    }
+
+    getDefinition(metric)
+    {
+        el_content.append("<b>" + this.metrics[metric] + ":</b><p>" + METRICS[metric].definition + "</p>");
     }
 
     getText(metric)
@@ -216,9 +221,9 @@ class JMeterResult extends Result
         let metric_avg = this.processed[metric].avg;
         let metric_max = this.processed[metric].max;
         let metric_max_time = this.processed[metric].max_time;
-        el_content.append("<p>The " + bgood("minimum") + " " + metric_name + " was " + bgood(metric_min) + " ms at " + bold(date(metric_min_time)) + ".</p>")
-                  .append("<p>The " + bcolor("average", "orange") + " " + metric_name + " was " + bcolor(metric_avg, "orange") + " ms.</p>")
-                  .append("<p>The " + bbad("maximum") + " " + metric_name + " was " + bbad(metric_max) + " ms at " + bold(date(metric_max_time)) + ".</p>");
+        el_content.append("<p>The " + bgood("minimum") + " " + metric_name + " was " + bgood(metric_min) + METRICS[metric].unit + " at " + bold(date(metric_min_time)) + ".</p>")
+                  .append("<p>The " + bcolor("average", "orange") + " " + metric_name + " was " + bcolor(metric_avg, "orange") + METRICS[metric].unit + ".</p>")
+                  .append("<p>The " + bbad("maximum") + " " + metric_name + " was " + bbad(metric_max) + METRICS[metric].unit + " at " + bold(date(metric_max_time)) + ".</p>");
 
     }
 
@@ -253,17 +258,31 @@ class JMeterResult extends Result
             }
         ];
 
-        series = this.getSeries(metric, "timeStamp", USER_CONCERN.analysis.meta.domain);
+        series = this.getSeries(metric, "timeStamp", this.data[1]["threadName"].split(" ")[0]);
         Highcharts.setOptions(STOCK_OPTIONS);
 
         Highcharts.stockChart(id,
                               {
                                   series: [series],
                                   yAxis:  {
-                                      title:     {text: metric},
+                                      title:     {text: this.metrics[metric]},
                                       plotLines: extremes
                                   },
-                                  legend: {enabled: true}
+                                  legend: {enabled: true},
+                                  tooltip: {
+                                      formatter: function()
+                                         {
+                                             let d = new Date(this.x);
+                                             let D = d.getDate();
+                                             let M = d.getMonth() + 1;
+                                             let h = d.getHours();
+                                             let m = d.getMinutes();
+                                             let s = d.getSeconds();
+                                             let ms = Math.round(d.getMilliseconds() / 10);
+                                             return "<b>Timestamp</b>: " + D + "." + M + " " + h + ":" + m + ":" + s + "." + ms +
+                                             "<br><b>" + this.points[0].series.name + "</b>: " + this.y + METRICS[metric].unit;
+                                         }
+                                  }
                               });
     }
 
@@ -315,10 +334,7 @@ function loadAnalysisData(format)
 
     ANALYSIS_DATA = format;
 
-    if(first_load)
-    {
-        report.configureAnalysisTool();
-    }
+    report.configureAnalysisTool();
 
     el_content.html("");
     el_sidebar.html("");

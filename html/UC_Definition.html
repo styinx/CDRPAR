@@ -24,6 +24,7 @@
 <script>
   let query;
 
+  let el_expert;
   let el_type;
   let el_parameters;
 
@@ -51,6 +52,7 @@
   $(document).ready(function() {
     query = new Query($("#query"), $(".badge-pool"));
 
+    el_expert = $("#filter_expert");
     el_type = $("#filter_type");
     el_parameters = $("#filter_parameters");
 
@@ -79,8 +81,11 @@
     $('[data-toggle="tooltip"]').tooltip();
 
     fillSelect("query_pattern", Object.keys(QUERIES));
+    fillSelect("loadtest_load", range(0, 11, [1, 1, 1, 2, 3, 2]).concat(range(15, 101, [5, 5, 5, 10, 10, 25, 25]))
+                                                                .concat(range(200, 1001, [50, 50, 100, 100])));
     loadModel();
     updateUI();
+    saveModel();
 
     $("#main-carousel").find("input, select").each(function() {
        $(this).on("change", function()
@@ -150,8 +155,8 @@
           </p>
 
           <div class="custom-control custom-checkbox">
-            <input type="checkbox" class="custom-control-input" id="expert" value="true">
-            <label class="custom-control-label" for="expert" data-toggle="tooltip" data-placement="right"
+            <input type="checkbox" class="custom-control-input" id="filter_expert" value="true">
+            <label class="custom-control-label" for="filter_expert" data-toggle="tooltip" data-placement="right"
                    title="Experts will have more options to configure a performance analysis.">
               Expert
             </label>
@@ -289,37 +294,97 @@
 
                 <div class="p-section">
 
-                  <h4>Select the location your system.</h4>
-                  <hr>
+                  <table>
+                    <tr>
+                      <td>Location:</td>
+                      <td><input type="url" id="loadtest_domain" placeholder="www.example.com"/></td>
+                      <td><span class="text-info">*</span></td>
 
-                  <input type="url" id="loadtest_domain" placeholder="www.example.com"/>
+                      <td rowspan="3">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
 
-                  <div class="filler"></div>
+                      <td>Path</td>
+                      <td><input type="text" id="loadtest_path" placeholder="/login.html"/></td>
+                      <td><span class="text-info"></span></td>
+                    </tr>
 
-                  <h4>Specify the loadtest values.</h4>
-                  <hr>
+                    <tr>
+                      <td>Load (number of Users):</td>
+                      <td>
+                        <select class="custom-select d-inline-block" id="loadtest_load">
+                          <option value="" selected disabled>Select the amount of load.</option>
+                        </select>
+                      </td>
+                      <td><span class="text-info">*</span></td>
 
-                  <label>
-                    Load (number of users) *:<br>
-                    <select class="custom-select d-inline-block" id="loadtest_load">
-                      <option value="" selected disabled>Select the amount of load.</option>
-                      <option value="0">0</option>
-                      <option value="1">1</option>
-                      <option value="2">2</option>
-                      <option value="10">10</option>
-                      <option value="100">100</option>
-                    </select>
-                  </label>
+                      <td>&nbsp;</td>
+                      <td>&nbsp;</td>
+                      <td>&nbsp;</td>
+                    </tr>
 
-                  <label>
-                    Ramp up time (s):<br>
-                    <input type="number" id="loadtest_ramp_up" placeholder="1">
-                  </label>
+                    <tr>
+                      <td>Duration (s):</td>
+                      <td><input type="number" id="loadtest_duration" placeholder="10"></td>
+                      <td><span class="text-info">*</span></td>
 
-                  <label>
-                    Ramp down time (s):<br>
-                    <input type="number" id="loadtest_ramp_down" placeholder="1">
-                  </label>
+
+                      <td>Delay (s):</td>
+                      <td><input type="number" id="loadtest_delay" placeholder="0"></td>
+                      <td><span class="text-info">*</span></td>
+                    </tr>
+
+                    <tr class="expert">
+                      <td colspan="6"><hr></td>
+                    </tr>
+
+                    <tr class="expert">
+                      <td>Method:</td>
+                      <td>
+                        <select class="custom-select" id="loadtest_method">
+                          <option value="GET">GET</option>
+                          <option value="POST">POST</option>
+                        </select>
+                      </td>
+                      <td></td>
+
+                      <td rowspan="3">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+
+                      <td>Follow Redirects:</td>
+                      <td><input type="checkbox" id="loadtest_follow_redirects"/></td>
+                      <td></td>
+                    </tr>
+
+                    <tr class="expert">
+                      <td>Ramp up time (s):</td>
+                      <td><input type="number" id="loadtest_ramp_up" placeholder="1"></td>
+                      <td><span class="text-info"></span></td>
+
+                      <td>Ramp down time (s):</td>
+                      <td><input type="number" id="loadtest_ramp_down" placeholder="1"></td>
+                      <td><span class="text-info"></span></td>
+                    </tr>
+
+                    <tr>
+                      <td>&nbsp;</td>
+                      <td>&nbsp;</td>
+                      <td>&nbsp;</td>
+
+                      <td>&nbsp;</td>
+                      <td>&nbsp;</td>
+                      <td>&nbsp;</td>
+                    </tr>
+
+                    <tr>
+                      <td><span class="text-info">* These fields are necessary.</span></td>
+                      <td>&nbsp;</td>
+                      <td>&nbsp;</td>
+
+                      <td>&nbsp;</td>
+
+                      <td>&nbsp;</td>
+                      <td>&nbsp;</td>
+                      <td>&nbsp;</td>
+                    </tr>
+                  </table>
 
                 </div>
 
