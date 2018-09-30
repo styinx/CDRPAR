@@ -15,6 +15,36 @@ h3
     font-weight: bold;
 }
 
+.link
+{
+    cursor: pointer;
+}
+
+.highcharts-tooltip span
+{
+    background: white;
+    border: 1px solid silver;
+    border-radius: 3px;
+    box-shadow: 1px 1px 2px #888;
+    padding: 8px;
+    opacity:1;
+    z-index: 200;
+}
+
+.tooltip
+{
+    padding: 0;
+    margin: 0;
+}
+
+.highcharts-plot-line-label
+{
+    border: 1px solid black;
+    border-radius: 3px;
+    padding: 0 2px 0 2px;
+    background: rgba(200, 200, 200, 150);
+}
+
 .main
 {
     position: fixed;
@@ -159,4 +189,40 @@ h3
     cursor:          pointer;
     text-decoration: underline;
     font-weight:     bold;
+}
+
+#loading
+{
+    z-index: 102;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(150, 150, 150, 0.5);
+    text-align: center;
+    display: none;
+}
+
+#loading i
+{
+    display: block;
+}
+
+#loader
+{
+    margin: 25% 25% 0 25%;
+    border: 16px solid #EEE;
+    border-top: 16px solid #3399ff;
+    border-radius: 50%;
+    width: 120px;
+    height: 120px;
+    display: inline-block;
+    animation: spin 2s linear infinite;
+}
+
+@keyframes spin
+{
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
 }

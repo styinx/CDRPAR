@@ -14,11 +14,14 @@
   <script src="../js/util.js"></script>
   <script src="../js/query.js"></script>
   <script src="../js/settings.js"></script>
+  <script src="../js/sparkline.js"></script>
+  <script src="../js/report.js"></script>
 
 
   <link rel="stylesheet" href="../css/bootstrap/bootstrap.min.css">
   <link rel="stylesheet" href="../css/query.css">
   <link rel="stylesheet" href="../css/report.css">
+  <link rel="stylesheet" href="../css/sparkline.css">
 </head>
 <body>
 <script>
@@ -28,6 +31,7 @@
   let report;
   let tooltip = true;
 
+  let el_loader;
   let el_content;
   let el_sidebar;
   let el_tooltip;
@@ -35,6 +39,8 @@
   function toggleTooltip() { tooltip = !tooltip; el_tooltip.tooltip(tooltip ? 'enable' : 'disable'); }
 
   $(document).ready(function() {
+
+      el_loader = $("#loading");
 
       Split(['#query-input', '#user-input'], {
           sizes: [75, 25],
@@ -71,6 +77,7 @@
       }
   });
 </script>
+<div id="loading"><div id="loader"></div><i>processing</i></div>
   <div class="main">
     <div class="query-container">
 
@@ -107,6 +114,5 @@
       <div id="sidebar" class="split split-horizontal"></div>
     </div>
   </div>
-<script src="../js/report.js"></script>
 </body>
 </html>

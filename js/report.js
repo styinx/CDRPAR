@@ -19,6 +19,7 @@ class Report
     constructor()
     {
         this.analysis_tool = null;
+        this.target_metric = null;
     }
 
     configureAnalysisTool()
@@ -46,11 +47,11 @@ class Report
                               .append("<hr><br>")
                               .append("<h3>Configuration and Analysis</h3>")
                               .append("<hr>")
-                              .append("<p>The chosen Analysis tool was " + linkSidebar(USER_CONCERN.analysis.tool) + "</p>")
-                              .append("<p>The experiment was performed on " + bold(USER_CONCERN.analysis.meta.domain) + "</p>")
-                              .append("<p>The experiment started at " + bold(start) + " and ended at " + bold(end) + ".</p>")
-                              .append("<p>The inspected metrics were recoreded over the course of " + bold(duration) + ".</p>")
-                              .append("<p>The " + linkSidebar("loadtest") + " was done with a load of " + bold(USER_CONCERN.analysis.meta.load) + " users."));
+                              .append("<p>The chosen Analysis tool was " + linkSidebar(USER_CONCERN.analysis.tool) + ".<br> " +
+                                    "The experiment was performed on " + bold(USER_CONCERN.analysis.meta.domain) + ".<br>" +
+                                    "The experiment started at " + bold(start) + " and ended at " + bold(end) + ".<br> " +
+                                    "The inspected metrics were recoreded over the course of " + bold(duration) + ".<br> " +
+                                    "The " + linkSidebar("loadtest") + " was done with a load of " + bold(USER_CONCERN.analysis.meta.load) + " users."));
 
         }
     }
@@ -69,6 +70,9 @@ class Report
         let value = USER_CONCERN.query.parameters["Value"];
         let unit = USER_CONCERN.query.parameters["Unit"];
 
+        this.target_metric = CONVERSION.metric[metric];
+        this.analysis_tool.target_time = value * CONVERSION.unit[unit];
+
         format = format.replace("Limit", limit)
                        .replace("Metric", metric)
                        .replace("Service", USER_CONCERN.query.parameters["Service"])
@@ -81,7 +85,7 @@ class Report
                                                             value * CONVERSION.unit[unit],
                                                             CONVERSION.limit[limit]);
 
-            format = bgood(format.replace("$1", underline(answer)));
+            format = bgood(format.replace("$1", underline(answer) + METRICS[CONVERSION.metric[metric]].unit));
         }
         else
         {
@@ -92,15 +96,17 @@ class Report
         el_content.append($(document.createElement("div"))
                           .append("<h3>Query</h3>")
                           .append("<hr>")
-                          .append("<div class='p-section'>" + query_desc.html() + "</div>"))
-        .append();
+                          .append("<div class='p-section'>" + query_desc.html() + "</div>"));
     }
 
     toolMetrics()
     {
+        this.analysis_tool.getTopic(this.target_metric);
+
         for(let key in this.analysis_tool.metrics)
         {
-            this.analysis_tool.getTopic(key);
+            if(key !== this.target_metric)
+                this.analysis_tool.getTopic(key);
         }
     }
 
@@ -122,6 +128,7 @@ class Result
         this.data = null;
         this.processed = {};
         this.metrics = {};
+        this.target_time = 0;
     }
 }
 
@@ -137,7 +144,12 @@ class JMeterResult extends Result
         this.headers = data.headers;
         delete data.headers;
         this.data = data;
-        this.metrics = {"Latency": "Latency", "allThreads": "number of Threads (Users)", "Connect": "Connection Time"};
+        this.sorted = objSort(this.data, "timeStamp");
+        this.metrics = {
+            "Latency": "Latency",
+            "allThreads": "number of Threads (Users)",
+            "Connect": "Connection Time"
+        };
         this.process();
     }
 
@@ -162,7 +174,7 @@ class JMeterResult extends Result
 
     getMetricAtTime(metric, time, what)
     {
-        let data = objSort(this.data, "timeStamp");
+        let data = this.sorted;
 
         let first = parseFloat(data[0]["timeStamp"]);
         let last = first;
@@ -221,9 +233,10 @@ class JMeterResult extends Result
         let metric_avg = this.processed[metric].avg;
         let metric_max = this.processed[metric].max;
         let metric_max_time = this.processed[metric].max_time;
-        el_content.append("<p>The " + bgood("minimum") + " " + metric_name + " was " + bgood(metric_min) + METRICS[metric].unit + " at " + bold(date(metric_min_time)) + ".</p>")
-                  .append("<p>The " + bcolor("average", "orange") + " " + metric_name + " was " + bcolor(metric_avg, "orange") + METRICS[metric].unit + ".</p>")
-                  .append("<p>The " + bbad("maximum") + " " + metric_name + " was " + bbad(metric_max) + METRICS[metric].unit + " at " + bold(date(metric_max_time)) + ".</p>");
+        el_content.append("<p>The " + bgood("minimum") + " " + metric_name + " was " + bgood(metric_min) + METRICS[metric].unit + " at " + bold(date(metric_min_time)) + ".<br> " +
+                          "The " + bcolor("average", "orange") + " " + metric_name + " was " + bcolor(metric_avg, "orange") + METRICS[metric].unit + ".<br> " +
+                          "The " + bbad("maximum") + " " + metric_name + " was " + bbad(metric_max) + METRICS[metric].unit + " at " + bold(date(metric_max_time)) + ".<br> ")
+                  .append();
 
     }
 
@@ -240,36 +253,58 @@ class JMeterResult extends Result
                 dashStyle: 'shortdash',
                 width:     2,
                 zIndex:    100,
-                label:     {text: 'minimum ' + this.metrics[metric], y: 10}
+                label:     {text: 'minimum ' + this.metrics[metric], useHTML: true}
             }, {
                 value:     this.processed[metric].avg,
                 color:     'orange',
                 dashStyle: 'shortdash',
                 width:     2,
                 zIndex:    100,
-                label:     {text: 'average ' + this.metrics[metric], y: 10}
+                label:     {text: 'average ' + this.metrics[metric], useHTML: true}
             }, {
                 value:     this.processed[metric].max,
                 color:     'red',
                 dashStyle: 'shortdash',
                 width:     2,
                 zIndex:    100,
-                label:     {text: 'maximum ' + this.metrics[metric]}
+                label:     {text: 'maximum ' + this.metrics[metric], useHTML: true}
             }
         ];
+        let time = this.target_time === null ? [] : [
+            {
+                color: '#FCFFC5',
+                from: 0,
+                to: parseInt(this.target_time) + parseInt(this.sorted[0]["timeStamp"])
+            }
+        ];
+        let min = parseInt(this.sorted[0]["timeStamp"]);
+        let max = (this.target_time === null) ? undefined : min + parseInt(this.target_time);
+
+        console.log(parseInt(this.target_time) + parseInt(this.sorted[0]["timeStamp"]));
 
         series = this.getSeries(metric, "timeStamp", this.data[1]["threadName"].split(" ")[0]);
+        let unit_text = METRICS[metric].unit;
+        let unit = METRICS[metric].unit === "" ? "" : "[" + METRICS[metric].unit + "]";
         Highcharts.setOptions(STOCK_OPTIONS);
 
         Highcharts.stockChart(id,
                               {
                                   series: [series],
                                   yAxis:  {
-                                      title:     {text: this.metrics[metric]},
+                                      title:     {text: this.metrics[metric] + " " + unit},
                                       plotLines: extremes
+                                  },
+                                  xAxis: {
+                                      plotBands: time,
+                                      min: min,
+                                      max: max
                                   },
                                   legend: {enabled: true},
                                   tooltip: {
+                                      borderWidth: 0,
+                                      backgroundColor: "rgba(255,255,255,0)",
+                                      shadow: false,
+                                      useHTML: true,
                                       formatter: function()
                                          {
                                              let d = new Date(this.x);
@@ -280,7 +315,7 @@ class JMeterResult extends Result
                                              let s = d.getSeconds();
                                              let ms = Math.round(d.getMilliseconds() / 10);
                                              return "<b>Timestamp</b>: " + D + "." + M + " " + h + ":" + m + ":" + s + "." + ms +
-                                             "<br><b>" + this.points[0].series.name + "</b>: " + this.y + METRICS[metric].unit;
+                                             "<br><b>" + this.points[0].series.name + "</b>: " + this.y.toFixed(0) + unit_text;
                                          }
                                   }
                               });
@@ -288,16 +323,15 @@ class JMeterResult extends Result
 
     getSeries(key, format, name)
     {
-        this.data = objSort(this.data, format);
         let series = {name: name, data: []};
 
         if(format !== undefined)
         {
             let last = null;
-            for(let index = 0; index < objLength(this.data); ++index)
+            for(let index = 0; index < objLength(this.sorted); ++index)
             {
-                let x = parseFloat(this.data[index][format]);
-                let y = parseFloat(this.data[index][key]);
+                let x = parseFloat(this.sorted[index][format]);
+                let y = parseFloat(this.sorted[index][key]);
                 if(last < x - 3600000 && last !== null)
                 {
                     series.data.push([last + (x - last) / 2, null]);
@@ -330,7 +364,7 @@ function loadUserConcern(json)
 
 function loadAnalysisData(format)
 {
-    let first_load = ANALYSIS_DATA === "";
+    el_loader.show();
 
     ANALYSIS_DATA = format;
 
@@ -340,6 +374,8 @@ function loadAnalysisData(format)
     el_sidebar.html("");
 
     report.createReport();
+
+    el_loader.hide();
 }
 
 $(window).on("queryChanged", function()
@@ -349,6 +385,8 @@ $(window).on("queryChanged", function()
 
     if(report.analysis_tool !== null)
     {
+        el_loader.show();
         report.createReport();
+        el_loader.hide();
     }
 });

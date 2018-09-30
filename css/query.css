@@ -15,11 +15,6 @@ select, input
     padding-left: 10px;
 }
 
-.link
-{
-    cursor: pointer;
-}
-
 #analysis-configuration select, #analysis-configuration input
 {
     max-width: 200px;

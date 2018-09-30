@@ -109,7 +109,8 @@ let CONVERSION = {
     metric: {
         "latency":         "Latency",
         "response time":   "",
-        "number of users": "allThreads"
+        "number of users": "allThreads",
+        "connection time": "Connect"
     },
     unit:   {
         "milliseconds": 1,
@@ -126,10 +127,10 @@ let CONVERSION = {
 let METRICS = {
     "Latency" : {
         unit: "ms",
-        definition: "Latency is the amount of time a message takes to traverse a system." +
+        definition: "Latency is the amount of time a message takes to traverse a system. " +
                     "In a computer network, it is an expression of how much time it takes for " +
                     "a packet of data to get from one designated point to another. " +
-                    "It is sometimes measured as the time required for a packet to be returned to its sender." +
+                    "It is sometimes measured as the time required for a packet to be returned to its sender. " +
                     "Latency depends on the speed of the transmission medium (e.g., copper wire, optical fiber " +
                     "or radio waves) and the delays in the transmission by devices along the way (e.g., routers and modems). " +
                     "A low latency indicates a high network efficiency."
@@ -143,7 +144,7 @@ let METRICS = {
         definition: "In computer science, the number of concurrent users for a resource in a location, with the " +
                     "location being a computing network or a single computer, refers to the total number of people " +
                     "using the resource within a predefined period of time. The resource can, for example, be a " +
-                    "computer program, a file, or the computer as a whole." +
+                    "computer program, a file, or the computer as a whole. " +
                     "A computer operating system that allows several users to access a resource on the computer " +
                     "at the same time is a multiuser multitasking operating system, historically called a " +
                     "time-sharing operating system. The capacity of a system can also be measured in terms of " +
