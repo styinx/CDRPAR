@@ -1,0 +1,38 @@
+.sparkline
+{
+    border:     1px solid rgba(150, 150, 150, 0.5);
+    background: rgba(255, 255, 255, 0.5);
+    display:    inline-block;
+    padding:    2px;
+}
+
+.highcharts-tooltip span
+{
+    background:    white;
+    border:        1px solid silver;
+    border-radius: 3px;
+    box-shadow:    1px 1px 2px #888888;
+    padding:       8px;
+    opacity:       1;
+    z-index:       200;
+    white-space:   nowrap !important;
+}
+
+.highcharts-tooltip div
+{
+    display: inline-block;
+}
+
+.tooltip
+{
+    padding: 0;
+    margin:  0;
+}
+
+.highcharts-plot-line-label
+{
+    border:        1px solid black;
+    border-radius: 3px;
+    padding:       0 2px 0 2px;
+    background:    rgba(200, 200, 200, 150);
+}
