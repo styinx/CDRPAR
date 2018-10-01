@@ -43,7 +43,7 @@ let QUERIES = {
     "What was the $Limit $Metric1 of service $Service when the $Metric2 is $Condition $Value?":  {
         type:       "loadtest",
         parameters: {"Limit": "", "Metric1": "", "Service": "", "Metric2": "", "Condition": "", "Value": ""},
-        format:     "Metric2 -> Condition -> Value -> Limit -> Metric1 -> Service"
+        format:     "The Limit Metric1 of service Service was $1, when the Metric2 was Condition Value."
     }
 };
 
@@ -244,6 +244,87 @@ let JMETER = {
               '    </hashTree>\n' +
               '  </hashTree>\n' +
               '</jmeterTestPlan>'
+};
+
+let SPARKLINE_OPTIONS = {
+    chart:         {
+        backgroundColor: null,
+        borderWidth:     0,
+        type:            'scatter',
+        margin:          [2, 0, 2, 0],
+        width:           120,
+        height:          30,
+        style:           {overflow: 'visible'},
+        skipClone:       true
+    },
+    title:         {text: ''},
+    credits:       {enabled: false},
+    xAxis:         {
+        crosshair:     true,
+        labels:        {enabled: false},
+        title:         {text: null},
+        startOnTick:   false,
+        endOnTick:     false,
+        tickPositions: [],
+        lineWidth: 0
+    },
+    yAxis:         {
+        endOnTick:      false,
+        startOnTick:    false,
+        labels:         {enabled: false},
+        title:          {text: null},
+        lineWidth: 0,
+        tickPositioner: function()
+                        {
+                            let step = (this.dataMax - this.dataMin) / 2;
+                            return range(this.dataMin, this.dataMax + 1, step);
+                        }
+    },
+    legend:        {enabled: false},
+    navigator:     {enabled: false},
+    scrollbar:     {enabled: false},
+    rangeSelector: {enabled: false},
+    tooltip:       {
+        style: {
+            textOverflow: 'ellipsis'
+        },
+        formatter:  function()
+               {
+                   return '<div style="color:' + this.series.color + '">●</div> <b>' + this.series.name + "</b>:<br>    " +
+                   this.y;
+               },
+        positioner: function(w, h, point)
+               {
+                   return {x: point.plotX - w / 2, y: point.plotY - h - 15};
+               }
+    },
+    plotOptions:   {
+        dataGrouping: {enabled: false},
+        series: {
+            dataGrouping: {enabled: false},
+            animation: false,
+            lineWidth: 1,
+            shadow:    false,
+            states:    {
+                hover: {
+                    halo:      {size: 0},
+                    lineWidth: 1
+                }
+            },
+            marker:    {
+                enabled: false,
+                symbol:  'circle',
+                radius:  2,
+                states:  {
+                    hover: {
+                        fillColor: null,
+                        lineColor: 'rgb(100, 100, 100)',
+                        lineWidth: 1
+                    }
+                }
+            }
+        }
+    }
 };
 
 /**
