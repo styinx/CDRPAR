@@ -11,7 +11,7 @@ h1, h2, h3, h4
 
 select, input
 {
-    min-width: 200px;
+    min-width:    200px;
     padding-left: 10px;
 }
 
@@ -50,13 +50,13 @@ select, input
 .filler
 {
     display: block;
-    height: 50px;
-    width: 100%;
+    height:  50px;
+    width:   100%;
 }
 
 .p-section
 {
-    padding: 20px 0 20px 50px;
+    padding:       20px 0 20px 50px;
     margin-bottom: 50px;
 }
 
@@ -73,23 +73,23 @@ select, input
 
 #query
 {
-    font-size: 40px;
+    font-size:   40px;
     font-weight: bold;
 }
 
 #query .badge-target
 {
-    max-height: 30px;
+    max-height:  30px;
     line-height: 16px;
-    font-size: 16px;
-    padding: 1px;
+    font-size:   16px;
+    padding:     1px;
 }
 
 #query .badge-target .badge
 {
-    max-height: 22px;
+    max-height:  22px;
     line-height: 16px;
-    font-size: 16px;
+    font-size:   16px;
 }
 
 .badge
@@ -116,17 +116,22 @@ select, input
 
 .badge-pool
 {
-    border:         2px dashed #000000;
-    background:     rgba(0, 0, 0, 0.2);
+    margin: 5px;
     width:          auto;
     height:         auto;
     overflow:       auto;
     min-width:      100px;
-    max-width:      50%;
+    max-width:      300px;
     min-height:     30px;
     max-height:     200px;
     text-align:     center;
     vertical-align: middle;
+}
+
+#metric-badge-pool
+{
+    border:         2px dashed #009900;
+    background:     rgba(0, 153, 0, 0.3);
 }
 
 .metric-target
@@ -142,6 +147,12 @@ select, input
     background: #009900;
 }
 
+#limit-badge-pool
+{
+    border:         2px dashed #999999;
+    background:     rgba(153, 153, 153, 0.3);
+}
+
 .limit-target
 {
     border:     2px dashed #999999;
@@ -153,6 +164,12 @@ select, input
     background: #999999;
 }
 
+#unit-badge-pool
+{
+    border:         2px dashed #FF3300;
+    background:     rgba(255, 51, 0, 0.3);
+}
+
 .unit-target
 {
     border:     2px dashed #FF3300;
@@ -162,6 +179,12 @@ select, input
 .unit-badge
 {
     background: #FF3300;
+}
+
+#service-badge-pool
+{
+    border:         2px dashed #0055FF;
+    background:     rgba(0, 85, 255, 0.3);
 }
 
 .service-target
@@ -176,6 +199,12 @@ select, input
     background: #0055FF;
 }
 
+/*#time-badge-pool*/
+/*{*/
+/*border: 2px dashed #FA0;*/
+/*background: rgba(255, 170, 0, 0.3);*/
+/*}*/
+
 /*.time-target*/
 /*{*/
 /*border: 2px dashed #FA0;*/
@@ -187,6 +216,12 @@ select, input
 /*background: #FA0;*/
 /*}*/
 
+#condition-badge-pool
+{
+    border:         2px dashed #AA00AA;
+    background:     rgba(170, 0, 170, 0.3);
+}
+
 .condition-target
 {
     border:     2px dashed #AA00AA;
@@ -197,6 +232,12 @@ select, input
 {
     color:      white;
     background: #AA00AA;
+}
+
+#value-badge-pool
+{
+    border:     2px dashed #663300;
+    background: rgba(102, 51, 0, 0.3);
 }
 
 .value-target

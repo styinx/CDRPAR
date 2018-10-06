@@ -33,16 +33,22 @@ let USER_CONCERN = {
  * where the key is the query as string and the object children are the meta data.
  *
  * type : type of the analysis
+ * parameters:
+ * format:
  */
 let QUERIES = {
     "What was the $Limit $Metric of service $Service, $Value $Unit after the experiment start?": {
         type:       "loadtest",
         parameters: {"Limit": "", "Metric": "", "Service": "", "Value": "", "Unit": ""},
+        target:     "Metric",
+        constraint: "Value",
         format:     "The Limit Metric of service Service was $1, Value Unit after the experiment start."
     },
-    "What was the $Limit $Metric1 of service $Service when the $Metric2 is $Condition $Value?":  {
+    "What was the $Limit $Metric1 of service $Service when the $Metric2 was $Condition $Value?":  {
         type:       "loadtest",
-        parameters: {"Limit": "", "Metric1": "", "Service": "", "Metric2": "", "Condition": "", "Value": ""},
+        parameters: {"Limit": "", "Metric1": "", "Service": "", "Metric2": "", "Condition": "", "Value": "",},
+        target:     "Metric1",
+        constraint: "Metric2",
         format:     "The Limit Metric1 of service Service was $1, when the Metric2 was Condition Value."
     }
 };
@@ -57,8 +63,7 @@ let DEFAULT_BADGES = {
     condition: ["<", "<=", "=", ">=", ">"],
     service:   ["dummy1", "dummy2", "dummy3"],
     unit:      ["milliseconds", "seconds", "minutes", "hours", "days"],
-    value:     range(0, 11, [1, 1, 1, 2, 3, 2]).concat(range(15, 101, [5, 5, 5, 10, 10, 25, 25]))
-                                               .concat(range(200, 1001, [50, 50, 100, 100]))
+    value:     range(0, 10, 1).concat(range(10, 100, 10)).concat(range(100, 1001, 100))
 };
 
 /**
@@ -66,7 +71,16 @@ let DEFAULT_BADGES = {
  *      A badge pool should only have badges that make sense to use.
  *      A loadtest shouldn't have the CPU Utilization as metric.
  */
-let LOADTEST_BADGES = {};
+let BADGES = {
+    loadtest: {
+        metric:    ["response time", "latency", "number of users", "connection time"],
+        limit:     ["minimum", "average", "maximum"],
+        condition: ["<", "<=", "=", ">=", ">"],
+        service:   ["dummy1", "dummy2", "dummy3"],
+        unit:      ["milliseconds", "seconds", "minutes", "hours", "days"],
+        value:     range(0, 10, 1).concat(range(10, 100, 10)).concat(range(100, 1001, 100))
+    }
+};
 
 /**
  * Default configuration for necessary element that cannot be empty.
@@ -106,6 +120,13 @@ let CONVERSION = {
         "average": "avg",
         "maximum": "max",
     },
+    condition: {
+        "<" : function(a, b) {return a < b;},
+        "<=" : function(a, b) {return a <= b;},
+        "=" : function(a, b) {return a === b;},
+        ">=" : function(a, b) {return a >= b;},
+        ">" : function(a, b) {return a > b;}
+    },
     metric: {
         "latency":         "Latency",
         "response time":   "",
@@ -125,8 +146,8 @@ let CONVERSION = {
  * METRICS hold information about all available metrics.
  */
 let METRICS = {
-    "Latency" : {
-        unit: "ms",
+    "Latency":    {
+        unit:       "ms",
         definition: "Latency is the amount of time a message takes to traverse a system. " +
                     "In a computer network, it is an expression of how much time it takes for " +
                     "a packet of data to get from one designated point to another. " +
@@ -135,12 +156,12 @@ let METRICS = {
                     "or radio waves) and the delays in the transmission by devices along the way (e.g., routers and modems). " +
                     "A low latency indicates a high network efficiency."
     },
-    "Connect": {
-        unit: "ms",
+    "Connect":    {
+        unit:       "ms",
         definition: "Part of the latency [TODO]."
     },
     "allThreads": {
-        unit: "",
+        unit:       "",
         definition: "In computer science, the number of concurrent users for a resource in a location, with the " +
                     "location being a computing network or a single computer, refers to the total number of people " +
                     "using the resource within a predefined period of time. The resource can, for example, be a " +
@@ -266,18 +287,19 @@ let SPARKLINE_OPTIONS = {
         startOnTick:   false,
         endOnTick:     false,
         tickPositions: [],
-        lineWidth: 0
+        lineWidth:     0
     },
     yAxis:         {
         endOnTick:      false,
         startOnTick:    false,
         labels:         {enabled: false},
         title:          {text: null},
-        lineWidth: 0,
+        lineWidth:      0,
         tickPositioner: function()
                         {
                             let step = (this.dataMax - this.dataMin) / 2;
-                            return range(this.dataMin, this.dataMax + 1, step);
+                            return range(this.dataMin, this.dataMax + 1,
+                                         step);
                         }
     },
     legend:        {enabled: false},
@@ -285,33 +307,33 @@ let SPARKLINE_OPTIONS = {
     scrollbar:     {enabled: false},
     rangeSelector: {enabled: false},
     tooltip:       {
-        style: {
+        style:      {
             textOverflow: 'ellipsis'
         },
         formatter:  function()
-               {
-                   return '<div style="color:' + this.series.color + '">●</div> <b>' + this.series.name + "</b>:<br>    " +
-                   this.y;
-               },
+                    {
+                        return '<div style="color:' + this.series.color + '">●</div> <b>' + this.series.name + "</b>:<br>    " +
+                        this.y;
+                    },
         positioner: function(w, h, point)
-               {
-                   return {x: point.plotX - w / 2, y: point.plotY - h - 15};
-               }
+                    {
+                        return {x: point.plotX - w / 2, y: point.plotY - h - 15};
+                    }
     },
     plotOptions:   {
         dataGrouping: {enabled: false},
-        series: {
+        series:       {
             dataGrouping: {enabled: false},
-            animation: false,
-            lineWidth: 1,
-            shadow:    false,
-            states:    {
+            animation:    false,
+            lineWidth:    1,
+            shadow:       false,
+            states:       {
                 hover: {
                     halo:      {size: 0},
                     lineWidth: 1
                 }
             },
-            marker:    {
+            marker:       {
                 enabled: false,
                 symbol:  'circle',
                 radius:  2,

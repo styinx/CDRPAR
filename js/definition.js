@@ -20,6 +20,8 @@ function saveModel()
         USER_CONCERN.query.type = QUERIES[el_query_pattern.val()].type;
         USER_CONCERN.query.parameters = QUERIES[el_query_pattern.val()].parameters;
         USER_CONCERN.query.format = QUERIES[el_query_pattern.val()].format;
+        USER_CONCERN.query.target = QUERIES[el_query_pattern.val()].target;
+        USER_CONCERN.query.constraint = QUERIES[el_query_pattern.val()].constraint;
         query.setQuery(el_query_pattern.val());
     }
 
@@ -98,10 +100,13 @@ function loadModel()
     /*
      * Set the query.
      */
-    el_query_pattern.find(":selected").removeAttr("selected");
-    el_query_pattern.find("option[value='" + USER_CONCERN.query.text + "']").prop("selected", "selected");
-    query.setQuery(el_query_pattern.val());
-    query.setQueryBadgeValues();
+    if(el_query_pattern.val() !== null)
+    {
+        el_query_pattern.find(":selected").removeAttr("selected");
+        el_query_pattern.find("option[value='" + USER_CONCERN.query.text + "']").prop("selected", "selected");
+        query.setQuery(el_query_pattern.val());
+        query.setQueryBadgeValues();
+    }
 
     /*
      * Set the analysis method.

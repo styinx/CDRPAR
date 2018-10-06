@@ -3,12 +3,11 @@
  */
 class Query
 {
-    constructor(element, pool, query)
+    constructor(element, query)
     {
         this.el = element;
-        this.pool = pool;
 
-        if(query !== undefined && query !== "")
+        if(query !== undefined && query !== "" && query !== null)
         {
             this.setQuery(query);
         }
@@ -77,11 +76,11 @@ class Query
      */
     createBadges(badges)
     {
-        this.pool.html("");
-        let els = [];
         for(let type in badges)
         {
+            let els = [];
             let badge_type = type;
+            let pool = $("#" + badge_type + "-badge-pool").html("");
             if(Object.keys(USER_CONCERN.query.parameters).join('#').toLowerCase().replace(/\d/, "").split('#').includes(type))
             {
                 for(let value in badges[type])
@@ -93,8 +92,8 @@ class Query
                     els.push(badge);
                 }
             }
+            pool.append(els);
         }
-        this.pool.append(els);
     }
 }
 
@@ -120,7 +119,7 @@ function drop(ev)
     let id = ev.dataTransfer.getData("id");
     let type = ev.dataTransfer.getData("type");
     let dropped = document.getElementById(id);
-    let badge_pool = $(".badge-pool")[0];
+    let badge_pool = $("#" + type + "-badge-pool")[0];
     let duplicate = dropped.cloneNode();
     duplicate.id = duplicate.id + "-d";
     duplicate.innerHTML = dropped.innerHTML;
@@ -173,17 +172,24 @@ function dropPool(ev)
     ev.preventDefault();
     let target = ev.target;
     let id = ev.dataTransfer.getData("id");
+    let type = ev.dataTransfer.getData("type");
+    let badge_pool = $("#" + type + "-badge-pool")[0];
 
     document.getElementById(id).outerHTML = "";
 
+    let nodes = Array.from(badge_pool.children);
     let metrics = USER_CONCERN.query.parameters;
-    for(let metric in metrics)
+    console.log(badge_pool, target.parentNode)
+    if(target.parentNode !== badge_pool && target.parentNode !== target)
     {
-        let value = metrics[metric];
-        if(value === $("#" + id).html())
+        for(let metric in metrics)
         {
-            USER_CONCERN.query.parameters[metric] = "";
-            query.el.trigger("queryChanged");
+            let value = metrics[metric];
+            if(value === $("#" + id).html())
+            {
+                USER_CONCERN.query.parameters[metric] = "";
+                query.el.trigger("queryChanged");
+            }
         }
     }
 

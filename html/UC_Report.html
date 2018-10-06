@@ -56,7 +56,7 @@
           cursor: 'col-resize'
       });
 
-      query = new Query($("#query"), $(".badge-pool"), "");
+      query = new Query($("#query"), "");
       content = new Content($("#content"));
       sidebar = new Sidebar($("#sidebar"));
       report = new Report();
@@ -83,7 +83,12 @@
 
       <div id="query-input" class="split split-horizontal">
         <div id="query">Here comes the query.</div>
-        <div id="badge-pool" class="d-inline-block badge-pool" ondrop="dropPool(event);" ondragover="allowDrop(event);"></div>
+        <div id="limit-badge-pool" class="d-inline-block badge-pool" ondrop="dropPool(event);" ondragover="allowDrop(event);"></div>
+        <div id="metric-badge-pool" class="d-inline-block badge-pool" ondrop="dropPool(event);" ondragover="allowDrop(event);"></div>
+        <div id="service-badge-pool" class="d-inline-block badge-pool" ondrop="dropPool(event);" ondragover="allowDrop(event);"></div>
+        <div id="condition-badge-pool" class="d-inline-block badge-pool" ondrop="dropPool(event);" ondragover="allowDrop(event);"></div>
+        <div id="value-badge-pool" class="d-inline-block badge-pool" ondrop="dropPool(event);" ondragover="allowDrop(event);"></div>
+        <div id="unit-badge-pool" class="d-inline-block badge-pool" ondrop="dropPool(event);" ondragover="allowDrop(event);"></div>
       </div>
 
       <div id="user-input" class="split split-horizontal">
