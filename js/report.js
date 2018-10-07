@@ -123,7 +123,7 @@ class Report
         if(this.target_metric !== "")
         {
             let answer = null;
-            if(constraint_metric !== "" && constraint_condition !== "")
+            if(/Metric\d*/.test(USER_CONCERN.query.constraint))
             {
                 answer = this.analysis_tool.getMetricByFilter(this.target_metric_name,
                                                               constraint_metric,
@@ -131,7 +131,7 @@ class Report
                                                               constraint_value,
                                                               constraint_limit);
             }
-            else
+            else if(/Value\d*/.test(USER_CONCERN.query.constraint))
             {
                 this.target_time = constraint_time;
                 answer = this.analysis_tool.getMetricTillTime(this.target_metric_name,
@@ -368,7 +368,6 @@ class JMeterResult extends AnalysisTool
     {
         let id = (this.metrics[metric] + USER_CONCERN.analysis.tool).toLowerCase().replace(" ", "-");
         el_content.append(chartContainer(this.metrics[metric], id));
-
         let extremes = [
             {
                 value:     this.processed[metric].min,
@@ -391,7 +390,14 @@ class JMeterResult extends AnalysisTool
                 width:     2,
                 zIndex:    100,
                 label:     {text: 'maximum ' + this.metrics[metric], useHTML: true}
-            }
+            }, /Metric\d*/.test(report.constraint) && metric === CONVERSION.metric[USER_CONCERN.query.parameters[report.constraint]] ? {
+                value:     USER_CONCERN.query.parameters["Value"],
+                color:     'blue',
+                dashStyle: 'shortdash',
+                width:     2,
+                zIndex:    101,
+                label:     {text: 'threshold', useHTML: true}
+            } : {}
         ];
         let time = report.target_time === null ? [] : [
             {
@@ -406,8 +412,6 @@ class JMeterResult extends AnalysisTool
         let max = (report.target_time === null) ? undefined : min + parseInt(report.target_time);
         let unit_text = METRICS[metric].unit;
         let unit = METRICS[metric].unit === "" ? "" : "[" + METRICS[metric].unit + "]";
-
-
 
         Highcharts.setOptions(STOCK_OPTIONS);
         Highcharts.stockChart(id, {
@@ -495,7 +499,10 @@ function loadAnalysisData(format)
     el_content.html("");
     el_sidebar.html("");
 
-    report.createReport();
+    if(!query.incomplete())
+    {
+        report.createReport();
+    }
 
     el_loader.hide();
 }
@@ -508,7 +515,10 @@ $(window).on("queryChanged", function()
     if(report.analysis_tool !== null)
     {
         el_loader.show();
-        report.createReport();
+        if(!query.incomplete())
+        {
+            report.createReport();
+        }
         el_loader.hide();
     }
 });

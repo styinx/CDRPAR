@@ -36,3 +36,8 @@
     padding:       0 2px 0 2px;
     background:    rgba(200, 200, 200, 150);
 }
+
+.highcharts-container {
+    width:100% !important;
+    height:100% !important;
+}

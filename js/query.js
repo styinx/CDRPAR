@@ -18,20 +18,25 @@ class Query
 
     }
 
+    incomplete()
+    {
+        for(let p in USER_CONCERN.query.parameters)
+        {
+            if(USER_CONCERN.query.parameters[p] === "")
+            {
+                el_content.html(bbad("Query incomplete!"));
+                return true;
+            }
+        }
+        return false;
+    }
+
     setQuery(query)
     {
         this.query = query;
         this.el.html(query);
 
-        if(history.pushState)
-        {
-            let url = "?concern=" + JSON.stringify(USER_CONCERN);
-            let protocol = window.location.protocol;
-            let host = window.location.host;
-            let path = window.location.pathname.replace(host, "").replace(/^\//, "");
-            let new_url = protocol + "//" + host + "/" + path + url;
-            window.history.pushState({path: new_url}, '', new_url);
-        }
+        updateURL();
 
         this.createBadgeTargets();
         this.createBadges(DEFAULT_BADGES);
@@ -115,92 +120,84 @@ function drag(ev)
 function drop(ev)
 {
     ev.preventDefault();
-    let target = ev.target;
+    let dropped = ev.target;
     let id = ev.dataTransfer.getData("id");
     let type = ev.dataTransfer.getData("type");
-    let dropped = document.getElementById(id);
-    let badge_pool = $("#" + type + "-badge-pool")[0];
-    let duplicate = dropped.cloneNode();
-    duplicate.id = duplicate.id + "-d";
-    duplicate.innerHTML = dropped.innerHTML;
+    let draged = document.getElementById(id);
+    let drag_duplicate = draged.cloneNode();
 
-    // Drop on badge in target area
-    if(target.className.split(' ').includes('badge'))
+    drag_duplicate.id = drag_duplicate.id + "-d";
+    drag_duplicate.innerHTML = draged.innerHTML;
+
+    // drop on badge-pool
+    if(dropped.id === type + "-badge-pool")
     {
-        if(target.className.split(' ').includes(type + "-badge"))
+        draged.outerHTML = "";
+    }
+    // drop on badge target
+    else if(dropped.className.split(' ').includes(type + '-target'))
+    {
+        dropped.appendChild(drag_duplicate);
+        USER_CONCERN.query.parameters[dropped.id] = draged.innerText;
+    }
+    // drop on badge
+    else if(dropped.className.split(' ').includes(type + '-badge'))
+    {
+        let parent = dropped.parentNode;
+
+        // drop on badge in badge-pool
+        if(parent.id === type + "-badge-pool")
         {
-            let parent = target.parentNode;
-            target.outerText = "";
+            let metrics = USER_CONCERN.query.parameters;
+
+            for(let metric in metrics)
+            {
+                let value = metrics[metric];
+                if(value === $("#" + metric).text())
+                {
+                    USER_CONCERN.query.parameters[metric] = "";
+                }
+            }
+        }
+        // drop on badge on badge target
+        else if(parent.className.split(' ').includes(type + '-target'))
+        {
             parent.innerHTML = "";
-            USER_CONCERN.query.parameters[parent.id] = dropped.innerText;
-            parent.appendChild(dropped);
-            badge_pool.insertBefore(duplicate, badge_pool.children[0]);
-            query.el.trigger("queryChanged");
-        }
-    }
-    // Drop on target area
-    else
-    {
-        if(target.className.split(' ').includes(type + "-target"))
-        {
-            if(target.children.length !== 0)
-            {
-                badge_pool.append(target.children[0]);
-                target.innerHTML = "";
-            }
-            USER_CONCERN.query.parameters[target.id] = dropped.innerText;
-            target.appendChild(dropped);
-            badge_pool.insertBefore(duplicate, badge_pool.children[0]);
-            query.el.trigger("queryChanged");
+            parent.appendChild(drag_duplicate);
+            USER_CONCERN.query.parameters[parent.id] = draged.innerText;
         }
     }
 
-    if(history.pushState)
-    {
-        let url = "?concern=" + JSON.stringify(USER_CONCERN);
-        let protocol = window.location.protocol;
-        let host = window.location.host;
-        let path = window.location.pathname.replace(host, "").replace(/^\//, "");
-        let new_url = protocol + "//" + host + "/" + path + url;
-        window.history.pushState({path: new_url}, '', new_url);
-    }
+    query.el.trigger("queryChanged");
+
+    updateURL();
     $("#redirect").attr("href", "UC_Report.html?concern=" + JSON.stringify(USER_CONCERN));
 }
 
-function dropPool(ev)
-{
-    ev.preventDefault();
-    let target = ev.target;
-    let id = ev.dataTransfer.getData("id");
-    let type = ev.dataTransfer.getData("type");
-    let badge_pool = $("#" + type + "-badge-pool")[0];
-
-    document.getElementById(id).outerHTML = "";
-
-    let nodes = Array.from(badge_pool.children);
-    let metrics = USER_CONCERN.query.parameters;
-    console.log(badge_pool, target.parentNode)
-    if(target.parentNode !== badge_pool && target.parentNode !== target)
-    {
-        for(let metric in metrics)
-        {
-            let value = metrics[metric];
-            if(value === $("#" + id).html())
-            {
-                USER_CONCERN.query.parameters[metric] = "";
-                query.el.trigger("queryChanged");
-            }
-        }
-    }
-
-    if(history.pushState)
-    {
-        let url = "?concern=" + JSON.stringify(USER_CONCERN);
-        let protocol = window.location.protocol;
-        let host = window.location.host;
-        let path = window.location.pathname.replace(host, "").replace(/^\//, "");
-        let new_url = protocol + "//" + host + "/" + path + url;
-        window.history.pushState({path: new_url}, '', new_url);
-    }
-    $("#redirect").attr("href", "UC_Report.html?concern=" + JSON.stringify(USER_CONCERN));
-}
+// function dropPool(ev)
+// {
+//     ev.preventDefault();
+//     let target = ev.target;
+//     let id = ev.dataTransfer.getData("id");
+//     let type = ev.dataTransfer.getData("type");
+//     let badge_pool = $("#" + type + "-badge-pool")[0];
+//     let metrics = USER_CONCERN.query.parameters;
+//
+//     document.getElementById(id).outerHTML = "";
+//
+//     if(1)
+//     {
+//         for(let metric in metrics)
+//         {
+//             let value = metrics[metric];
+//             if(value === $("#" + id).html())
+//             {
+//                 USER_CONCERN.query.parameters[metric] = "";
+//                 query.el.trigger("queryChanged");
+//             }
+//         }
+//     }
+//
+//     updateURL();
+//     $("#redirect").attr("href", "UC_Report.html?concern=" + JSON.stringify(USER_CONCERN));
+// }

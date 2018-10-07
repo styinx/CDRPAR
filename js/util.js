@@ -407,7 +407,7 @@ function seriesMax(series, max_key, want_key)
 
 function date(val, format)
 {
-    format = format || "%d.%m %H:%M:%S %f";
+    format = format || "%d.%m %H:%M:%S.%f";
     let d = new Date(parseInt(val));
 
     format = format.replace("%d", d.getDate())
@@ -573,3 +573,16 @@ function neutral(what) { return color(what, "dodgerblue");}
 function bneutral(what) { return bold(neutral(what));}
 function uneutral(what) { return underline(neutral(what));}
 function buneutral(what) { return underline(bneutral(what));}
+
+function updateURL()
+{
+    if(history.pushState)
+    {
+        let url = "?concern=" + JSON.stringify(USER_CONCERN);
+        let protocol = window.location.protocol;
+        let host = window.location.host;
+        let path = window.location.pathname.replace(host, "").replace(/^\//, "");
+        let new_url = protocol + "//" + host + "/" + path + url;
+        window.history.pushState({path: new_url}, '', new_url);
+    }
+}

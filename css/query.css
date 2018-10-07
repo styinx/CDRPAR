@@ -251,3 +251,9 @@ select, input
     color:      white;
     background: #663300;
 }
+
+.badge-pool,
+#limit-badge-pool, #metric-badge-pool, #service-badge-pool, #condition-badge-pool, #value-badge-pool, #unit-badge-pool
+{
+    display: none;
+}

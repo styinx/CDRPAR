@@ -23,8 +23,15 @@ function saveModel()
         USER_CONCERN.query.target = QUERIES[el_query_pattern.val()].target;
         USER_CONCERN.query.constraint = QUERIES[el_query_pattern.val()].constraint;
         query.setQuery(el_query_pattern.val());
-    }
 
+        /*
+         * Show badge pools
+         */
+        for(let p in DEFAULT_BADGES)
+        {
+            $("#" + p + "-badge-pool").css("display", "inline-block");
+        }
+    }
 
     /*
      * Set the analysis method.
