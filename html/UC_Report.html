@@ -35,6 +35,7 @@
   let el_content;
   let el_sidebar;
   let el_tooltip;
+  let el_data_input_label;
 
   function toggleTooltip() { tooltip = !tooltip; el_tooltip.tooltip(tooltip ? 'enable' : 'disable'); }
 
@@ -64,6 +65,7 @@
       el_tooltip = $('[data-toggle="tooltip"]');
       el_content = $('#content');
       el_sidebar = $('#sidebar');
+      el_data_input_label = $("#data_input_label");
 
       el_tooltip.tooltip();
 
@@ -74,6 +76,12 @@
           $("#query").html(USER_CONCERN.query.text);
           query.setQuery(USER_CONCERN.query.text);
           query.setQueryBadgeValues();
+      }
+
+      if(USER_CONCERN.analysis.tool !== "")
+      {
+          el_data_input_label.html("Load a analysis result (" + USER_CONCERN.analysis.tool + ")" +
+              '<input id="data_input" type="file" class="d-none" onclick="upload(this.id, loadAnalysisData);">');
       }
   });
 </script>
@@ -93,14 +101,14 @@
 
       <div id="user-input" class="split split-horizontal">
         <div class="form-group">
-          <label for="concern_input" class="file-input btn btn-primary btn-file" data-toggle="tooltip" data-placement="bottom"
+          <label for="concern_input" id="concern_input_label" class="file-input btn btn-primary btn-file" data-toggle="tooltip" data-placement="bottom"
                  title="Here you can load an existing User Concern into the reporting tool.">
             Load a User Concern<input id="concern_input" type="file" class="d-none" onclick="upload(this.id, loadUserConcern);">
           </label>
         </div>
 
         <div class="form-group">
-          <label for="data_input" class="file-input btn btn-primary btn-file" data-toggle="tooltip" data-placement="top"
+          <label for="data_input" id="data_input_label" class="file-input btn btn-primary btn-file" data-toggle="tooltip" data-placement="top"
                  title="In order to show data, the tool needs some performance data, which you can upload here.">
             Load a analysis result<input id="data_input" type="file" class="d-none" onclick="upload(this.id, loadAnalysisData);">
           </label>

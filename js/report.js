@@ -484,6 +484,9 @@ function loadUserConcern(json)
     query.setQuery(USER_CONCERN.query.text);
     query.setQueryBadgeValues();
 
+    el_data_input_label.html("Load a analysis result (" + USER_CONCERN.analysis.tool + ")" +
+        '<input id="data_input" type="file" class="d-none" onclick="upload(this.id, loadAnalysisData);">');
+
     el_content.html("");
     el_sidebar.html("");
 }
@@ -509,6 +512,7 @@ function loadAnalysisData(format)
 
 $(window).on("queryChanged", function()
 {
+    console.log("asd")
     el_content.html("");
     el_sidebar.html("");
 

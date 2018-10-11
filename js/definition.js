@@ -36,7 +36,7 @@ function saveModel()
     /*
      * Set the analysis method.
      */
-    USER_CONCERN.analysis.tool = el_analysis_method.val();
+    USER_CONCERN.analysis.tool = el_analysis_method.val() || "";
 
     /*
      * Set analysis meta data.
@@ -107,7 +107,7 @@ function loadModel()
     /*
      * Set the query.
      */
-    if(el_query_pattern.val() !== null)
+    if(USER_CONCERN.query.text !== "")
     {
         el_query_pattern.find(":selected").removeAttr("selected");
         el_query_pattern.find("option[value='" + USER_CONCERN.query.text + "']").prop("selected", "selected");
@@ -159,7 +159,7 @@ function updateUI()
 
     if(USER_CONCERN.query.text !== "")
     {
-        if(USER_CONCERN.type === "Analysis" && USER_CONCERN.analysis.tool !== "")
+        if(USER_CONCERN.type === "Analysis")
         {
             indicator_3.show();
             analysis_method.show();

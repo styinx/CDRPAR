@@ -58,7 +58,7 @@ let QUERIES = {
  * Each group of badges can only be used on a target of the same type ('limit-minimum' -> 'limit-target').
  */
 let DEFAULT_BADGES = {
-    metric:    ["response time", "latency", "number of users", "connection time"],
+    metric:    ["latency", "number of users", "connection time"],
     limit:     ["minimum", "average", "maximum"],
     condition: ["<", "<=", "=", ">=", ">"],
     service:   ["dummy1", "dummy2", "dummy3"],
@@ -73,7 +73,7 @@ let DEFAULT_BADGES = {
  */
 let BADGES = {
     loadtest: {
-        metric:    ["response time", "latency", "number of users", "connection time"],
+        metric:    ["latency", "number of users", "connection time"],
         limit:     ["minimum", "average", "maximum"],
         condition: ["<", "<=", "=", ">=", ">"],
         service:   ["dummy1", "dummy2", "dummy3"],

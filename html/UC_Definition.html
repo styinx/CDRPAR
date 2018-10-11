@@ -302,22 +302,27 @@
                   <table>
                     <tr>
                       <td>Location:</td>
-                      <td><input type="url" id="loadtest_domain" placeholder="www.example.com"/></td>
+                      <td>
+                        <input type="url" id="loadtest_domain" placeholder="www.example.com" data-toggle="tooltip"
+                               title="Here you can define the location of the system you want to test."/>
+                      </td>
                       <td><span class="text-info">*</span></td>
 
                       <td rowspan="3">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
 
                       <td>Path</td>
-                      <td><input type="text" id="loadtest_path" placeholder="/login.html"/></td>
+                      <td>
+                        <input type="text" id="loadtest_path" placeholder="/login.html" data-toggle="tooltip"
+                               title="If you want to test a specific service you can define the name of it here."/>
+                      </td>
                       <td><span class="text-info"></span></td>
                     </tr>
 
                     <tr>
                       <td>Load (number of Users):</td>
                       <td>
-                        <select class="custom-select d-inline-block" id="loadtest_load">
-                          <option value="" selected disabled>Select the amount of load.</option>
-                        </select>
+                        <input type="number" id="loadtest_load" placeholder="10" data-toggle="tooltip"
+                               title="This is the amount of generated work the system has to process."/>
                       </td>
                       <td><span class="text-info">*</span></td>
 
@@ -329,12 +334,12 @@
                     <tr>
                       <td>Duration (s):</td>
                       <td><input type="number" id="loadtest_duration" placeholder="10"></td>
-                      <td><span class="text-info">*</span></td>
+                      <td><span class="text-info"></span></td>
 
 
                       <td>Delay (s):</td>
                       <td><input type="number" id="loadtest_delay" placeholder="0"></td>
-                      <td><span class="text-info">*</span></td>
+                      <td><span class="text-info"></span></td>
                     </tr>
 
                     <tr class="expert">
