@@ -209,13 +209,13 @@ function objValues(obj, numbers, key, value)
     {
         if(value !== "" && value !== undefined)
         {
-            let k = numbers ? parseFloat(obj[i][key]) : obj[i][key];
-            let v = numbers ? parseFloat(obj[i][value]) : obj[i][value];
+            let k = numbers ? Math.round(parseFloat(obj[i][key]) * 100) / 100 : obj[i][key];
+            let v = numbers ? Math.round(parseFloat(obj[i][value]) * 100) / 100 : obj[i][value];
             result[k] = v;
         }
         else
         {
-            result.push(numbers ? parseFloat(obj[i][key]) : obj[i][key]);
+            result.push(numbers ? Math.round(parseFloat(obj[i][key]) * 100) / 100 : obj[i][key]);
         }
     }
     return result;

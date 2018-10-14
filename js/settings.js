@@ -92,7 +92,9 @@ let DEFAULT = {
     loadtest_duration:  "10",
     loadtest_delay:     "0",
     loadtest_ramp_up:   "0",
-    loadtest_ramp_down: "0"
+    loadtest_ramp_down: "0",
+    loadtest_min_wait: "1000",
+    loadtest_max_wait: "2000"
 };
 
 /**
@@ -101,6 +103,7 @@ let DEFAULT = {
  */
 let LINKS = {
     "JMeter":   "https://en.wikipedia.org/wiki/Apache_JMeter?printable=yes",
+    "Locust": "https://locust.io/",
     "loadtest": "https://en.wikipedia.org/wiki/Load_testing?printable=yes"
 };
 
@@ -129,7 +132,7 @@ let CONVERSION = {
     },
     metric: {
         "latency":         "Latency",
-        "response time":   "",
+        "response time":   "responseTime",
         "number of users": "allThreads",
         "connection time": "Connect"
     },
@@ -170,6 +173,10 @@ let METRICS = {
                     "at the same time is a multiuser multitasking operating system, historically called a " +
                     "time-sharing operating system. The capacity of a system can also be measured in terms of " +
                     "maximum concurrent users, at which point system performance begins to degrade noticeably."
+    },
+    "responseTime": {
+        unit: "ms",
+        definition: "TODO"
     }
 };
 
@@ -265,6 +272,21 @@ let JMETER = {
               '    </hashTree>\n' +
               '  </hashTree>\n' +
               '</jmeterTestPlan>'
+};
+
+let LOCUST = {
+    'simple': '' +
+        'from locust import HttpLocust, TaskSet, task\n' +
+        '\n' +
+        'class Experiment(TaskSet):\n' +
+        '    @task(1)\n' +
+        '    def index(self):\n' +
+        '        self.client.get("$LC_DOMAIN/$LC_PATH")\n' +
+        '\n' +
+        'class Locust(HttpLocust):\n' +
+        '    task_set = Experiment\n' +
+        '    min_wait = $LC_MIN_WAIT\n' +
+        '    max_wait = $LC_MAX_WAIT'
 };
 
 let SPARKLINE_OPTIONS = {

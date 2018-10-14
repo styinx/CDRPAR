@@ -113,7 +113,7 @@
 
 #filter_parameters, #query-configuration, #analysis-method, #analysis-configuration, #parameter-selection,
 #tab-Limits, #tab-Metrics, #tab-Conditions, #tab-Services, #tab-Timestamps, #tab-Status,
-#jmeter-configuration
+.jmeter-configuration, .locust-configuration
 {
     display: none;
 }

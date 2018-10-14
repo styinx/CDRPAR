@@ -46,10 +46,12 @@ function saveModel()
         USER_CONCERN.analysis.meta.domain = el_loadtest_domain.val() || DEFAULT.loadtest_domain;
         USER_CONCERN.analysis.meta.path =  DEFAULT.loadtest_path;
         USER_CONCERN.analysis.meta.load = el_loadtest_load.val() || DEFAULT.loadtest_load;
-        USER_CONCERN.analysis.meta.duration = DEFAULT.loadtest_duration;
-        USER_CONCERN.analysis.meta.delay = DEFAULT.loadtest_delay;
+        USER_CONCERN.analysis.meta.duration = el_loadtest_duration.val() || DEFAULT.loadtest_duration;
+        USER_CONCERN.analysis.meta.delay = el_loadtest_delay.val() || DEFAULT.loadtest_delay;
         USER_CONCERN.analysis.meta.ramp_up = el_loadtest_ramp_up.val() || DEFAULT.loadtest_ramp_up;
         USER_CONCERN.analysis.meta.ramp_down = el_loadtest_ramp_down.val() || DEFAULT.loadtest_ramp_down;
+        USER_CONCERN.analysis.meta.min_wait = el_loadtest_min_wait.val() || DEFAULT.loadtest_min_wait;
+        USER_CONCERN.analysis.meta.max_wait = el_loadtest_max_wait.val() || DEFAULT.loadtest_max_wait;
     }
 
     /*
@@ -65,6 +67,20 @@ function saveModel()
                    .replace(/\$JM_DELAY/g, USER_CONCERN.analysis.meta.delay)
                    .replace(/\$JM_RAMP_UP/g, USER_CONCERN.analysis.meta.ramp_up)
                    .replace(/\$JM_RAMP_DOWN/g, USER_CONCERN.analysis.meta.ramp_down);
+
+        el_jmeter_experiment.val(text);
+    }
+
+    if(USER_CONCERN.analysis.tool === "Locust")
+    {
+        let text = JMETER["simple"];
+        text = text.replace(/\$LC_DOMAIN/g, USER_CONCERN.analysis.meta.domain)
+            .replace(/\$LC_PATH/g, USER_CONCERN.analysis.meta.path)
+            .replace(/\$LC_MIN_WAIT/g, USER_CONCERN.analysis.meta.min_wait)
+            .replace(/\$LC_MAX_WAIT/g, USER_CONCERN.analysis.meta.max_wait);
+
+        $("#locust-load").html("-r 1 -c " + USER_CONCERN.analysis.meta.load);
+        $("#locust-duration").html(USER_CONCERN.analysis.meta.duration + "s");
 
         el_jmeter_experiment.val(text);
     }
@@ -144,7 +160,8 @@ function updateUI()
 
     let analysis_configuration = $("#analysis-configuration");
     let analysis_method = $("#analysis-method");
-    let jmeter_configuration = $("#jmeter-configuration");
+    let jmeter_configuration = $(".jmeter-configuration");
+    let locust_configuration = $(".locust-configuration");
 
     $("#query-configuration").show();
 
@@ -190,6 +207,15 @@ function updateUI()
         else
         {
             jmeter_configuration.hide();
+        }
+
+        if(USER_CONCERN.analysis.tool === "Locust")
+        {
+            locust_configuration.show();
+        }
+        else
+        {
+            locust_configuration.hide();
         }
     }
     else
