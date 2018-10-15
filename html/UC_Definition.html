@@ -139,7 +139,8 @@
             <p class="p-section p-right">
               This is the User Interface to configure a User Concern which helps you
               to configure an analysis and create automatic generated performance reports.
-              In the following steps you will be asked to fill out forms that match your situation.
+              In the following steps you will be asked to fill out forms that you can fill
+              according to your situation.
               This helps us to define a useful User Concern.
               If you are ready, then proceed by either clicking the navigation arrows
               or using the control buttons on the bottom.
@@ -153,7 +154,8 @@
         <hr>
 
         <p>
-          Filters help to categorize the user concern. This way you will get a limited number of options.
+          Filters help to categorize the user concern.
+          This way you will get a exactly the number of options you need.
         </p>
 
         <div class="p-section">
@@ -164,7 +166,7 @@
           <p>
             If you check this option you will see all available configurations.
             <br>
-            As an expert you should have performed at least one performance analysis already.
+            As an expert you should have performed at least more than one performance analysis already.
           </p>
 
           <div class="custom-control custom-checkbox">
@@ -233,7 +235,7 @@
 
           <div class="p-section">
 
-            <h4>Choose a query that suits your needs the most?</h4>
+            <h4>Choose a query that suits your needs the most.</h4>
             <hr>
 
             <p>
@@ -356,14 +358,9 @@
 
                 <p>
                   Here you can see the settings for JMeter.
-                  These are updated automatically and you can not change them by hand.
-                  At the end of the User Concern Definition you will be able to get those files.
                 </p>
 
-                <div class="p-section">
-
-                  <h4>Analysis Experiment</h4>
-                  <hr>
+                <div class="">
 
                   <div class="p-section">
                     <table>
@@ -375,16 +372,15 @@
                         </td>
                         <td><span class="text-info">*</span></td>
 
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
+                        <td>Duration (s):</td>
+                        <td><input type="number" id="loadtest_duration" placeholder="10"></td>
+                        <td><span class="text-info">*</span></td>
                       </tr>
 
                       <tr>
-                        <td>Duration (s):</td>
-                        <td><input type="number" id="loadtest_duration" placeholder="10"></td>
-                        <td><span class="text-info"></span></td>
-
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
 
                         <td>Delay (s):</td>
                         <td><input type="number" id="loadtest_delay" placeholder="0"></td>
@@ -446,22 +442,27 @@
                     </table>
                   </div>
 
-                  <div class="p-section">
+                  <div class="expert">
+
+                    <h4>Experiment Configuration</h4>
+                    <hr>
+                    <br>
 
                     <div class="form-group d-inline-block">
-                      <label for="jmeter_experiment">JMeter experiment configuration:</label><br>
+                      <label for="jmeter_experiment"><b>JMeter experiment configuration:</b></label><br>
                       <textarea class="form-control" rows="10" cols="100" id="jmeter_experiment" readonly></textarea>
                     </div>
 
                   </div>
 
-                  <h4>Experiment Properties</h4>
-                  <hr>
+                  <div class="expert">
 
-                  <div class="p-section">
+                    <h4>Experiment Properties</h4>
+                    <hr>
+                    <br>
 
                     <div class="form-group d-inline-block">
-                      <label for="jmeter_properties">JMeter experiment properties:</label><br>
+                      <label for="jmeter_properties"><b>JMeter experiment properties:</b></label><br>
                       <textarea class="form-control" rows="10" cols="100" id="jmeter_properties" readonly></textarea>
                     </div>
 
@@ -476,8 +477,6 @@
 
                 <p>
                   Here you can see the settings for Locust.
-                  These are updated automatically and you can not change them by hand.
-                  At the end of the User Concern Definition you will be able to get the file.
                 </p>
 
                 <div class="p-section">
@@ -485,17 +484,17 @@
                   <h4>Analysis Experiment</h4>
                   <hr>
 
-                  <div class="p-section">
+                  <div class="">
                     <table>
-                      <tr class="expert">
-                        <td>Minimum Wait Time:</td>
-                        <td><input type="number" id="loadtest_min_wait"/></td>
+                      <tr class="">
+                        <td>Minimum Wait Time (s):</td>
+                        <td><input type="number" id="loadtest_min_wait" placeholder="1000"/></td>
                         <td><span class="text-info">*</span></td>
 
                         <td rowspan="3">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
 
-                        <td>Maximum Wait Time:</td>
-                        <td><input type="number" id="loadtest_max_wait"/></td>
+                        <td>Maximum Wait Time (s):</td>
+                        <td><input type="number" id="loadtest_max_wait" placeholder="2000"/></td>
                         <td><span class="text-info">*</span></td>
                       </tr>
 
@@ -523,11 +522,13 @@
                     </table>
                   </div>
 
-                  <div class="p-section">
+                  <div class="expert">
+
+                    <br>
 
                     <div class="form-group d-inline-block">
-                      <label for="jmeter_experiment">JMeter experiment configuration:</label><br>
-                      <textarea class="form-control" rows="10" cols="100" id="locust_experiment" readonly></textarea>
+                      <label for="locust_experiment"><b>Locust experiment configuration:</b></label><br>
+                      <textarea class="form-control" rows="10" cols="80" id="locust_experiment" readonly></textarea>
                     </div>
 
                   </div>
@@ -549,7 +550,7 @@
           <div class="jmeter-configuration">
             <p>
               JMeter will be your analysis tool. Download the following two files, then proceed with the next steps.<br>
-              <button class="d-inline-block btn-primary" onclick="download('#jmeter_experiment', 'jmeter_experiment.jmx')">Download JMeter Test File</button>
+              <button class="d-inline-block btn-primary" onclick="download('#jmeter_experiment', 'jmeter_experiment.jmx')">Download JMeter Experiment File</button>
               <button class="d-inline-block btn-primary" onclick="download('#jmeter_properties', 'jmeter_properties.prop')">Download JMeter Properties File</button>
             </p>
 
@@ -567,7 +568,7 @@
           <div class="locust-configuration">
             <p>
               Locust will be your analysis tool. Download the following file, then proceed with the next steps.<br>
-              <button class="d-inline-block btn-primary" onclick="download('#locust_experiment', 'locust_experiment.py')">Download JMeter Test File</button>
+              <button class="d-inline-block btn-primary" onclick="download('#locust_experiment', 'locust_experiment.py')">Download Locust Experiment File</button>
             </p>
 
             <p>

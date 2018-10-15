@@ -86,7 +86,7 @@ let BADGES = {
  * Default configuration for necessary element that cannot be empty.
  */
 let DEFAULT = {
-    loadtest_domain:    "www.example.com",
+    loadtest_domain:    "http://www.example.com",
     loadtest_path:      "",
     loadtest_load:      "100",
     loadtest_duration:  "10",
@@ -107,7 +107,9 @@ let LINKS = {
     "loadtest": "https://en.wikipedia.org/wiki/Load_testing?printable=yes"
 };
 
-let REFS = {};
+let REFS = {
+    "" : ""
+};
 
 /**
  * ANALYSIS_DATA stores a set of analysis data as a string.
@@ -276,17 +278,50 @@ let JMETER = {
 
 let LOCUST = {
     'simple': '' +
-        'from locust import HttpLocust, TaskSet, task\n' +
+        'from locust import HttpLocust, TaskSet, task, events, web\n' +
+        'import time\n' +
+        'import csv\n' +
         '\n' +
-        'class Experiment(TaskSet):\n' +
-        '    @task(1)\n' +
-        '    def index(self):\n' +
-        '        self.client.get("$LC_DOMAIN/$LC_PATH")\n' +
         '\n' +
-        'class Locust(HttpLocust):\n' +
-        '    task_set = Experiment\n' +
+        'def index(l):\n' +
+        '    l.client.get("/")\n' +
+        '\n' +
+        '\n' +
+        'class MyTaskSet(TaskSet):\n' +
+        '    tasks = [index]\n' +
+        '\n' +
+        '\n' +
+        'class MyLocust(HttpLocust):\n' +
+        '    host = "$LC_DOMAIN"\n' +
+        '    result_file = "locust_experiment_result.csv"\n' +
         '    min_wait = $LC_MIN_WAIT\n' +
-        '    max_wait = $LC_MAX_WAIT'
+        '    max_wait = $LC_MAX_WAIT\n' +
+        '    task_set = MyTaskSet\n' +
+        '    header = ["timeStamp", "service", "type", "success", "responseTime", "bytes"]\n' +
+        '    footer = ["$LC_DOMAIN"]\n' +
+        '    data = []\n' +
+        '\n' +
+        '    def __init__(self):\n' +
+        '        super(MyLocust, self).__init__()\n' +
+        '        events.request_success += self.save_succ\n' +
+        '        events.request_failure += self.save_fail\n' +
+        '        events.quitting += self.write\n' +
+        '\n' +
+        '    def save_succ(self, request_type, name, response_time, response_length):\n' +
+        '        self.save(request_type, name, response_time, response_length, 1)\n' +
+        '\n' +
+        '    def save_fail(self, request_type, name, response_time):\n' +
+        '        self.save(request_type, name, response_time, 0, 0)\n' +
+        '\n' +
+        '    def save(self, request_type, name, response_time, response_length, success):\n' +
+        '        self.data.append([int(round(time.time() * 1000)), name, request_type, success, response_time, response_length])\n' +
+        '\n' +
+        '    def write(self):\n' +
+        '        with open(self.result_file, \'wb\') as csv_file:\n' +
+        '            csv_file.write(",".join(self.header) + "\\n")\n' +
+        '            for value in self.data:\n' +
+        '                csv_file.write(",".join(str(x) for x in value) + "\\n")\n' +
+        '            csv_file.write(",".join(self.footer) + "\\n")'
 };
 
 let SPARKLINE_OPTIONS = {

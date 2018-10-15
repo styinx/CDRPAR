@@ -551,6 +551,14 @@ function refSidebar(what)
     return bneutral("<a onclick='addSidebarRef(\"" + REFS[what] + "\")'>" + what + "</a>");
 }
 
+function sparklineSidebar(what, series)
+{
+    let el = $(document.createElement("div"));
+    el.html("<div id='id'></div><script>Highcharts.SparkLine('id', 'spline', {series: series});</script>");
+    console.log(el.html())
+    return bneutral("<a onclick='addSidebarRef(\"" + el.html() + "\")'>" + what + "</a>");
+}
+
 function link(what) { return '<a>' + what + '</a>'; }
 function id(what, id) { return '<span id="' + id + '">' + what + '</span>'; }
 function className(what, id) { return '<span class="' + id + '">' + what + '</span>'; }

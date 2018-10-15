@@ -6,21 +6,16 @@ import csv
 def index(l):
     l.client.get("/")
 
-
-def stats(l):
-    l.client.get("/")
-
-
-class MyTaskSet(TaskSet):
-    tasks = [index,stats]
+class ExperimentTaskSet(TaskSet):
+    tasks = [index]
 
 
-class MyLocust(HttpLocust):
+class Experiment(HttpLocust):
     host = "http://www.example.com"
     result_file = "locust_experiment_result.csv"
     min_wait = 1000
     max_wait = 2000
-    task_set = MyTaskSet
+    task_set = ExperimentTaskSet
     header = ["timeStamp", "service", "type", "success", "responseTime", "bytes"]
     footer = ["http://www.example.com"]
     data = []

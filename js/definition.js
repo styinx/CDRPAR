@@ -73,16 +73,16 @@ function saveModel()
 
     if(USER_CONCERN.analysis.tool === "Locust")
     {
-        let text = JMETER["simple"];
+        let text = LOCUST["simple"];
         text = text.replace(/\$LC_DOMAIN/g, USER_CONCERN.analysis.meta.domain)
             .replace(/\$LC_PATH/g, USER_CONCERN.analysis.meta.path)
             .replace(/\$LC_MIN_WAIT/g, USER_CONCERN.analysis.meta.min_wait)
             .replace(/\$LC_MAX_WAIT/g, USER_CONCERN.analysis.meta.max_wait);
 
-        $("#locust-load").html("-r 1 -c " + USER_CONCERN.analysis.meta.load);
-        $("#locust-duration").html(USER_CONCERN.analysis.meta.duration + "s");
+        $("#locust-load").html("-r1 -c" + USER_CONCERN.analysis.meta.load);
+        $("#locust-duration").html("-t" + USER_CONCERN.analysis.meta.duration + "s");
 
-        el_jmeter_experiment.val(text);
+        el_locust_experiment.val(text);
     }
 
     /*
@@ -143,6 +143,8 @@ function loadModel()
     el_loadtest_load.val(USER_CONCERN.analysis.meta.load || DEFAULT.loadtest_load);
     el_loadtest_ramp_up.val(USER_CONCERN.analysis.meta.ramp_up || DEFAULT.loadtest_ramp_up);
     el_loadtest_ramp_down.val(USER_CONCERN.analysis.meta.ramp_down || DEFAULT.loadtest_ramp_down);
+    el_loadtest_min_wait.val(USER_CONCERN.analysis.meta.min_wait || DEFAULT.loadtest_min_wait);
+    el_loadtest_max_wait.val(USER_CONCERN.analysis.meta.max_wait || DEFAULT.loadtest_max_wait);
 
     /*
      * Set the user concern.
