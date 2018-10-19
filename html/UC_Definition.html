@@ -22,6 +22,7 @@
 <body>
 
 <script>
+  let tool_name;
   let query;
 
   let el_expert;
@@ -41,6 +42,7 @@
 
   let el_loadtest_domain;
   let el_loadtest_load;
+  let el_loadtest_loops;
   let el_loadtest_duration;
   let el_loadtest_delay;
   let el_loadtest_ramp_up;
@@ -56,6 +58,7 @@
   let el_user_concern;
 
   $(document).ready(function() {
+    tool_name = $(".tool_name").html("<b>Vizard</b>")
     query = new Query($("#query"));
 
     el_expert = $("#filter_expert");
@@ -75,6 +78,7 @@
 
     el_loadtest_domain = $("#loadtest_domain");
     el_loadtest_load = $("#loadtest_load");
+    el_loadtest_loops = $("#loadtest_loops");
     el_loadtest_duration = $("#loadtest_duration");
     el_loadtest_delay = $("#loadtest_delay");
     el_loadtest_ramp_up = $("#loadtest_ramp_up");
@@ -136,12 +140,22 @@
           <h1>User Concern Definition</h1>
           <hr>
           <div class="p-section p-right">
-            <p class="p-section p-right">
-              This is the User Interface to configure a User Concern which helps you
-              to configure an analysis and create automatic generated performance reports.
-              In the following steps you will be asked to fill out forms that you can fill
-              according to your situation.
-              This helps us to define a useful User Concern.
+            <p class="p-right">
+              <img style="float:right; margin: 0 0 0 10%" src="../resources/img/UC_Definition.svg" width="250px">
+              This is the <span class="tool_name"></span> tool.
+              It guides you through the creation of a <b>User Concern</b>.
+              A <b>User Concern</b> formulates an interest in attributes of a software system.
+              It can be used to configure a performance analysis tool, which retrieves metrics from an analysis experiment.
+              <span class="tool_name"></span> utilizes such results in combination with the <b>User Concern</b> to create a performance report.
+              <br>
+              <br>
+              In the following steps you will be asked to fill out input fields.
+              Choose the options according to your question you have about the performance of a system.
+              This helps us to define a useful <b>User Concern</b>.
+              <br>
+              <q>The process you will perform is described in the image on the right side.</q>
+              <br>
+              <br>
               If you are ready, then proceed by either clicking the navigation arrows
               or using the control buttons on the bottom.
             </p>
@@ -154,44 +168,28 @@
         <hr>
 
         <p>
-          Filters help to categorize the user concern.
-          This way you will get a exactly the number of options you need.
+          Filters help to categorize the <b>User Concern</b>.
+          This way you will get a exactly the options you need.
         </p>
 
         <div class="p-section">
-
-          <h4>Are you a performance analysis expert?</h4>
-          <hr>
-
-          <p>
-            If you check this option you will see all available configurations.
-            <br>
-            As an expert you should have performed at least more than one performance analysis already.
-          </p>
-
-          <div class="custom-control custom-checkbox">
-            <input type="checkbox" class="custom-control-input" id="filter_expert" value="true">
-            <label class="custom-control-label" for="filter_expert" data-toggle="tooltip" data-placement="right"
-                   title="Experts will have more options to configure a performance analysis.">
-              Expert
-            </label>
-          </div>
-
-          <div class="filler"></div>
 
           <h4>Do you want to perform an analysis or generate a report from existing data?</h4>
           <hr>
 
           <p>
-            A User Concern can have one of two types.
+            A <b>User Concern</b> can have one of two following types.
             <ul>
               <li>
-                A User Concern from the type <i>Analysis</i> is able to configure a performance analysis tool.
+                A <b>User Concern</b> from the type <b><i>Analysis</i></b> is able to configure a performance analysis tool.
                 <br>
-                If you choose this option you can still create a performance report.
+                If can also create a performance report with this type.
               </li>
+              <br>
               <li>
-                A User Concern from the type <i>Report</i> needs existing data from an appropriate analysis tool.
+                A <b>User Concern</b> from the type <b><i>Report</i></b> needs existing data from an appropriate analysis tool.
+                <br>
+                This type will not help you with the configuration of an analysis tool.
               </li>
             </ul>
           </p>
@@ -202,7 +200,7 @@
               <div class="custom-control custom-radio">
                 <input type="radio" class="custom-control-input" id="filter_type_Analysis" name="filter_type" value="Analysis" checked>
                 <label class="custom-control-label" for="filter_type_Analysis" data-toggle="tooltip" data-placement="right"
-                       title="You can configure an analysis experiment.">
+                       title="You want to perform an analysis experiment and create a performance report.">
                   Analysis
                 </label>
               </div>
@@ -227,23 +225,25 @@
           <h1>Query</h1>
           <hr>
 
-          <p>
-            A query defines your interest in a metric with additional properties.
+          <ul>
+            <li>A query defines your interest in a metric with additional properties.</li>
             <br>
-            The query will represent the aim of a performance analysis.
-          </p>
+            <li>The query will represent your question to software system.</li>
+            <br>
+            <li>
+              The <b>User Concern</b> is able to understand this question and will answer this
+              with the results of a performance analysis.
+            </li>
+          </ul>
 
           <div class="p-section">
 
             <h4>Choose a query that suits your needs the most.</h4>
             <hr>
 
-            <p>
-              The following queries are split into categories, where each category supports multiple analysis tools.
-            </p>
-
             <select class="custom-select" id="query_pattern">
               <option value="" selected disabled>Select a query.</option>
+              <option value="" disabled>When does the service $Service experience the maximum load?</option>
             </select>
 
             <div class="query-wrapper">
@@ -266,11 +266,16 @@
           <h1>Analysis Method</h1>
           <hr>
 
-          <p>
-            The analysis method is provided through the category of the queries user concern.
+          <ul class="p-section">
+            <li>The query you selected represents a typical request from load testing.</li>
             <br>
-            You will get a selection of analysis tool, that can be configured to execute your User Concern.
-          </p>
+            <li>To generate load on your system it is necessary to configure a load testing framework.</li>
+            <br>
+            <li>
+              In the following you are given a selection of such frameworks.
+              Please select one of them and then proceed.
+            </li>
+          </ul>
 
           <div class="p-section">
 
@@ -296,11 +301,26 @@
           <h1>Analysis Configuration</h1>
           <hr>
 
-          <p>
-            The analysis configuration will produce appropriate settings, which can be used to run an experiment with the analysis tool.
-          </p>
-
           <div class="p-section">
+
+            <h4>Are you a performance analysis expert?</h4>
+            <hr>
+
+            <p>
+              If you check this option you will get more advanced options to configure a analysis.
+              <br>
+              As an expert you should have performed at least more than one performance analysis already.
+            </p>
+
+            <div class="custom-control custom-checkbox">
+              <input type="checkbox" class="custom-control-input" id="filter_expert" value="true">
+              <label class="custom-control-label" for="filter_expert" data-toggle="tooltip" data-placement="right"
+                     title="Experts will have more options to configure a performance analysis.">
+                Expert
+              </label>
+            </div>
+
+            <div class="filler"></div>
 
             <div id="loadtest-configuration">
 
@@ -308,7 +328,9 @@
               <hr>
 
               <p>
-                A loadtest produces a virtual created number of users and sends requests to the given domain.
+                Here you see the configurations to create a load test.
+                <br>
+                A load test produces a virtual created number of users which send requests to the given domain.
               </p>
 
               <div class="form-group">
@@ -320,18 +342,64 @@
                       <td>Location:</td>
                       <td>
                         <input type="url" id="loadtest_domain" placeholder="www.example.com" data-toggle="tooltip"
-                               title="Here you can define the location of the system you want to test."/>
+                               title="The location of a software system is represented as a URL.
+                                      Please enter the URL where your system is located."/>
                       </td>
                       <td><span class="text-info">*</span></td>
 
                       <td rowspan="3">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
 
-                      <td>Path</td>
+                      <td rowspan="3">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+
+                      <!--<td>Path</td>-->
+                      <!--<td>-->
+                        <!--<input type="text" id="loadtest_path" placeholder="/login.html" data-toggle="tooltip"-->
+                               <!--title="If you want to test a specific service you can define the name of it here."/>-->
+                      <!--</td>-->
+                      <!--<td><span class="text-info"></span></td>-->
+                    </tr>
+
+                    <tr>
+                      <td></td>
+                      <td>&nbsp;</td>
+                      <td>&nbsp;</td>
+
+                      <td>&nbsp;</td>
+
+                      <td>&nbsp;</td>
+                      <td>&nbsp;</td>
+                      <td>&nbsp;</td>
+                    </tr>
+
+                    <tr>
+                      <td>Load (number of Users):</td>
                       <td>
-                        <input type="text" id="loadtest_path" placeholder="/login.html" data-toggle="tooltip"
-                               title="If you want to test a specific service you can define the name of it here."/>
+                        <input type="number" id="loadtest_load" placeholder="10" data-toggle="tooltip"
+                               title="The 'Load' is the number of users that produce requests which are send to your system.
+                                        The more users, the more work is processed by the tested systems.
+                                        Define here the number of users that send requests to your system."/>
                       </td>
-                      <td><span class="text-info"></span></td>
+                      <td><span class="text-info">*</span></td>
+
+                      <td rowspan="3">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+
+                      <td>Duration (s):</td>
+                      <td><input type="number" id="loadtest_duration" placeholder="10" data-toggle="tooltip"
+                                 title="This defines how long the experiment is executed.">
+                      </td>
+                      <td><span class="text-info">*</span></td>
+                    </tr>
+
+                    <tr>
+                      <td>&nbsp;</td>
+                      <td>&nbsp;</td>
+                      <td>&nbsp;</td>
+
+                      <td>&nbsp;</td>
+
+                      <td>&nbsp;</td>
+                      <td>&nbsp;</td>
+                      <td>&nbsp;</td>
                     </tr>
 
                     <tr>
@@ -357,7 +425,9 @@
                 <hr>
 
                 <p>
-                  Here you can see the settings for JMeter.
+                  The following configurations help to define attributes of the analysis experiment.
+                  Each analysis tool takes a different approach.
+                  Here you can see the settings for <b>JMeter</b>.
                 </p>
 
                 <div class="">
@@ -365,30 +435,43 @@
                   <div class="p-section">
                     <table>
                       <tr>
-                        <td>Load (number of Users):</td>
-                        <td>
-                          <input type="number" id="loadtest_load" placeholder="10" data-toggle="tooltip"
-                                 title="This is the amount of generated work the system has to process."/>
-                        </td>
-                        <td><span class="text-info">*</span></td>
-
-                        <td>Duration (s):</td>
-                        <td><input type="number" id="loadtest_duration" placeholder="10"></td>
-                        <td><span class="text-info">*</span></td>
-                      </tr>
-
-                      <tr>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-
                         <td>Delay (s):</td>
-                        <td><input type="number" id="loadtest_delay" placeholder="0"></td>
+                        <td><input type="number" id="loadtest_delay" placeholder="0" data-toggle="tooltip"
+                                   title="In order to prevent side effects in the generated data, JMeter can use a delay.
+                                          With a delay, the load test takes time to setup the environment.">
+                        </td>
                         <td><span class="text-info"></span></td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
                       </tr>
 
                       <tr class="expert">
                         <td colspan="6"><hr></td>
+                      </tr>
+
+                      <tr class="expert">
+                        <td colspan="6"><b>Expert Selection:</b></td>
+                      </tr>
+
+                      <tr class="expert">
+                        <td colspan="6"></td>
+                      </tr>
+
+                      <tr class="expert">
+                        <td>Loops:</td>
+                        <td>
+                          <input type="number" id="loadtest_loops" placeholder="2" data-toggle="tooltip"
+                                 title=""/>
+                        </td>
+                        <td></td>
+
+                        <td rowspan="3">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+
+                        <td></td>
+                        <td></td>
+                        <!--<td><input type="number" id="b"/></td>-->
+                        <td></td>
                       </tr>
 
                       <tr class="expert">
@@ -424,6 +507,8 @@
                         <td>&nbsp;</td>
 
                         <td>&nbsp;</td>
+
+                        <td>&nbsp;</td>
                         <td>&nbsp;</td>
                         <td>&nbsp;</td>
                       </tr>
@@ -455,18 +540,18 @@
 
                   </div>
 
-                  <div class="expert">
+                  <!--<div class="expert">-->
 
-                    <h4>Experiment Properties</h4>
-                    <hr>
-                    <br>
+                    <!--<h4>Experiment Properties</h4>-->
+                    <!--<hr>-->
+                    <!--<br>-->
 
-                    <div class="form-group d-inline-block">
-                      <label for="jmeter_properties"><b>JMeter experiment properties:</b></label><br>
-                      <textarea class="form-control" rows="10" cols="100" id="jmeter_properties" readonly></textarea>
-                    </div>
+                    <!--<div class="form-group d-inline-block">-->
+                      <!--<label for="jmeter_properties"><b>JMeter experiment properties:</b></label><br>-->
+                      <!--<textarea class="form-control" rows="10" cols="100" id="jmeter_properties" readonly></textarea>-->
+                    <!--</div>-->
 
-                  </div>
+                  <!--</div>-->
                 </div>
               </div>
 
@@ -476,7 +561,9 @@
                 <hr>
 
                 <p>
-                  Here you can see the settings for Locust.
+                  The following configurations help to define attributes of the analysis experiment.
+                  Each analysis tool takes a different approach.
+                  Here you can see the settings for <b>Locust</b>.
                 </p>
 
                 <div class="p-section">
@@ -551,15 +638,19 @@
             <p>
               JMeter will be your analysis tool. Download the following two files, then proceed with the next steps.<br>
               <button class="d-inline-block btn-primary" onclick="download('#jmeter_experiment', 'jmeter_experiment.jmx')">Download JMeter Experiment File</button>
-              <button class="d-inline-block btn-primary" onclick="download('#jmeter_properties', 'jmeter_properties.prop')">Download JMeter Properties File</button>
+              <!--<button class="d-inline-block btn-primary" onclick="download('#jmeter_properties', 'jmeter_properties.prop')">Download JMeter Properties File</button>-->
+              <br>
             </p>
 
             <p>
               If you have downloaded the two files you are ready to perform a loadtest evaluation of your system.
-              Open a terminal, then type the following commands into the terminal (they have the same effect).
+              <br>
+              Install <b>JMeter</b> with the following <a href="https://jmeter.apache.org/download_jmeter.cgi">instructions</a>.
+              <br>
+              Open a terminal, then type the following command into the terminal.
               <pre>
               <code>
-                jmeter -p jmeter_properties.prop -t jmeter_experiment.jmx -l jmeter_experiment_result.csv
+                jmeter -t jmeter_experiment.jmx -l jmeter_experiment_result.csv
               </code>
               </pre>
             </p>
@@ -573,6 +664,9 @@
 
             <p>
               If you have downloaded the file you are ready to perform a loadtest evaluation of your system.
+              <br>
+              Install <b>locust</b> with the following <a href="https://docs.locust.io/en/stable/installation.html">instructions</a>.
+              <br>
               Open a terminal, then type one of the following command into the terminal.
             <pre>
               <code>
@@ -586,8 +680,11 @@
           <hr>
 
           <p>
-            For the last step you have to get the User Concern by downloading it.
-            If you don't mind to keep your User Concern, you can continue by clicking <a id="redirect" href="">here</a>.
+            For the last step you have to get the <b>User Concern</b> by downloading it.
+            <br>
+            If you don't mind to keep your User Concern, you can continue by clicking <a id="redirect" href="">here</a>
+            (you will not be able to use this concern later).
+            <br>
             <br>
             <button class="btn-primary" onclick="download('#user_concern', 'user_concern.json')">Download the User Concern</button>
             <textarea id="user_concern" class="d-none"></textarea>

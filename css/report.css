@@ -73,6 +73,7 @@ h3
 {
     width: auto;
     max-width: 80%;
+    display: none;
 }
 
 .badge-pool .badge

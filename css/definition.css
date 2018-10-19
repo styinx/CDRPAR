@@ -3,7 +3,7 @@
     position:  fixed;
     top:       0;
     left:      0;
-    margin:    100px 100px 100px 100px;
+    margin:    50px 100px 100px 100px;
     min-width: 1000px;
     width:     calc(100% - 200px);
 }
@@ -23,7 +23,7 @@
 
 .carousel
 {
-    height: calc(100vh - 200px);
+    height: calc(100vh - 150px);
     width:  100%;
 }
 

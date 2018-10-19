@@ -13,11 +13,6 @@ class Query
         }
     }
 
-    getQueryValue()
-    {
-
-    }
-
     incomplete()
     {
         for(let p in USER_CONCERN.query.parameters)
@@ -40,6 +35,25 @@ class Query
 
         this.createBadgeTargets();
         this.createBadges(DEFAULT_BADGES);
+
+        /*
+         * Show badge pools
+         */
+        for(let p in DEFAULT_BADGES)
+        {
+            $("#" + p + "-badge-pool").css("visibility", "hidden").css("display", "none");
+        }
+        for(let p in DEFAULT_BADGES)
+        {
+            let pattern = new RegExp(p[0].toLocaleUpperCase() + p.substr(1) + "\d*");
+            for (let param in USER_CONCERN.query.parameters)
+            {
+                if (pattern.exec(param))
+                {
+                    $("#" + p + "-badge-pool").css("visibility", "visible").css("display", "inline-block");
+                }
+            }
+        }
     }
 
     /**
@@ -66,12 +80,12 @@ class Query
         let pattern = /\$([^\d \?,])+\d*/g;
         let match = pattern.exec(this.query);
 
-        while(match != null)
+        while(match)
         {
             let name = match[0].replace('$', '');
             let type = match[0].substr(1).replace(/\d*/g, '').toLowerCase();
-            let pool = '<div class="d-inline-block ' + type + '-target badge-target" id="' + name + '" ondrop="drop(event);" ondragover="allowDrop(event);"></div>';
-            this.el.html(this.el.html().replace(match[0], pool));
+            let target = '<div class="d-inline-block ' + type + '-target badge-target" id="' + name + '" ondrop="drop(event);" ondragover="allowDrop(event);"></div>';
+            this.el.html(this.el.html().replace(match[0], target));
             match = pattern.exec(this.query);
         }
     }
@@ -173,31 +187,3 @@ function drop(ev)
     updateURL();
     $("#redirect").attr("href", "UC_Report.html?concern=" + JSON.stringify(USER_CONCERN));
 }
-
-// function dropPool(ev)
-// {
-//     ev.preventDefault();
-//     let target = ev.target;
-//     let id = ev.dataTransfer.getData("id");
-//     let type = ev.dataTransfer.getData("type");
-//     let badge_pool = $("#" + type + "-badge-pool")[0];
-//     let metrics = USER_CONCERN.query.parameters;
-//
-//     document.getElementById(id).outerHTML = "";
-//
-//     if(1)
-//     {
-//         for(let metric in metrics)
-//         {
-//             let value = metrics[metric];
-//             if(value === $("#" + id).html())
-//             {
-//                 USER_CONCERN.query.parameters[metric] = "";
-//                 query.el.trigger("queryChanged");
-//             }
-//         }
-//     }
-//
-//     updateURL();
-//     $("#redirect").attr("href", "UC_Report.html?concern=" + JSON.stringify(USER_CONCERN));
-// }

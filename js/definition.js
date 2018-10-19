@@ -13,7 +13,6 @@ function saveModel()
     /*
      * Set the query.
      */
-    USER_CONCERN.query = {};
     if(el_query_pattern.val() !== null)
     {
         USER_CONCERN.query.text = el_query_pattern.val();
@@ -23,14 +22,6 @@ function saveModel()
         USER_CONCERN.query.target = QUERIES[el_query_pattern.val()].target;
         USER_CONCERN.query.constraint = QUERIES[el_query_pattern.val()].constraint;
         query.setQuery(el_query_pattern.val());
-
-        /*
-         * Show badge pools
-         */
-        for(let p in DEFAULT_BADGES)
-        {
-            $("#" + p + "-badge-pool").css("display", "inline-block");
-        }
     }
 
     /*
@@ -46,6 +37,7 @@ function saveModel()
         USER_CONCERN.analysis.meta.domain = el_loadtest_domain.val() || DEFAULT.loadtest_domain;
         USER_CONCERN.analysis.meta.path =  DEFAULT.loadtest_path;
         USER_CONCERN.analysis.meta.load = el_loadtest_load.val() || DEFAULT.loadtest_load;
+        USER_CONCERN.analysis.meta.loops = el_loadtest_loops.val() || DEFAULT.loadtest_loops;
         USER_CONCERN.analysis.meta.duration = el_loadtest_duration.val() || DEFAULT.loadtest_duration;
         USER_CONCERN.analysis.meta.delay = el_loadtest_delay.val() || DEFAULT.loadtest_delay;
         USER_CONCERN.analysis.meta.ramp_up = el_loadtest_ramp_up.val() || DEFAULT.loadtest_ramp_up;
@@ -63,6 +55,7 @@ function saveModel()
         text = text.replace(/\$JM_DOMAIN/g, USER_CONCERN.analysis.meta.domain)
                    .replace(/\$JM_PATH/g, USER_CONCERN.analysis.meta.path)
                    .replace(/\$JM_LOAD/g, USER_CONCERN.analysis.meta.load)
+                   .replace(/\$JM_LOOPS/g, USER_CONCERN.analysis.meta.loops)
                    .replace(/\$JM_DURATION/g, USER_CONCERN.analysis.meta.duration)
                    .replace(/\$JM_DELAY/g, USER_CONCERN.analysis.meta.delay)
                    .replace(/\$JM_RAMP_UP/g, USER_CONCERN.analysis.meta.ramp_up)

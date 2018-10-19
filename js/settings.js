@@ -15,10 +15,12 @@
  */
 let USER_CONCERN = {
     query:    {
-        text:       "",
-        type:       "",
-        parameters: {},
-        format:     ""
+        text:        "",
+        type:        "",
+        parameters:  {},
+        format:      "",
+        target:      "",
+        contstraint: ""
     },
     type:     "",
     analysis: {
@@ -44,7 +46,7 @@ let QUERIES = {
         constraint: "Value",
         format:     "The Limit Metric of service Service was $1, Value Unit after the experiment start."
     },
-    "What was the $Limit $Metric1 of service $Service when the $Metric2 was $Condition $Value?":  {
+    "What was the $Limit $Metric1 of service $Service when the $Metric2 was $Condition $Value?": {
         type:       "loadtest",
         parameters: {"Limit": "", "Metric1": "", "Service": "", "Metric2": "", "Condition": "", "Value": "",},
         target:     "Metric1",
@@ -58,7 +60,7 @@ let QUERIES = {
  * Each group of badges can only be used on a target of the same type ('limit-minimum' -> 'limit-target').
  */
 let DEFAULT_BADGES = {
-    metric:    ["latency", "number of users", "connection time"],
+    metric:    ["latency", "number of users", "connection time", "response time"],
     limit:     ["minimum", "average", "maximum"],
     condition: ["<", "<=", "=", ">=", ">"],
     service:   ["dummy1", "dummy2", "dummy3"],
@@ -89,12 +91,13 @@ let DEFAULT = {
     loadtest_domain:    "http://www.example.com",
     loadtest_path:      "",
     loadtest_load:      "100",
+    loadtest_loops:      "2",
     loadtest_duration:  "10",
     loadtest_delay:     "0",
     loadtest_ramp_up:   "0",
     loadtest_ramp_down: "0",
-    loadtest_min_wait: "1000",
-    loadtest_max_wait: "2000"
+    loadtest_min_wait:  "1000",
+    loadtest_max_wait:  "2000"
 };
 
 /**
@@ -103,12 +106,12 @@ let DEFAULT = {
  */
 let LINKS = {
     "JMeter":   "https://en.wikipedia.org/wiki/Apache_JMeter?printable=yes",
-    "Locust": "https://locust.io/",
+    "Locust":   "https://locust.io/",
     "loadtest": "https://en.wikipedia.org/wiki/Load_testing?printable=yes"
 };
 
 let REFS = {
-    "" : ""
+    "": ""
 };
 
 /**
@@ -120,25 +123,40 @@ let ANALYSIS_DATA = "";
  * UNIT_CONVERSION converts query values to the analysis tool values.
  */
 let CONVERSION = {
-    limit:  {
+    limit:     {
         "minimum": "min",
         "average": "avg",
         "maximum": "max",
     },
     condition: {
-        "<" : function(a, b) {return a < b;},
-        "<=" : function(a, b) {return a <= b;},
-        "=" : function(a, b) {return a === b;},
-        ">=" : function(a, b) {return a >= b;},
-        ">" : function(a, b) {return a > b;}
+        "<":  function (a, b)
+              {
+                  return a < b;
+              },
+        "<=": function (a, b)
+              {
+                  return a <= b;
+              },
+        "=":  function (a, b)
+              {
+                  return a === b;
+              },
+        ">=": function (a, b)
+              {
+                  return a >= b;
+              },
+        ">":  function (a, b)
+              {
+                  return a > b;
+              }
     },
-    metric: {
+    metric:    {
         "latency":         "Latency",
         "response time":   "responseTime",
         "number of users": "allThreads",
         "connection time": "Connect"
     },
-    unit:   {
+    unit:      {
         "milliseconds": 1,
         "seconds":      1000,
         "minutes":      60000,
@@ -151,33 +169,33 @@ let CONVERSION = {
  * METRICS hold information about all available metrics.
  */
 let METRICS = {
-    "Latency":    {
+    "Latency":      {
         unit:       "ms",
         definition: "Latency is the amount of time a message takes to traverse a system. " +
-                    "In a computer network, it is an expression of how much time it takes for " +
-                    "a packet of data to get from one designated point to another. " +
-                    "It is sometimes measured as the time required for a packet to be returned to its sender. " +
-                    "Latency depends on the speed of the transmission medium (e.g., copper wire, optical fiber " +
-                    "or radio waves) and the delays in the transmission by devices along the way (e.g., routers and modems). " +
-                    "A low latency indicates a high network efficiency."
+                        "In a computer network, it is an expression of how much time it takes for " +
+                        "a packet of data to get from one designated point to another. " +
+                        "It is sometimes measured as the time required for a packet to be returned to its sender. " +
+                        "Latency depends on the speed of the transmission medium (e.g., copper wire, optical fiber " +
+                        "or radio waves) and the delays in the transmission by devices along the way (e.g., routers and modems). " +
+                        "A low latency indicates a high network efficiency."
     },
-    "Connect":    {
+    "Connect":      {
         unit:       "ms",
         definition: "Part of the latency [TODO]."
     },
-    "allThreads": {
+    "allThreads":   {
         unit:       "",
         definition: "In computer science, the number of concurrent users for a resource in a location, with the " +
-                    "location being a computing network or a single computer, refers to the total number of people " +
-                    "using the resource within a predefined period of time. The resource can, for example, be a " +
-                    "computer program, a file, or the computer as a whole. " +
-                    "A computer operating system that allows several users to access a resource on the computer " +
-                    "at the same time is a multiuser multitasking operating system, historically called a " +
-                    "time-sharing operating system. The capacity of a system can also be measured in terms of " +
-                    "maximum concurrent users, at which point system performance begins to degrade noticeably."
+                        "location being a computing network or a single computer, refers to the total number of people " +
+                        "using the resource within a predefined period of time. The resource can, for example, be a " +
+                        "computer program, a file, or the computer as a whole. " +
+                        "A computer operating system that allows several users to access a resource on the computer " +
+                        "at the same time is a multiuser multitasking operating system, historically called a " +
+                        "time-sharing operating system. The capacity of a system can also be measured in terms of " +
+                        "maximum concurrent users, at which point system performance begins to degrade noticeably."
     },
     "responseTime": {
-        unit: "ms",
+        unit:       "ms",
         definition: "TODO"
     }
 };
@@ -188,140 +206,140 @@ let METRICS = {
  */
 let JMETER = {
     "simple": '' +
-              '<?xml version="1.0" encoding="UTF-8"?>\n' +
-              '<jmeterTestPlan version="1.2" properties="4.0" jmeter="4.0 r1823414">\n' +
-              '  <hashTree>\n' +
-              '    <TestPlan guiclass="TestPlanGui" testclass="TestPlan" testname="Testplan" enabled="true">\n' +
-              '      <stringProp name="TestPlan.comments"></stringProp>\n' +
-              '      <boolProp name="TestPlan.functional_mode">false</boolProp>\n' +
-              '      <boolProp name="TestPlan.tearDown_on_shutdown">true</boolProp>\n' +
-              '      <boolProp name="TestPlan.serialize_threadgroups">false</boolProp>\n' +
-              '      <elementProp name="TestPlan.user_defined_variables" elementType="Arguments" guiclass="ArgumentsPanel" testclass="Arguments" testname="Benutzer definierte Variablen" enabled="true">\n' +
-              '        <collectionProp name="Arguments.arguments"/>\n' +
-              '      </elementProp>\n' +
-              '      <stringProp name="TestPlan.user_define_classpath"></stringProp>\n' +
-              '    </TestPlan>\n' +
-              '    <hashTree>\n' +
-              '      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="$JM_DOMAIN" enabled="true">\n' +
-              '        <stringProp name="ThreadGroup.on_sample_error">stopthread</stringProp>\n' +
-              '        <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Schleifen-Controller (Loop Controller)" enabled="true">\n' +
-              '          <boolProp name="LoopController.continue_forever">false</boolProp>\n' +
-              '          <stringProp name="LoopController.loops">1</stringProp>\n' +
-              '        </elementProp>\n' +
-              '        <stringProp name="ThreadGroup.num_threads">$JM_LOAD</stringProp>\n' +
-              '        <stringProp name="ThreadGroup.ramp_time">$JM_RAMP_UP</stringProp>\n' +
-              '        <boolProp name="ThreadGroup.scheduler">false</boolProp>\n' +
-              '        <stringProp name="ThreadGroup.duration">$JM_DURATION</stringProp>\n' +
-              '        <stringProp name="ThreadGroup.delay">$JM_DELAY</stringProp>\n' +
-              '      </ThreadGroup>\n' +
-              '      <hashTree>\n' +
-              '        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="HTTP Request" enabled="true">\n' +
-              '          <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="Benutzer definierte Variablen" enabled="true">\n' +
-              '            <collectionProp name="Arguments.arguments"/>\n' +
-              '          </elementProp>\n' +
-              '          <stringProp name="HTTPSampler.domain">$JM_DOMAIN</stringProp>\n' +
-              '          <stringProp name="HTTPSampler.port"></stringProp>\n' +
-              '          <stringProp name="HTTPSampler.protocol"></stringProp>\n' +
-              '          <stringProp name="HTTPSampler.contentEncoding"></stringProp>\n' +
-              '          <stringProp name="HTTPSampler.path"></stringProp>\n' +
-              '          <stringProp name="HTTPSampler.method">GET</stringProp>\n' +
-              '          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>\n' +
-              '          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>\n' +
-              '          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>\n' +
-              '          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>\n' +
-              '          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>\n' +
-              '          <stringProp name="HTTPSampler.connect_timeout"></stringProp>\n' +
-              '          <stringProp name="HTTPSampler.response_timeout"></stringProp>\n' +
-              '        </HTTPSamplerProxy>\n' +
-              '        <hashTree/>\n' +
-              '        <ResultCollector guiclass="GraphVisualizer" testclass="ResultCollector" testname="Graph Results" enabled="true">\n' +
-              '          <boolProp name="ResultCollector.error_logging">false</boolProp>\n' +
-              '          <objProp>\n' +
-              '            <name>saveConfig</name>\n' +
-              '            <value class="SampleSaveConfiguration">\n' +
-              '              <time>true</time>\n' +
-              '              <latency>true</latency>\n' +
-              '              <timestamp>true</timestamp>\n' +
-              '              <success>true</success>\n' +
-              '              <label>true</label>\n' +
-              '              <code>true</code>\n' +
-              '              <message>true</message>\n' +
-              '              <threadName>true</threadName>\n' +
-              '              <dataType>false</dataType>\n' +
-              '              <encoding>false</encoding>\n' +
-              '              <assertions>false</assertions>\n' +
-              '              <subresults>false</subresults>\n' +
-              '              <responseData>true</responseData>\n' +
-              '              <samplerData>true</samplerData>\n' +
-              '              <xml>false</xml>\n' +
-              '              <fieldNames>true</fieldNames>\n' +
-              '              <responseHeaders>false</responseHeaders>\n' +
-              '              <requestHeaders>false</requestHeaders>\n' +
-              '              <responseDataOnError>false</responseDataOnError>\n' +
-              '              <saveAssertionResultsFailureMessage>false</saveAssertionResultsFailureMessage>\n' +
-              '              <assertionsResultsToSave>0</assertionsResultsToSave>\n' +
-              '              <bytes>true</bytes>\n' +
-              '              <sentBytes>true</sentBytes>\n' +
-              '              <threadCounts>true</threadCounts>\n' +
-              '              <idleTime>true</idleTime>\n' +
-              '              <connectTime>true</connectTime>\n' +
-              '            </value>\n' +
-              '          </objProp>\n' +
-              '          <stringProp name="filename"></stringProp>\n' +
-              '        </ResultCollector>\n' +
-              '        <hashTree/>\n' +
-              '      </hashTree>\n' +
-              '    </hashTree>\n' +
-              '  </hashTree>\n' +
-              '</jmeterTestPlan>'
+                  '<?xml version="1.0" encoding="UTF-8"?>\n' +
+                  '<jmeterTestPlan version="1.2" properties="4.0" jmeter="4.0 r1823414">\n' +
+                  '  <hashTree>\n' +
+                  '    <TestPlan guiclass="TestPlanGui" testclass="TestPlan" testname="Testplan" enabled="true">\n' +
+                  '      <stringProp name="TestPlan.comments"></stringProp>\n' +
+                  '      <boolProp name="TestPlan.functional_mode">false</boolProp>\n' +
+                  '      <boolProp name="TestPlan.tearDown_on_shutdown">true</boolProp>\n' +
+                  '      <boolProp name="TestPlan.serialize_threadgroups">false</boolProp>\n' +
+                  '      <elementProp name="TestPlan.user_defined_variables" elementType="Arguments" guiclass="ArgumentsPanel" testclass="Arguments" testname="Benutzer definierte Variablen" enabled="true">\n' +
+                  '        <collectionProp name="Arguments.arguments"/>\n' +
+                  '      </elementProp>\n' +
+                  '      <stringProp name="TestPlan.user_define_classpath"></stringProp>\n' +
+                  '    </TestPlan>\n' +
+                  '    <hashTree>\n' +
+                  '      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="$JM_DOMAIN" enabled="true">\n' +
+                  '        <stringProp name="ThreadGroup.on_sample_error">stopthread</stringProp>\n' +
+                  '        <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Schleifen-Controller (Loop Controller)" enabled="true">\n' +
+                  '          <boolProp name="LoopController.continue_forever">false</boolProp>\n' +
+                  '          <stringProp name="LoopController.loops">$JM_LOOPS</stringProp>\n' +
+                  '        </elementProp>\n' +
+                  '        <stringProp name="ThreadGroup.num_threads">$JM_LOAD</stringProp>\n' +
+                  '        <stringProp name="ThreadGroup.ramp_time">$JM_RAMP_UP</stringProp>\n' +
+                  '        <boolProp name="ThreadGroup.scheduler">true</boolProp>\n' +
+                  '        <stringProp name="ThreadGroup.duration">$JM_DURATION</stringProp>\n' +
+                  '        <stringProp name="ThreadGroup.delay">$JM_DELAY</stringProp>\n' +
+                  '      </ThreadGroup>\n' +
+                  '      <hashTree>\n' +
+                  '        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="HTTP Request" enabled="true">\n' +
+                  '          <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="Benutzer definierte Variablen" enabled="true">\n' +
+                  '            <collectionProp name="Arguments.arguments"/>\n' +
+                  '          </elementProp>\n' +
+                  '          <stringProp name="HTTPSampler.domain">$JM_DOMAIN</stringProp>\n' +
+                  '          <stringProp name="HTTPSampler.port"></stringProp>\n' +
+                  '          <stringProp name="HTTPSampler.protocol"></stringProp>\n' +
+                  '          <stringProp name="HTTPSampler.contentEncoding"></stringProp>\n' +
+                  '          <stringProp name="HTTPSampler.path"></stringProp>\n' +
+                  '          <stringProp name="HTTPSampler.method">GET</stringProp>\n' +
+                  '          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>\n' +
+                  '          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>\n' +
+                  '          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>\n' +
+                  '          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>\n' +
+                  '          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>\n' +
+                  '          <stringProp name="HTTPSampler.connect_timeout"></stringProp>\n' +
+                  '          <stringProp name="HTTPSampler.response_timeout"></stringProp>\n' +
+                  '        </HTTPSamplerProxy>\n' +
+                  '        <hashTree/>\n' +
+                  '        <ResultCollector guiclass="GraphVisualizer" testclass="ResultCollector" testname="Graph Results" enabled="true">\n' +
+                  '          <boolProp name="ResultCollector.error_logging">false</boolProp>\n' +
+                  '          <objProp>\n' +
+                  '            <name>saveConfig</name>\n' +
+                  '            <value class="SampleSaveConfiguration">\n' +
+                  '              <time>true</time>\n' +
+                  '              <latency>true</latency>\n' +
+                  '              <timestamp>true</timestamp>\n' +
+                  '              <success>true</success>\n' +
+                  '              <label>true</label>\n' +
+                  '              <code>true</code>\n' +
+                  '              <message>true</message>\n' +
+                  '              <threadName>true</threadName>\n' +
+                  '              <dataType>false</dataType>\n' +
+                  '              <encoding>false</encoding>\n' +
+                  '              <assertions>false</assertions>\n' +
+                  '              <subresults>false</subresults>\n' +
+                  '              <responseData>true</responseData>\n' +
+                  '              <samplerData>true</samplerData>\n' +
+                  '              <xml>false</xml>\n' +
+                  '              <fieldNames>true</fieldNames>\n' +
+                  '              <responseHeaders>false</responseHeaders>\n' +
+                  '              <requestHeaders>false</requestHeaders>\n' +
+                  '              <responseDataOnError>false</responseDataOnError>\n' +
+                  '              <saveAssertionResultsFailureMessage>false</saveAssertionResultsFailureMessage>\n' +
+                  '              <assertionsResultsToSave>0</assertionsResultsToSave>\n' +
+                  '              <bytes>true</bytes>\n' +
+                  '              <sentBytes>true</sentBytes>\n' +
+                  '              <threadCounts>true</threadCounts>\n' +
+                  '              <idleTime>true</idleTime>\n' +
+                  '              <connectTime>true</connectTime>\n' +
+                  '            </value>\n' +
+                  '          </objProp>\n' +
+                  '          <stringProp name="filename"></stringProp>\n' +
+                  '        </ResultCollector>\n' +
+                  '        <hashTree/>\n' +
+                  '      </hashTree>\n' +
+                  '    </hashTree>\n' +
+                  '  </hashTree>\n' +
+                  '</jmeterTestPlan>'
 };
 
 let LOCUST = {
     'simple': '' +
-        'from locust import HttpLocust, TaskSet, task, events, web\n' +
-        'import time\n' +
-        'import csv\n' +
-        '\n' +
-        '\n' +
-        'def index(l):\n' +
-        '    l.client.get("/")\n' +
-        '\n' +
-        '\n' +
-        'class MyTaskSet(TaskSet):\n' +
-        '    tasks = [index]\n' +
-        '\n' +
-        '\n' +
-        'class MyLocust(HttpLocust):\n' +
-        '    host = "$LC_DOMAIN"\n' +
-        '    result_file = "locust_experiment_result.csv"\n' +
-        '    min_wait = $LC_MIN_WAIT\n' +
-        '    max_wait = $LC_MAX_WAIT\n' +
-        '    task_set = MyTaskSet\n' +
-        '    header = ["timeStamp", "service", "type", "success", "responseTime", "bytes"]\n' +
-        '    footer = ["$LC_DOMAIN"]\n' +
-        '    data = []\n' +
-        '\n' +
-        '    def __init__(self):\n' +
-        '        super(MyLocust, self).__init__()\n' +
-        '        events.request_success += self.save_succ\n' +
-        '        events.request_failure += self.save_fail\n' +
-        '        events.quitting += self.write\n' +
-        '\n' +
-        '    def save_succ(self, request_type, name, response_time, response_length):\n' +
-        '        self.save(request_type, name, response_time, response_length, 1)\n' +
-        '\n' +
-        '    def save_fail(self, request_type, name, response_time):\n' +
-        '        self.save(request_type, name, response_time, 0, 0)\n' +
-        '\n' +
-        '    def save(self, request_type, name, response_time, response_length, success):\n' +
-        '        self.data.append([int(round(time.time() * 1000)), name, request_type, success, response_time, response_length])\n' +
-        '\n' +
-        '    def write(self):\n' +
-        '        with open(self.result_file, \'wb\') as csv_file:\n' +
-        '            csv_file.write(",".join(self.header) + "\\n")\n' +
-        '            for value in self.data:\n' +
-        '                csv_file.write(",".join(str(x) for x in value) + "\\n")\n' +
-        '            csv_file.write(",".join(self.footer) + "\\n")'
+                  'from locust import HttpLocust, TaskSet, task, events, web\n' +
+                  'import time\n' +
+                  'import csv\n' +
+                  '\n' +
+                  '\n' +
+                  'def index(l):\n' +
+                  '    l.client.get("/")\n' +
+                  '\n' +
+                  '\n' +
+                  'class MyTaskSet(TaskSet):\n' +
+                  '    tasks = [index]\n' +
+                  '\n' +
+                  '\n' +
+                  'class MyLocust(HttpLocust):\n' +
+                  '    host = "$LC_DOMAIN"\n' +
+                  '    result_file = "locust_experiment_result.csv"\n' +
+                  '    min_wait = $LC_MIN_WAIT\n' +
+                  '    max_wait = $LC_MAX_WAIT\n' +
+                  '    task_set = MyTaskSet\n' +
+                  '    header = ["timeStamp", "service", "type", "success", "responseTime", "bytes"]\n' +
+                  '    footer = ["$LC_DOMAIN"]\n' +
+                  '    data = []\n' +
+                  '\n' +
+                  '    def __init__(self):\n' +
+                  '        super(MyLocust, self).__init__()\n' +
+                  '        events.request_success += self.save_succ\n' +
+                  '        events.request_failure += self.save_fail\n' +
+                  '        events.quitting += self.write\n' +
+                  '\n' +
+                  '    def save_succ(self, request_type, name, response_time, response_length):\n' +
+                  '        self.save(request_type, name, response_time, response_length, 1)\n' +
+                  '\n' +
+                  '    def save_fail(self, request_type, name, response_time):\n' +
+                  '        self.save(request_type, name, response_time, 0, 0)\n' +
+                  '\n' +
+                  '    def save(self, request_type, name, response_time, response_length, success):\n' +
+                  '        self.data.append([int(round(time.time() * 1000)), name, request_type, success, response_time, response_length])\n' +
+                  '\n' +
+                  '    def write(self):\n' +
+                  '        with open(self.result_file, \'wb\') as csv_file:\n' +
+                  '            csv_file.write(",".join(self.header) + "\\n")\n' +
+                  '            for value in self.data:\n' +
+                  '                csv_file.write(",".join(str(x) for x in value) + "\\n")\n' +
+                  '            csv_file.write(",".join(self.footer) + "\\n")'
 };
 
 let SPARKLINE_OPTIONS = {
@@ -352,11 +370,11 @@ let SPARKLINE_OPTIONS = {
         labels:         {enabled: false},
         title:          {text: null},
         lineWidth:      0,
-        tickPositioner: function()
+        tickPositioner: function ()
                         {
                             let step = (this.dataMax - this.dataMin) / 2;
                             return range(this.dataMin, this.dataMax + 1,
-                                         step);
+                                step);
                         }
     },
     legend:        {enabled: false},
@@ -367,12 +385,12 @@ let SPARKLINE_OPTIONS = {
         style:      {
             textOverflow: 'ellipsis'
         },
-        formatter:  function()
+        formatter:  function ()
                     {
                         return '<div style="color:' + this.series.color + '">●</div> <b>' + this.series.name + "</b>:<br>    " +
-                        this.y;
+                            this.y;
                     },
-        positioner: function(w, h, point)
+        positioner: function (w, h, point)
                     {
                         return {x: point.plotX - w / 2, y: point.plotY - h - 15};
                     }
@@ -421,14 +439,14 @@ let STOCK_OPTIONS = {
         lineWidth: 1,
         lineColor: "#333",
         labels:    {
-            formatter: function()
+            formatter: function ()
                        {
-                           let d = new Date(this.value);
-                           let D = d.getDate();
-                           let M = d.getMonth() + 1;
-                           let h = d.getHours();
-                           let m = d.getMinutes();
-                           let s = d.getSeconds();
+                           let d  = new Date(this.value);
+                           let D  = d.getDate();
+                           let M  = d.getMonth() + 1;
+                           let h  = d.getHours();
+                           let m  = d.getMinutes();
+                           let s  = d.getSeconds();
                            let ms = Math.round(d.getMilliseconds() / 10);
                            return D + "." + M + "<br>" + h + ":" + m + ":" + s + "." + ms;
                        }

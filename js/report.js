@@ -707,6 +707,25 @@ $(window).on("queryChanged", function()
     el_content.html("");
     el_sidebar.html("");
 
+    /*
+     * Show badge pools
+     */
+    for(let p in DEFAULT_BADGES)
+    {
+        $("#" + p + "-badge-pool").css("visibility", "hidden").css("display", "none");
+    }
+    for(let p in DEFAULT_BADGES)
+    {
+        let pattern = new RegExp(p[0].toLocaleUpperCase() + p.substr(1) + "\d*");
+        for(let param in USER_CONCERN.query.parameters)
+        {
+            if(pattern.exec(param))
+            {
+                $("#" + p + "-badge-pool").css("visibility", "visible").css("display", "inline-block");
+            }
+        }
+    }
+
     if(report.analysis_tool !== null)
     {
         el_loader.show();
