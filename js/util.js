@@ -562,8 +562,14 @@ function sparklineSidebar(what, series)
 function link(what) { return '<a>' + what + '</a>'; }
 function id(what, id) { return '<span id="' + id + '">' + what + '</span>'; }
 function className(what, id) { return '<span class="' + id + '">' + what + '</span>'; }
+function s(value, term, show_value)
+{
+    let res = "";
+    res += (show_value === true) ? value + " " : "";
+    res += (value === 1) ? term : term + "s";
+    return res;
+}
 
-function s(val, word) { return val === 1 ? word : word + "s";}
 function bold(what) { return "<b>" + what + "</b>"; }
 function underline(what) { return "<u>" + what + "</u>"; }
 function color(what, color) { return "<span style='color: " + color + "'>" + what + "</span>"; }

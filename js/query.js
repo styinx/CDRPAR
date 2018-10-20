@@ -164,14 +164,14 @@ function drop(ev)
         {
             let metrics = USER_CONCERN.query.parameters;
 
-            for(let metric in metrics)
-            {
-                let value = metrics[metric];
-                if(value === $("#" + metric).text())
-                {
-                    USER_CONCERN.query.parameters[metric] = "";
-                }
-            }
+            // for(let metric in metrics)
+            // {
+            //     let value = metrics[metric];
+            //     if(value === draged.innerText)
+            //     {
+            //         USER_CONCERN.query.parameters[metric] = "";
+            //     }
+            // }
         }
         // drop on badge on badge target
         else if(parent.className.split(' ').includes(type + '-target'))

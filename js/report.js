@@ -18,12 +18,12 @@ class Report
 {
     constructor()
     {
-        this.analysis_tool = null;
-        this.target = null;
-        this.constraint = null;
-        this.target_metric = null;
+        this.analysis_tool      = null;
+        this.target             = null;
+        this.constraint         = null;
+        this.target_metric      = null;
         this.target_metric_name = null;
-        this.target_time = null;
+        this.target_time        = null;
     }
 
     configureAnalysisTool()
@@ -47,22 +47,75 @@ class Report
         {
             let time_key = "timeStamp";
 
-            let start_time = parseFloat(this.analysis_tool.sorted[0][time_key]);
-            let stop_time = parseFloat(this.analysis_tool.sorted[objLength(this.analysis_tool.sorted) - 1][time_key]);
-            let start = date(start_time, "%d.%m %H:%M:%S");
-            let end = date(stop_time, "%d.%m %H:%M:%S");
-            let duration = time(stop_time - start_time, "%d days %H hours %M minutes and %S seconds");
+            let start_time   = parseFloat(this.analysis_tool.sorted[0][time_key]);
+            let stop_time    = parseFloat(this.analysis_tool.sorted[objLength(this.analysis_tool.sorted) - 1][time_key]);
+            let start        = date(start_time, "%d.%m %H:%M:%S");
+            let end          = date(stop_time, "%d.%m %H:%M:%S");
+            let duration_exp = time(stop_time - start_time, "%d days %H hours %M minutes and %S seconds");
+
+            let tool        = USER_CONCERN.analysis.tool;
+            let domain      = USER_CONCERN.analysis.meta.domain;
+            let load        = parseInt(USER_CONCERN.analysis.meta.load);
+            let loops       = 0;
+            let min_wait    = 0;
+            let max_wait    = 0;
+            let duration    = parseInt(USER_CONCERN.analysis.meta.duration);
+            let experiments = this.analysis_tool.multiple ? 1 : 0;
+
+            if(tool === "JMeter")
+            {
+                loops = parseInt(USER_CONCERN.analysis.meta.loops) + 1;
+                loops = loops === "0" ? 1 : loops;
+            }
+            else if(tool === "Locust")
+            {
+                min_wait = parseInt(USER_CONCERN.analysis.meta.min_wait);
+                max_wait = parseInt(USER_CONCERN.analysis.meta.max_wait);
+            }
+
+            let experiment_description = "" +
+                "The configured query did trigger a " + linkSidebar("loadtest") + ". " +
+                "The chosen loadtest tool was " + linkSidebar(tool) + ".<br>" +
+                tool + " performed the loadtest on the domain " + bold(domain) + " with a load of " + bold(s(load, "user", true)) +". ";
+
+            if(loops !== 0)
+            {
+                experiment_description += " Users sent " + ((loops === -1) ?
+                                                            "requests until the end of the " + s(experiments, "experiment") + ". " :
+                                                            "exactly " + bold(s(loops, "request", true)) + ". ");
+            }
+
+            if(min_wait !== 0 && max_wait !== 0)
+            {
+                experiment_description += " Users spent from " + s(min_wait / 1000, " second", true) +
+                    " to " + s(max_wait / 1000, " second", true) + " on the page. ";
+            }
+
+            // if(this.analysis_tool.multiple)
+            // {
+            //     experiment_description += "<br>The evaluation result contains more than one experiment. "
+            // }
+            // else
+            // {
+            //     experiment_description += "<br>The experiment execution took " + bold(s(duration, "second", true)) + ". "
+            // }
+
+            experiment_description += "The evaluation started at " + bold(start) + " and ended at " + bold(end) + ".<br> ";
+
+            let metrics = this.analysis_tool.metrics;
+            experiment_description += tool + " collected the following metrics: <br><ul>";
+            for(let metric in metrics)
+            {
+                experiment_description += "<li>" + metrics[metric] + "</li>";
+            }
+            experiment_description += "</ul><br>The inspected metrics were recoreded over the course of " + bold(duration_exp) + ".<br> ";
 
             el_content.append($(document.createElement("div"))
-                              .append("<h1>Experiment Result</h1>")
-                              .append("<hr><br>")
-                              .append("<h3>Configuration and Analysis</h3>")
-                              .append("<hr>")
-                              .append("<p>The chosen Analysis tool was " + linkSidebar(USER_CONCERN.analysis.tool) + ".<br> " +
-                              "The experiment was performed on " + bold(USER_CONCERN.analysis.meta.domain) + ".<br>" +
-                              "The experiment started at " + bold(start) + " and ended at " + bold(end) + ".<br> " +
-                              "The inspected metrics were recoreded over the course of " + bold(duration) + ".<br> " +
-                              "The " + linkSidebar("loadtest") + " was done with a load of " + bold(USER_CONCERN.analysis.meta.load) + " users."));
+                .append("<h1>Experiment Result</h1>")
+                .append("<hr><br>")
+                .append("<h3>Configuration and Analysis</h3>")
+                .append("<hr>")
+                .append("<p>" + experiment_description + "</p>"));
         }
     }
 
@@ -72,16 +125,16 @@ class Report
     queryDescription()
     {
         let query_desc = $(document.createElement("div"))
-        .append("<h4>" + $("#query").text() + "</h4>");
+            .append("<h4>" + $("#query").text() + "</h4>");
 
-        let format = USER_CONCERN.query.format;
+        let format     = USER_CONCERN.query.format;
         let parameters = USER_CONCERN.query.parameters;
 
-        let constraint_time = 1, constraint_limit = "", constraint_metric = "";
+        let constraint_time      = 1, constraint_limit = "", constraint_metric = "";
         let constraint_condition = "", constraint_value = null;
-        let desired_metric = null, desired_value, desired_unit, desired_limit, desired_condition;
+        let desired_metric       = null, desired_value, desired_unit, desired_limit, desired_condition;
 
-        this.target_metric = parameters[USER_CONCERN.query.target];
+        this.target_metric      = parameters[USER_CONCERN.query.target];
         this.target_metric_name = CONVERSION.metric[this.target_metric];
 
         for(let parameter in parameters)
@@ -90,12 +143,12 @@ class Report
             {
                 if(/Condition\d*/.test(parameter))
                 {
-                    desired_condition = parameters[parameter];
+                    desired_condition    = parameters[parameter];
                     constraint_condition = desired_condition;
                 }
                 else if(/Metric\d*/.test(parameter))
                 {
-                    desired_metric = parameters[parameter];
+                    desired_metric    = parameters[parameter];
                     constraint_metric = CONVERSION.metric[desired_metric];
                 }
                 else if(/Value\d*/.test(parameter))
@@ -119,7 +172,7 @@ class Report
 
             if(/Limit\d*/.test(parameter))
             {
-                desired_limit = parameters[parameter];
+                desired_limit    = parameters[parameter];
                 constraint_limit = CONVERSION.limit[desired_limit];
             }
 
@@ -132,17 +185,17 @@ class Report
             if(/Metric\d*/.test(USER_CONCERN.query.constraint))
             {
                 answer = this.analysis_tool.getMetricByFilter(this.target_metric_name,
-                                                              constraint_metric,
-                                                              constraint_condition,
-                                                              constraint_value,
-                                                              constraint_limit);
+                    constraint_metric,
+                    constraint_condition,
+                    constraint_value,
+                    constraint_limit);
             }
             else if(/Value\d*/.test(USER_CONCERN.query.constraint))
             {
                 this.target_time = constraint_time;
-                answer = this.analysis_tool.getMetricTillTime(this.target_metric_name,
-                                                              constraint_time,
-                                                              constraint_limit);
+                answer           = this.analysis_tool.getMetricTillTime(this.target_metric_name,
+                    constraint_time,
+                    constraint_limit);
             }
             if(answer !== null)
             {
@@ -160,9 +213,9 @@ class Report
 
         query_desc.append(format);
         el_content.append($(document.createElement("div"))
-                          .append("<h3>Query</h3>")
-                          .append("<hr>")
-                          .append('<div class="p-section">' + query_desc.html() + '</div>'));
+            .append("<h3>Query</h3>")
+            .append("<hr>")
+            .append('<div class="p-section">' + query_desc.html() + '</div>'));
     }
 
     toolMetrics()
@@ -181,7 +234,7 @@ class Report
     createReport()
     {
         this.constraint = USER_CONCERN.query.constraint;
-        this.target = USER_CONCERN.query.target;
+        this.target     = USER_CONCERN.query.target;
 
         this.experimentDescription();
         this.queryDescription();
@@ -196,12 +249,13 @@ class AnalysisTool
 {
     constructor()
     {
-        this.data = null;
-        this.sorted = null;
-        this.processed = {};
-        this.metrics = {};
+        this.data       = null;
+        this.sorted     = null;
+        this.processed  = {};
+        this.metrics    = {};
         this.constraint = null;
-        this.series = [];
+        this.multiple   = false;
+        this.series     = [];
     }
 
     getMetricByFilter(metric, filter_metric, filter_cond, filter_val, what)
@@ -209,7 +263,7 @@ class AnalysisTool
         let data = this.sorted;
 
         let values = [];
-        let cond = CONVERSION.condition[filter_cond];
+        let cond   = CONVERSION.condition[filter_cond];
         for(let i = 0; i < objLength(data); ++i)
         {
             if(cond(parseFloat(data[i][filter_metric]), filter_val))
@@ -223,10 +277,12 @@ class AnalysisTool
             if(what === "min")
             {
                 return objMin(values, false, false);
-            } else if(what === "avg")
+            }
+            else if(what === "avg")
             {
                 return objAvg(values, false, false);
-            } else if(what === "max")
+            }
+            else if(what === "max")
             {
                 return objMax(values, false, false);
             }
@@ -244,7 +300,10 @@ class AnalysisTool
                 .append("<hr>"));
 
             this.getDiagram(metric);
-            this.getDefinition(metric);
+            if(!USER_CONCERN.analysis.expert)
+            {
+                this.getDefinition(metric);
+            }
             this.getText(metric);
         }
     }
@@ -256,17 +315,17 @@ class AnalysisTool
 
     getText(metric)
     {
-        let metric_name = this.metrics[metric];
-        let metric_min = this.processed[metric].min;
+        let metric_name     = this.metrics[metric];
+        let metric_min      = this.processed[metric].min;
         let metric_min_time = this.processed[metric].min_time;
-        let metric_avg = this.processed[metric].avg;
-        let metric_max = this.processed[metric].max;
+        let metric_avg      = this.processed[metric].avg;
+        let metric_max      = this.processed[metric].max;
         let metric_max_time = this.processed[metric].max_time;
 
         el_content.append("<p>The " + bgood("minimum") + " " + metric_name + " was " + bgood(metric_min) + METRICS[metric].unit + " at " + bold(date(metric_min_time)) + ".<br> " +
             "The " + bcolor("average", "orange") + " " + metric_name + " was " + bcolor(metric_avg, "orange") + METRICS[metric].unit + ".<br> " +
             "The " + bbad("maximum") + " " + metric_name + " was " + bbad(metric_max) + METRICS[metric].unit + " at " + bold(date(metric_max_time)) + ".<br> ")
-            .append('<div id="sparkline' + metric + '" class="sparkline"></div>');
+                  .append('<div id="sparkline' + metric + '" class="sparkline"></div>');
 
         Highcharts.SparkLine("sparkline" + metric,
             "scatter",
@@ -279,11 +338,11 @@ class AnalysisTool
                 ],
                 tooltip: {
                     formatter: function()
-                    {
-                        return '<div style="color:' + this.series.color + '">●</div> <b>' +
-                            this.series.name + "</b>:<br>    " +
-                            this.y + METRICS[metric].unit;
-                    }
+                               {
+                                   return '<div style="color:' + this.series.color + '">●</div> <b>' +
+                                       this.series.name + "</b>:<br>    " +
+                                       this.y + METRICS[metric].unit;
+                               }
                 }
             });
 
@@ -308,6 +367,7 @@ class AnalysisTool
                 if(last < x - 3600000 && last !== null)
                 {
                     series.data.push([last + (x - last) / 2, null]);
+                    this.multiple = true;
                 }
                 series.data.push([x, y]);
                 last = x;
@@ -328,8 +388,8 @@ class JMeterResult extends AnalysisTool
         }
         this.headers = data.headers;
         delete data.headers;
-        this.data = data;
-        this.sorted = objSort(this.data, "timeStamp");
+        this.data    = data;
+        this.sorted  = objSort(this.data, "timeStamp");
         this.metrics = {
             "Latency":    "Latency",
             "allThreads": "number of Threads (Users)",
@@ -344,15 +404,15 @@ class JMeterResult extends AnalysisTool
         {
             this.processed[metric] = {};
 
-            let metric_vals = objValues(this.sorted, true, "timeStamp", metric);
+            let metric_vals     = objValues(this.sorted, true, "timeStamp", metric);
             let min_metric_time = seriesMin(metric_vals, false, true);
-            let avg_metric_val = objAvg(metric_vals, true, false);
+            let avg_metric_val  = objAvg(metric_vals, true, false);
             let max_metric_time = seriesMax(metric_vals, false, true);
 
-            this.processed[metric]["min"] = metric_vals[min_metric_time];
+            this.processed[metric]["min"]      = metric_vals[min_metric_time];
             this.processed[metric]["min_time"] = min_metric_time;
-            this.processed[metric]["avg"] = avg_metric_val;
-            this.processed[metric]["max"] = metric_vals[max_metric_time];
+            this.processed[metric]["avg"]      = avg_metric_val;
+            this.processed[metric]["max"]      = metric_vals[max_metric_time];
             this.processed[metric]["max_time"] = max_metric_time;
         }
     }
@@ -361,8 +421,8 @@ class JMeterResult extends AnalysisTool
     {
         let data = this.sorted;
 
-        let first = parseFloat(data[0]["timeStamp"]);
-        let last = first;
+        let first  = parseFloat(data[0]["timeStamp"]);
+        let last   = first;
         let values = [];
         for(let i = 0; i < objLength(data); ++i)
         {
@@ -384,10 +444,12 @@ class JMeterResult extends AnalysisTool
                     if(what === "min")
                     {
                         return objMin(values, false, false);
-                    } else if(what === "avg")
+                    }
+                    else if(what === "avg")
                     {
                         return objAvg(values, false, false);
-                    } else if(what === "max")
+                    }
+                    else if(what === "max")
                     {
                         return objMax(values, false, false);
                     }
@@ -402,7 +464,7 @@ class JMeterResult extends AnalysisTool
     {
         let id = (this.metrics[metric] + USER_CONCERN.analysis.tool).toLowerCase().replace(" ", "-");
         el_content.append(chartContainer(this.metrics[metric], id));
-        let extremes = [
+        let extremes        = [
             {
                 value:     this.processed[metric].min,
                 color:     'green',
@@ -433,7 +495,7 @@ class JMeterResult extends AnalysisTool
                 label:     {text: 'threshold', useHTML: true}
             } : {}
         ];
-        let time = report.target_time === null ? [] : [
+        let time            = report.target_time === null ? [] : [
             {
                 color: '#FCFFC5',
                 from:  0,
@@ -442,10 +504,10 @@ class JMeterResult extends AnalysisTool
         ];
         this.series[metric] = this.getSeries(metric, "timeStamp", this.data[1]["threadName"].split(" ")[0]);
 
-        let min = parseInt(this.sorted[0]["timeStamp"]);
-        let max = (report.target_time === null) ? undefined : min + parseInt(report.target_time);
+        let min       = parseInt(this.sorted[0]["timeStamp"]);
+        let max       = (report.target_time === null) ? undefined : min + parseInt(report.target_time);
         let unit_text = METRICS[metric].unit;
-        let unit = METRICS[metric].unit === "" ? "" : "[" + METRICS[metric].unit + "]";
+        let unit      = METRICS[metric].unit === "" ? "" : "[" + METRICS[metric].unit + "]";
 
         Highcharts.setOptions(STOCK_OPTIONS);
         Highcharts.stockChart(id, {
@@ -467,15 +529,15 @@ class JMeterResult extends AnalysisTool
                 useHTML:         true,
                 formatter:       function()
                                  {
-                                     let d = new Date(this.x);
-                                     let D = d.getDate();
-                                     let M = d.getMonth() + 1;
-                                     let h = d.getHours();
-                                     let m = d.getMinutes();
-                                     let s = d.getSeconds();
+                                     let d  = new Date(this.x);
+                                     let D  = d.getDate();
+                                     let M  = d.getMonth() + 1;
+                                     let h  = d.getHours();
+                                     let m  = d.getMinutes();
+                                     let s  = d.getSeconds();
                                      let ms = Math.round(d.getMilliseconds() / 10);
                                      return "<b>Timestamp</b>: " + D + "." + M + " " + h + ":" + m + ":" + s + "." + ms +
-                                     "<br><b>" + this.points[0].series.name + "</b>: " + this.y.toFixed(0) + unit_text;
+                                         "<br><b>" + this.points[0].series.name + "</b>: " + this.y.toFixed(0) + unit_text;
                                  }
             }
         });
@@ -495,8 +557,8 @@ class LocustResult extends AnalysisTool
         delete data.headers;
         this.footer = data[objLength(data) - 1];
         delete data[objLength(data) - 1];
-        this.data = data;
-        this.sorted = this.data;
+        this.data    = data;
+        this.sorted  = this.data;
         this.metrics = {
             "responseTime": "Response Time"
         };
@@ -509,15 +571,15 @@ class LocustResult extends AnalysisTool
         {
             this.processed[metric] = {};
 
-            let metric_vals = objValues(this.sorted, true, "timeStamp", metric);
+            let metric_vals     = objValues(this.sorted, true, "timeStamp", metric);
             let min_metric_time = seriesMin(metric_vals, false, true);
-            let avg_metric_val = objAvg(metric_vals, true, false);
+            let avg_metric_val  = objAvg(metric_vals, true, false);
             let max_metric_time = seriesMax(metric_vals, false, true);
 
-            this.processed[metric]["min"] = metric_vals[min_metric_time];
+            this.processed[metric]["min"]      = metric_vals[min_metric_time];
             this.processed[metric]["min_time"] = min_metric_time;
-            this.processed[metric]["avg"] = avg_metric_val;
-            this.processed[metric]["max"] = metric_vals[max_metric_time];
+            this.processed[metric]["avg"]      = avg_metric_val;
+            this.processed[metric]["max"]      = metric_vals[max_metric_time];
             this.processed[metric]["max_time"] = max_metric_time;
         }
     }
@@ -526,8 +588,8 @@ class LocustResult extends AnalysisTool
     {
         let data = this.sorted;
 
-        let first = parseFloat(data[0]["timeStamp"]);
-        let last = first;
+        let first  = parseFloat(data[0]["timeStamp"]);
+        let last   = first;
         let values = [];
         for(let i = 0; i < objLength(data); ++i)
         {
@@ -549,10 +611,12 @@ class LocustResult extends AnalysisTool
                     if(what === "min")
                     {
                         return objMin(values, false, false);
-                    } else if(what === "avg")
+                    }
+                    else if(what === "avg")
                     {
                         return objAvg(values, false, false);
-                    } else if(what === "max")
+                    }
+                    else if(what === "max")
                     {
                         return objMax(values, false, false);
                     }
@@ -567,7 +631,7 @@ class LocustResult extends AnalysisTool
     {
         let id = (this.metrics[metric] + USER_CONCERN.analysis.tool).toLowerCase().replace(" ", "-");
         el_content.append(chartContainer(this.metrics[metric], id));
-        let extremes = [
+        let extremes        = [
             {
                 value:     this.processed[metric].min,
                 color:     'green',
@@ -598,7 +662,7 @@ class LocustResult extends AnalysisTool
                 label:     {text: 'threshold', useHTML: true}
             } : {}
         ];
-        let time = report.target_time === null ? [] : [
+        let time            = report.target_time === null ? [] : [
             {
                 color: '#FCFFC5',
                 from:  0,
@@ -607,10 +671,10 @@ class LocustResult extends AnalysisTool
         ];
         this.series[metric] = this.getSeries(metric, "timeStamp", this.footer.service);
 
-        let min = parseInt(this.sorted[0]["timeStamp"]);
-        let max = (report.target_time === null) ? undefined : min + parseInt(report.target_time);
+        let min       = parseInt(this.sorted[0]["timeStamp"]);
+        let max       = (report.target_time === null) ? undefined : min + parseInt(report.target_time);
         let unit_text = METRICS[metric].unit;
-        let unit = METRICS[metric].unit === "" ? "" : "[" + METRICS[metric].unit + "]";
+        let unit      = METRICS[metric].unit === "" ? "" : "[" + METRICS[metric].unit + "]";
 
         Highcharts.setOptions(STOCK_OPTIONS);
         Highcharts.stockChart(id, {
@@ -631,17 +695,17 @@ class LocustResult extends AnalysisTool
                 shadow:          false,
                 useHTML:         true,
                 formatter:       function()
-                {
-                    let d = new Date(this.x);
-                    let D = d.getDate();
-                    let M = d.getMonth() + 1;
-                    let h = d.getHours();
-                    let m = d.getMinutes();
-                    let s = d.getSeconds();
-                    let ms = Math.round(d.getMilliseconds() / 10);
-                    return "<b>Timestamp</b>: " + D + "." + M + " " + h + ":" + m + ":" + s + "." + ms +
-                        "<br><b>" + this.points[0].series.name + "</b>: " + this.y.toFixed(0) + unit_text;
-                }
+                                 {
+                                     let d  = new Date(this.x);
+                                     let D  = d.getDate();
+                                     let M  = d.getMonth() + 1;
+                                     let h  = d.getHours();
+                                     let m  = d.getMinutes();
+                                     let s  = d.getSeconds();
+                                     let ms = Math.round(d.getMilliseconds() / 10);
+                                     return "<b>Timestamp</b>: " + D + "." + M + " " + h + ":" + m + ":" + s + "." + ms +
+                                         "<br><b>" + this.points[0].series.name + "</b>: " + this.y.toFixed(0) + unit_text;
+                                 }
             }
         });
     }

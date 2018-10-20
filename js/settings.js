@@ -91,7 +91,7 @@ let DEFAULT = {
     loadtest_domain:    "http://www.example.com",
     loadtest_path:      "",
     loadtest_load:      "100",
-    loadtest_loops:      "2",
+    loadtest_loops:      "0",
     loadtest_duration:  "10",
     loadtest_delay:     "0",
     loadtest_ramp_up:   "0",
@@ -318,6 +318,7 @@ let LOCUST = {
                   '    header = ["timeStamp", "service", "type", "success", "responseTime", "bytes"]\n' +
                   '    footer = ["$LC_DOMAIN"]\n' +
                   '    data = []\n' +
+                  '    last_entry = 0\n' +
                   '\n' +
                   '    def __init__(self):\n' +
                   '        super(MyLocust, self).__init__()\n' +
@@ -332,7 +333,10 @@ let LOCUST = {
                   '        self.save(request_type, name, response_time, 0, 0)\n' +
                   '\n' +
                   '    def save(self, request_type, name, response_time, response_length, success):\n' +
-                  '        self.data.append([int(round(time.time() * 1000)), name, request_type, success, response_time, response_length])\n' +
+                  '        timestamp = int(round(time.time() * 1000))\n' +
+                  '        if timestamp != self.last_entry:\n' +
+                  '            self.data.append([timestamp, name, request_type, success, response_time, response_length])\n' +
+                  '            self.last_entry = timestamp\n' +
                   '\n' +
                   '    def write(self):\n' +
                   '        with open(self.result_file, \'wb\') as csv_file:\n' +
