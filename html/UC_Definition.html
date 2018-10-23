@@ -41,6 +41,7 @@
   let el_analysis_method;
 
   let el_loadtest_domain;
+  let el_loadtest_path;
   let el_loadtest_load;
   let el_loadtest_loops;
   let el_loadtest_duration;
@@ -77,6 +78,7 @@
     el_analysis_method = $("#analysis_method");
 
     el_loadtest_domain = $("#loadtest_domain");
+    el_loadtest_path = $("#loadtest_path");
     el_loadtest_load = $("#loadtest_load");
     el_loadtest_loops = $("#loadtest_loops");
     el_loadtest_duration = $("#loadtest_duration");
@@ -462,7 +464,7 @@
                         <td>Loops:</td>
                         <td>
                           <input type="number" id="loadtest_loops" placeholder="2" data-toggle="tooltip"
-                                 title=""/>
+                                 title="The number of times a user will sent a request."/>
                         </td>
                         <td></td>
 
@@ -477,7 +479,8 @@
                       <tr class="expert">
                         <td>Method:</td>
                         <td>
-                          <select class="custom-select" id="loadtest_method">
+                          <select class="custom-select" id="loadtest_method" data-toggle="tooltip"
+                                  title="The method to sent the requests.">
                             <option value="GET">GET</option>
                             <option value="POST">POST</option>
                           </select>
@@ -487,17 +490,20 @@
                         <td rowspan="3">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
 
                         <td>Follow Redirects:</td>
-                        <td><input type="checkbox" id="loadtest_follow_redirects"/></td>
+                        <td><input type="checkbox" id="loadtest_follow_redirects" data-toggle="tooltip"
+                                   title=""/></td>
                         <td></td>
                       </tr>
 
                       <tr class="expert">
                         <td>Ramp up time (s):</td>
-                        <td><input type="number" id="loadtest_ramp_up" placeholder="1"></td>
+                        <td><input type="number" id="loadtest_ramp_up" placeholder="1" data-toggle="tooltip"
+                                   title=""></td>
                         <td><span class="text-info"></span></td>
 
                         <td>Ramp down time (s):</td>
-                        <td><input type="number" id="loadtest_ramp_down" placeholder="1"></td>
+                        <td><input type="number" id="loadtest_ramp_down" placeholder="1" data-toggle="tooltip"
+                                   title=""></td>
                         <td><span class="text-info"></span></td>
                       </tr>
 
@@ -575,13 +581,15 @@
                     <table>
                       <tr class="">
                         <td>Minimum Wait Time (s):</td>
-                        <td><input type="number" id="loadtest_min_wait" placeholder="1000"/></td>
+                        <td><input type="number" id="loadtest_min_wait" placeholder="1000" data-toggle="tooltip"
+                                   title="The minimum time a user spents on the specified system."/></td>
                         <td><span class="text-info">*</span></td>
 
                         <td rowspan="3">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
 
                         <td>Maximum Wait Time (s):</td>
-                        <td><input type="number" id="loadtest_max_wait" placeholder="2000"/></td>
+                        <td><input type="number" id="loadtest_max_wait" placeholder="2000" data-toggle="tooltip"
+                                   title="The maximum time a user spents on the specified system."/></td>
                         <td><span class="text-info">*</span></td>
                       </tr>
 

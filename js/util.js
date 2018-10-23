@@ -551,12 +551,33 @@ function refSidebar(what)
     return bneutral("<a onclick='addSidebarRef(\"" + REFS[what] + "\")'>" + what + "</a>");
 }
 
-function sparklineSidebar(what, series)
+function sparklineSidebar(what, id, series)
 {
-    let el = $(document.createElement("div"));
-    el.html("<div id='id'></div><script>Highcharts.SparkLine('id', 'spline', {series: series});</script>");
-    console.log(el.html())
-    return bneutral("<a onclick='addSidebarRef(\"" + el.html() + "\")'>" + what + "</a>");
+    console.log(what, id, series)
+    el_sidebar.html('<div id="sparkline' + id + '" class="sparkline"></div>');
+    Highcharts.SparkLine("sparkline" + id,
+        "scatter",
+        {
+            series:  [
+                {
+                    name: what,
+                    data: series
+                }
+            ],
+            tooltip: {
+                formatter: function()
+                           {
+                               return '<div style="color:' + this.series.color + '">●</div> <b>' +
+                                   this.series.name + "</b>:<br>    " +
+                                   this.y;
+                           }
+            }
+        });
+}
+
+function sparkline(what, id, series)
+{
+    return buneutral("<a onclick='sparklineSidebar(\"" + what + "\", \"" + id + "\", " + JSON.stringify(series) + ")'>" + what + "</a>");
 }
 
 function link(what) { return '<a>' + what + '</a>'; }
@@ -571,7 +592,7 @@ function s(value, term, show_value)
 }
 
 function bold(what) { return "<b>" + what + "</b>"; }
-function underline(what) { return "<u>" + what + "</u>"; }
+function underline(what) { return "<u style='cursor: pointer'>" + what + "</u>"; }
 function color(what, color) { return "<span style='color: " + color + "'>" + what + "</span>"; }
 function bcolor(what, color) { return "<span style='color: " + color + "'>" + bold(what) + "</span>"; }
 

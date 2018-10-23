@@ -3,9 +3,10 @@ Concern-Driven Reporting of Performance Analysis Results (Bachelor's Thesis)
 
 ## User Concern
 
-## Analysis Tools
+## Supported Analysis Tools
 
 - JMeter
+- Locust
 
 ## UC Definition
 

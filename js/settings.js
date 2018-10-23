@@ -39,19 +39,19 @@ let USER_CONCERN = {
  * format:
  */
 let QUERIES = {
-    "What was the $Limit $Metric of service $Service, $Value $Unit after the experiment start?": {
+    "What was the $Limit $Metric of the system, $Value $Unit after the experiment start?": {
         type:       "loadtest",
-        parameters: {"Limit": "", "Metric": "", "Service": "", "Value": "", "Unit": ""},
+        parameters: {"Limit": "", "Metric": "", "Value": "", "Unit": ""},
         target:     "Metric",
         constraint: "Value",
-        format:     "The Limit Metric of service Service was $1, Value Unit after the experiment start."
+        format:     "The Limit Metric of the system was $1, Value Unit after the experiment start."
     },
-    "What was the $Limit $Metric1 of service $Service when the $Metric2 was $Condition $Value?": {
+    "What was the $Limit $Metric1 of the system when the $Metric2 was $Condition $Value?": {
         type:       "loadtest",
-        parameters: {"Limit": "", "Metric1": "", "Service": "", "Metric2": "", "Condition": "", "Value": "",},
+        parameters: {"Limit": "", "Metric1": "", "Metric2": "", "Condition": "", "Value": "",},
         target:     "Metric1",
         constraint: "Metric2",
-        format:     "The Limit Metric1 of service Service was $1, when the Metric2 was Condition Value."
+        format:     "The Limit Metric1 of the service was $1, when the Metric2 was Condition Value."
     }
 };
 
@@ -91,7 +91,7 @@ let DEFAULT = {
     loadtest_domain:    "http://www.example.com",
     loadtest_path:      "",
     loadtest_load:      "100",
-    loadtest_loops:      "0",
+    loadtest_loops:     "0",
     loadtest_duration:  "10",
     loadtest_delay:     "0",
     loadtest_ramp_up:   "0",
@@ -129,23 +129,23 @@ let CONVERSION = {
         "maximum": "max",
     },
     condition: {
-        "<":  function (a, b)
+        "<":  function(a, b)
               {
                   return a < b;
               },
-        "<=": function (a, b)
+        "<=": function(a, b)
               {
                   return a <= b;
               },
-        "=":  function (a, b)
+        "=":  function(a, b)
               {
                   return a === b;
               },
-        ">=": function (a, b)
+        ">=": function(a, b)
               {
                   return a >= b;
               },
-        ">":  function (a, b)
+        ">":  function(a, b)
               {
                   return a > b;
               }
@@ -174,14 +174,28 @@ let METRICS = {
         definition: "Latency is the amount of time a message takes to traverse a system. " +
                         "In a computer network, it is an expression of how much time it takes for " +
                         "a packet of data to get from one designated point to another. " +
-                        "It is sometimes measured as the time required for a packet to be returned to its sender. " +
-                        "Latency depends on the speed of the transmission medium (e.g., copper wire, optical fiber " +
-                        "or radio waves) and the delays in the transmission by devices along the way (e.g., routers and modems). " +
+                        "It is measured as the time required for a request to be sent to the server and returned to its sender. " +
+                        "Latency depends on the speed of the transmission medium  and the delays " +
+                        "in the transmission by devices along the way. " +
                         "A low latency indicates a high network efficiency."
     },
     "Connect":      {
         unit:       "ms",
-        definition: "Part of the latency [TODO]."
+        definition: "The connection time is the amount of time it takes to establish a connection between a client and the server. " +
+                        "If the connection request between client and server was successful, the client can send further requests. " +
+                        "If the connection was not successful, no further requests can be send to the server." +
+                        "The connection time is part of the latency. "
+    },
+    "elapsed":      {
+        unit:       "ms",
+        definition: "The elapsed time is the amount of time it takes to send the first request until the last response is received. " +
+                        "This metric does not include the time a client is executing code."
+    },
+    "bytes":      {
+        unit:       "bytes",
+        definition: "To perform a request, it is necessary to exchange data between client and server. " +
+            "This data consists of header data and meta information, which is needed by the server. " +
+            "The amount of exchanged information is measured in bytes."
     },
     "allThreads":   {
         unit:       "",
@@ -189,9 +203,7 @@ let METRICS = {
                         "location being a computing network or a single computer, refers to the total number of people " +
                         "using the resource within a predefined period of time. The resource can, for example, be a " +
                         "computer program, a file, or the computer as a whole. " +
-                        "A computer operating system that allows several users to access a resource on the computer " +
-                        "at the same time is a multiuser multitasking operating system, historically called a " +
-                        "time-sharing operating system. The capacity of a system can also be measured in terms of " +
+                        "The capacity of a system can also be measured in terms of " +
                         "maximum concurrent users, at which point system performance begins to degrade noticeably."
     },
     "responseTime": {
@@ -374,7 +386,7 @@ let SPARKLINE_OPTIONS = {
         labels:         {enabled: false},
         title:          {text: null},
         lineWidth:      0,
-        tickPositioner: function ()
+        tickPositioner: function()
                         {
                             let step = (this.dataMax - this.dataMin) / 2;
                             return range(this.dataMin, this.dataMax + 1,
@@ -389,12 +401,12 @@ let SPARKLINE_OPTIONS = {
         style:      {
             textOverflow: 'ellipsis'
         },
-        formatter:  function ()
+        formatter:  function()
                     {
                         return '<div style="color:' + this.series.color + '">●</div> <b>' + this.series.name + "</b>:<br>    " +
                             this.y;
                     },
-        positioner: function (w, h, point)
+        positioner: function(w, h, point)
                     {
                         return {x: point.plotX - w / 2, y: point.plotY - h - 15};
                     }
@@ -443,7 +455,7 @@ let STOCK_OPTIONS = {
         lineWidth: 1,
         lineColor: "#333",
         labels:    {
-            formatter: function ()
+            formatter: function()
                        {
                            let d  = new Date(this.value);
                            let D  = d.getDate();

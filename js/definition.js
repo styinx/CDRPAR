@@ -133,7 +133,11 @@ function loadModel()
      * Set analysis meta data.
      */
     el_loadtest_domain.val(USER_CONCERN.analysis.meta.domain || DEFAULT.loadtest_domain);
+    el_loadtest_path.val(USER_CONCERN.analysis.meta.path || DEFAULT.loadtest_path);
     el_loadtest_load.val(USER_CONCERN.analysis.meta.load || DEFAULT.loadtest_load);
+    el_loadtest_loops.val(USER_CONCERN.analysis.meta.loops || DEFAULT.loadtest_loops);
+    el_loadtest_duration.val(USER_CONCERN.analysis.meta.duration || DEFAULT.loadtest_duration);
+    el_loadtest_delay.val(USER_CONCERN.analysis.meta.delay || DEFAULT.loadtest_delay);
     el_loadtest_ramp_up.val(USER_CONCERN.analysis.meta.ramp_up || DEFAULT.loadtest_ramp_up);
     el_loadtest_ramp_down.val(USER_CONCERN.analysis.meta.ramp_down || DEFAULT.loadtest_ramp_down);
     el_loadtest_min_wait.val(USER_CONCERN.analysis.meta.min_wait || DEFAULT.loadtest_min_wait);

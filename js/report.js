@@ -76,18 +76,18 @@ class Report
             let experiment_description = "" +
                 "The configured query did trigger a " + linkSidebar("loadtest") + ". " +
                 "The chosen loadtest tool was " + linkSidebar(tool) + ".<br>" +
-                tool + " performed the loadtest on the domain " + bold(domain) + " with a load of " + bold(s(load, "user", true)) +". ";
+                tool + " performed the loadtest on the domain " + bold(domain) + " with a load of " + bold(s(load, "user", true)) + ". ";
 
             if(loops !== 0)
             {
-                experiment_description += " Users sent " + ((loops === -1) ?
-                                                            "requests until the end of the " + s(experiments, "experiment") + ". " :
-                                                            "exactly " + bold(s(loops, "request", true)) + ". ");
+                experiment_description += "<br> Users sent " + ((loops === -1) ?
+                                                                "requests until the end of the " + s(experiments, "experiment") + ". " :
+                                                                "exactly " + bold(s(loops, "request", true)) + ". ");
             }
 
             if(min_wait !== 0 && max_wait !== 0)
             {
-                experiment_description += " Users spent from " + s(min_wait / 1000, " second", true) +
+                experiment_description += "<br> Users spent from " + s(min_wait / 1000, " second", true) +
                     " to " + s(max_wait / 1000, " second", true) + " on the page. ";
             }
 
@@ -264,7 +264,8 @@ class AnalysisTool
 
         let values = [];
         let cond   = CONVERSION.condition[filter_cond];
-        for(let i = 0; i < objLength(data); ++i)
+        let d_len  = objLength(data);
+        for(let i = 0; i < d_len; ++i)
         {
             if(cond(parseFloat(data[i][filter_metric]), filter_val))
             {
@@ -322,30 +323,19 @@ class AnalysisTool
         let metric_max      = this.processed[metric].max;
         let metric_max_time = this.processed[metric].max_time;
 
-        el_content.append("<p>The " + bgood("minimum") + " " + metric_name + " was " + bgood(metric_min) + METRICS[metric].unit + " at " + bold(date(metric_min_time)) + ".<br> " +
-            "The " + bcolor("average", "orange") + " " + metric_name + " was " + bcolor(metric_avg, "orange") + METRICS[metric].unit + ".<br> " +
-            "The " + bbad("maximum") + " " + metric_name + " was " + bbad(metric_max) + METRICS[metric].unit + " at " + bold(date(metric_max_time)) + ".<br> ")
-                  .append('<div id="sparkline' + metric + '" class="sparkline"></div>');
+        let content = "" +
+            "The " + bgood("minimum") + " " +
+            sparkline(metric_name, metric_name + "min", objValues(this.sorted, true, metric)) + " was " +
+            bgood(metric_min) + METRICS[metric].unit + " at " +
+            bold(date(metric_min_time)) + ".<br> " +
+            "The " + bcolor("average", "orange") + " " + metric_name + " was " +
+            bcolor(metric_avg, "orange") + METRICS[metric].unit + ".<br> " +
+            "The " + bbad("maximum") + " " +
+            sparkline(metric_name, metric_name + "max", objValues(this.sorted, true, metric)) + " was " +
+            bbad(metric_max) + METRICS[metric].unit + " at " +
+            bold(date(metric_max_time)) + ".<br>";
 
-        Highcharts.SparkLine("sparkline" + metric,
-            "scatter",
-            {
-                series:  [
-                    {
-                        name: this.metrics[metric],
-                        data: objValues(this.sorted, true, metric)
-                    }
-                ],
-                tooltip: {
-                    formatter: function()
-                               {
-                                   return '<div style="color:' + this.series.color + '">●</div> <b>' +
-                                       this.series.name + "</b>:<br>    " +
-                                       this.y + METRICS[metric].unit;
-                               }
-                }
-            });
-
+        el_content.append("<p>" + content + "</p>")
     }
 
     getDiagram()
@@ -359,8 +349,9 @@ class AnalysisTool
 
         if(format !== undefined)
         {
-            let last = null;
-            for(let index = 0; index < objLength(this.sorted); ++index)
+            let last  = null;
+            let d_len = objLength(this.sorted);
+            for(let index = 0; index < d_len; ++index)
             {
                 let x = parseFloat(this.sorted[index][format]);
                 let y = parseFloat(this.sorted[index][key]);
@@ -424,13 +415,14 @@ class JMeterResult extends AnalysisTool
         let first  = parseFloat(data[0]["timeStamp"]);
         let last   = first;
         let values = [];
-        for(let i = 0; i < objLength(data); ++i)
+        let d_len  = objLength(data);
+        for(let i = 0; i < d_len; ++i)
         {
             last = parseFloat(data[i][metric]);
 
-            if(parseFloat(data[i]["timeStamp"]) - first > time || i === objLength(data) - 1)
+            if(parseFloat(data[i]["timeStamp"]) - first > time || i === d_len - 1)
             {
-                if(i === objLength(data) - 1)
+                if(i === d_len - 1)
                 {
                     values.push(parseFloat(data[i][metric]));
                 }
@@ -555,8 +547,9 @@ class LocustResult extends AnalysisTool
         }
         this.headers = data.headers;
         delete data.headers;
-        this.footer = data[objLength(data) - 1];
-        delete data[objLength(data) - 1];
+        let d_len   = objLength(data);
+        this.footer = data[d_len - 1];
+        delete data[d_len - 1];
         this.data    = data;
         this.sorted  = this.data;
         this.metrics = {
@@ -591,13 +584,14 @@ class LocustResult extends AnalysisTool
         let first  = parseFloat(data[0]["timeStamp"]);
         let last   = first;
         let values = [];
-        for(let i = 0; i < objLength(data); ++i)
+        let d_len  = objLength(data);
+        for(let i = 0; i < d_len; ++i)
         {
             last = parseFloat(data[i][metric]);
 
-            if(parseFloat(data[i]["timeStamp"]) - first > time || i === objLength(data) - 1)
+            if(parseFloat(data[i]["timeStamp"]) - first > time || i === d_len - 1)
             {
-                if(i === objLength(data) - 1)
+                if(i === d_len - 1)
                 {
                     values.push(parseFloat(data[i][metric]));
                 }
