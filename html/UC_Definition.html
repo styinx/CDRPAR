@@ -228,13 +228,13 @@
           <hr>
 
           <ul>
-            <li>A query defines your interest in a metric with additional properties.</li>
+            <li>A query defines your interest in a metric and can be configured with additional parameters.</li>
             <br>
             <li>The query will represent your question to software system.</li>
             <br>
             <li>
               The <b>User Concern</b> is able to understand this question and will answer this
-              with the results of a performance analysis.
+              with the results of the performance analysis.
             </li>
           </ul>
 
@@ -439,8 +439,7 @@
                       <tr>
                         <td>Delay (s):</td>
                         <td><input type="number" id="loadtest_delay" placeholder="0" data-toggle="tooltip"
-                                   title="In order to prevent side effects in the generated data, JMeter can use a delay.
-                                          With a delay, the load test takes time to setup the environment.">
+                                   title="This defines the delay when the experiment is scheduled.">
                         </td>
                         <td><span class="text-info"></span></td>
                         <td>&nbsp;</td>
@@ -464,15 +463,17 @@
                         <td>Loops:</td>
                         <td>
                           <input type="number" id="loadtest_loops" placeholder="2" data-toggle="tooltip"
-                                 title="The number of times a user will sent a request."/>
+                                 title="The number of times a user will send a request."/>
                         </td>
                         <td></td>
 
                         <td rowspan="3">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
 
-                        <td></td>
-                        <td></td>
-                        <!--<td><input type="number" id="b"/></td>-->
+                        <td>Loop forever:</td>
+                        <td>
+                          <input type="checkbox" id="loadtest_loop_infinite"  data-toggle="tooltip"
+                                 title="The users will send requests until the experiment end."/>
+                        </td>
                         <td></td>
                       </tr>
 
@@ -480,14 +481,12 @@
                         <td>Method:</td>
                         <td>
                           <select class="custom-select" id="loadtest_method" data-toggle="tooltip"
-                                  title="The method to sent the requests.">
+                                  title="The method to send the requests.">
                             <option value="GET">GET</option>
                             <option value="POST">POST</option>
                           </select>
                         </td>
                         <td></td>
-
-                        <td rowspan="3">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
 
                         <td>Follow Redirects:</td>
                         <td><input type="checkbox" id="loadtest_follow_redirects" data-toggle="tooltip"
@@ -498,7 +497,8 @@
                       <tr class="expert">
                         <td>Ramp up time (s):</td>
                         <td><input type="number" id="loadtest_ramp_up" placeholder="1" data-toggle="tooltip"
-                                   title=""></td>
+                                   title="In order to prevent side effects in the generated data, JMeter can use a delay.
+                                          With a delay, the load test takes time to setup the environment."></td>
                         <td><span class="text-info"></span></td>
 
                         <td>Ramp down time (s):</td>
@@ -541,7 +541,7 @@
 
                     <div class="form-group d-inline-block">
                       <label for="jmeter_experiment"><b>JMeter experiment configuration:</b></label><br>
-                      <textarea class="form-control" rows="10" cols="100" id="jmeter_experiment" readonly></textarea>
+                      <textarea class="form-control" rows="10" cols="120" id="jmeter_experiment"></textarea>
                     </div>
 
                   </div>
@@ -623,7 +623,7 @@
 
                     <div class="form-group d-inline-block">
                       <label for="locust_experiment"><b>Locust experiment configuration:</b></label><br>
-                      <textarea class="form-control" rows="10" cols="80" id="locust_experiment" readonly></textarea>
+                      <textarea class="form-control" rows="10" cols="120" id="locust_experiment"></textarea>
                     </div>
 
                   </div>
@@ -658,7 +658,7 @@
               Open a terminal, then type the following command into the terminal.
               <pre>
               <code>
-                jmeter -t jmeter_experiment.jmx -l jmeter_experiment_result.csv
+                jmeter -n -t jmeter_experiment.jmx -l jmeter_experiment_result.csv
               </code>
               </pre>
             </p>

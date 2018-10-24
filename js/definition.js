@@ -66,6 +66,10 @@ function saveModel()
 
     if(USER_CONCERN.analysis.tool === "Locust")
     {
+        if(USER_CONCERN.analysis.meta.domain.indexOf("http://") === -1)
+        {
+            USER_CONCERN.analysis.meta.domain = "http://" + USER_CONCERN.analysis.meta.domain
+        }
         let text = LOCUST["simple"];
         text = text.replace(/\$LC_DOMAIN/g, USER_CONCERN.analysis.meta.domain)
             .replace(/\$LC_PATH/g, USER_CONCERN.analysis.meta.path)

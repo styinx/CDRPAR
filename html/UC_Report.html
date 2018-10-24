@@ -72,7 +72,9 @@
       let url = window.location.href;
       if(url.indexOf('concern=') > -1)
       {
-          USER_CONCERN = JSON.parse(decodeURI(url.substr(url.indexOf('concern=') + 8)));
+          let start = url.indexOf('concern=');
+          let stop = (url.indexOf('#') > -1 ? url.indexOf('#') - 1 : 0 || url.length) ;
+          USER_CONCERN = JSON.parse(decodeURI(url.substr(start + 8, stop - start - 7)));
           $("#query").html(USER_CONCERN.query.text);
           query.setQuery(USER_CONCERN.query.text);
           query.setQueryBadgeValues();

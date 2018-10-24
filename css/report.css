@@ -15,6 +15,22 @@ h3
     font-weight: bold;
 }
 
+iframe
+{
+    padding-left: 10px;
+}
+
+#sidebar p
+{
+    padding: 10px;
+}
+
+#sidebar .sparkline
+{
+    padding: 2px;
+    margin: 10px calc(50% - 50px) 10px calc(50% - 50px);
+}
+
 .link
 {
     cursor: pointer;

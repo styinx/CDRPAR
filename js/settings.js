@@ -48,7 +48,7 @@ let QUERIES = {
     },
     "What was the $Limit $Metric1 of the system when the $Metric2 was $Condition $Value?": {
         type:       "loadtest",
-        parameters: {"Limit": "", "Metric1": "", "Metric2": "", "Condition": "", "Value": "",},
+        parameters: {"Limit": "", "Metric1": "", "Metric2": "", "Condition": "", "Value": ""},
         target:     "Metric1",
         constraint: "Metric2",
         format:     "The Limit Metric1 of the service was $1, when the Metric2 was Condition Value."
@@ -60,7 +60,7 @@ let QUERIES = {
  * Each group of badges can only be used on a target of the same type ('limit-minimum' -> 'limit-target').
  */
 let DEFAULT_BADGES = {
-    metric:    ["latency", "number of users", "connection time", "response time"],
+    metric:    ["latency", "number of active users", "connection time", "response time", "traffic", "number of successful requests"],
     limit:     ["minimum", "average", "maximum"],
     condition: ["<", "<=", "=", ">=", ">"],
     service:   ["dummy1", "dummy2", "dummy3"],
@@ -75,20 +75,21 @@ let DEFAULT_BADGES = {
  */
 let BADGES = {
     loadtest: {
-        metric:    ["latency", "number of users", "connection time"],
+        metric:    ["latency", "number of active users", "connection time", "traffic", "number of successful requests"],
         limit:     ["minimum", "average", "maximum"],
         condition: ["<", "<=", "=", ">=", ">"],
         service:   ["dummy1", "dummy2", "dummy3"],
         unit:      ["milliseconds", "seconds", "minutes", "hours", "days"],
         value:     range(0, 10, 1).concat(range(10, 100, 10)).concat(range(100, 1001, 100))
-    }
+    },
+    other:    {}
 };
 
 /**
  * Default configuration for necessary element that cannot be empty.
  */
 let DEFAULT = {
-    loadtest_domain:    "http://www.example.com",
+    loadtest_domain:    "www.example.com",
     loadtest_path:      "",
     loadtest_load:      "100",
     loadtest_loops:     "0",
@@ -105,13 +106,22 @@ let DEFAULT = {
  * Aimed to use for sidebar reference.
  */
 let LINKS = {
-    "JMeter":   "https://en.wikipedia.org/wiki/Apache_JMeter?printable=yes",
-    "Locust":   "https://locust.io/",
-    "loadtest": "https://en.wikipedia.org/wiki/Load_testing?printable=yes"
+    "JMeter":    "https://en.wikipedia.org/wiki/Apache_JMeter?printable=yes",
+    "Locust":    "https://locust.io/",
+    "loadtest":  "https://en.wikipedia.org/wiki/Load_testing?printable=yes",
+    "sparkline": "https://en.wikipedia.org/wiki/Sparkline?printable=yes"
 };
 
 let REFS = {
-    "": ""
+    "?": '<p><b>Diagram explanation:</b><ul>' +
+             '<li><span style="color: #FCFF55;"><b>&#9632;</b></span>&nbsp;&nbsp;Shows the metric in the requested time</li>' +
+             '<li><span style="color: #00C000"><b>- -</b></span>&nbsp;Shows minimum value of the metric</li>' +
+             '<li><span style="color: #00C000"><b>|</b></span>&nbsp;&nbsp;&nbsp;Shows timestamp when the minimum value of the metric was recorded</li>' +
+             '<li><span style="color: #FF8000"><b>- -</b></span>&nbsp;Shows average value of the metric</li>' +
+             '<li><span style="color: #FF0000"><b>- -</b></span>&nbsp;Shows maximum value of the metric</li>' +
+             '<li><span style="color: #FF0000"><b>|</b></span>&nbsp;&nbsp;&nbsp;Shows timestamp when the maximum value of the metric was recorded</li>' +
+             '<li><span style="color: #0080FF"><b>- -</b></span>&nbsp;Shows threshold value of the query</li>' +
+             '</ul></p>'
 };
 
 /**
@@ -151,10 +161,12 @@ let CONVERSION = {
               }
     },
     metric:    {
-        "latency":         "Latency",
-        "response time":   "responseTime",
-        "number of users": "allThreads",
-        "connection time": "Connect"
+        "latency":                       "Latency",
+        "response time":                 "responseTime",
+        "number of active users":               "allThreads",
+        "connection time":               "Connect",
+        "traffic":                       "bytes",
+        "number of successful requests": "success"
     },
     unit:      {
         "milliseconds": 1,
@@ -171,6 +183,7 @@ let CONVERSION = {
 let METRICS = {
     "Latency":      {
         unit:       "ms",
+        type:       "spline",
         definition: "Latency is the amount of time a message takes to traverse a system. " +
                         "In a computer network, it is an expression of how much time it takes for " +
                         "a packet of data to get from one designated point to another. " +
@@ -181,6 +194,7 @@ let METRICS = {
     },
     "Connect":      {
         unit:       "ms",
+        type:       "spline",
         definition: "The connection time is the amount of time it takes to establish a connection between a client and the server. " +
                         "If the connection request between client and server was successful, the client can send further requests. " +
                         "If the connection was not successful, no further requests can be send to the server." +
@@ -188,17 +202,28 @@ let METRICS = {
     },
     "elapsed":      {
         unit:       "ms",
+        type:       "spline",
         definition: "The elapsed time is the amount of time it takes to send the first request until the last response is received. " +
                         "This metric does not include the time a client is executing code."
     },
-    "bytes":      {
+    "bytes":        {
         unit:       "bytes",
+        type:       "area",
         definition: "To perform a request, it is necessary to exchange data between client and server. " +
-            "This data consists of header data and meta information, which is needed by the server. " +
-            "The amount of exchanged information is measured in bytes."
+                        "This data consists of header data and meta information, which is needed by the server. " +
+                        "The amount of exchanged information is measured in bytes."
+    },
+    "success":      {
+        unit:       "",
+        convert:    {"true": "successful", "false": "not successful"},
+        type:       "pie",
+        definition: "If a request does not reach the server or is refused by it, the request was not successful. " +
+                        "An unsuccessful request can contain the reason of the refusal as plain text in the response text. " +
+                        "Another reason is a faulty connection to the server."
     },
     "allThreads":   {
         unit:       "",
+        type:       "spline",
         definition: "In computer science, the number of concurrent users for a resource in a location, with the " +
                         "location being a computing network or a single computer, refers to the total number of people " +
                         "using the resource within a predefined period of time. The resource can, for example, be a " +
@@ -208,6 +233,7 @@ let METRICS = {
     },
     "responseTime": {
         unit:       "ms",
+        type:       "spline",
         definition: "TODO"
     }
 };
@@ -476,9 +502,19 @@ let STOCK_OPTIONS = {
     legend:        {enabled: true},
     navigator:     {
         margin: 5,
-        height: 25,
+        height: 35,
         xAxis:  {labels: {enabled: false}},
         yAxis:  {lineWidth: 0}
+    },
+    plotOptions:   {
+        pie: {
+            allowPointSelect: true,
+            cursor:           'pointer',
+            dataLabels:       {
+                enabled: true,
+                format:  '<b>{point.name}</b>: {point.percentage:.1f} %'
+            }
+        }
     },
     scrollbar:     {
         height:                0,
