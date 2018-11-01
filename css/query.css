@@ -100,6 +100,7 @@ select, input
     line-height:    14px;
     text-align:     center;
     vertical-align: middle;
+    cursor: pointer;
 }
 
 .badge-target
@@ -112,6 +113,7 @@ select, input
     border-radius:  5px;
     text-align:     center;
     vertical-align: middle;
+    cursor: pointer;
 }
 
 .badge-pool
@@ -126,6 +128,7 @@ select, input
     max-height:     200px;
     text-align:     center;
     vertical-align: middle;
+    cursor: pointer;
 }
 
 #metric-badge-pool

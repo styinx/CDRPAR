@@ -99,7 +99,7 @@
     $("#locust_experiment").val(LOCUST.simple);
     $('[data-toggle="tooltip"]').tooltip();
 
-    fillSelect("query_pattern", Object.keys(QUERIES));
+    fillSelect("query_pattern", Object.keys(QUERIES), true);
     fillSelect("loadtest_load", range(0, 11, [1, 1, 1, 2, 3, 2]).concat(range(15, 101, [5, 5, 5, 10, 10, 25, 25]))
                                                                 .concat(range(200, 1001, [50, 50, 100, 100])));
     loadModel();
@@ -245,7 +245,22 @@
 
             <select class="custom-select" id="query_pattern">
               <option value="" selected disabled>Select a query.</option>
-              <option value="" disabled>When does the service $Service experience the maximum load?</option>
+              <optgroup label=""></optgroup>
+              <optgroup label="Performance over Time">
+                <option value="" disabled>When does the service Database experience the maximum load? (disabled)</option>
+                <option value="" disabled>When does the system crash? (disabled)</option>
+                <option value="" disabled>When does the service Frontend have its highest utilization over a period of 5 minutes? (disabled)</option>
+              </optgroup>
+              <optgroup label=""></optgroup>
+              <optgroup label="System Comparison">
+                <option value="" disabled>How does the performance of the system change after a new deployment? (disabled)</option>
+                <option value="" disabled>How does the system perform against system XY? (disabled)</option>
+              </optgroup>
+              <optgroup label=""></optgroup>
+              <optgroup label="Behaviour Examination">
+                <option value="" disabled>What is the ratio of successful over unsuccessful requests? (disabled)</option>
+              </optgroup>
+              <optgroup label=""></optgroup>
             </select>
 
             <div class="query-wrapper">
@@ -287,9 +302,12 @@
 
             <select class="custom-select" id="analysis_method">
               <option value="" selected disabled>Select a analysis method.</option>
+              <optgroup label=""></optgroup>
               <option value="JMeter">JMeter</option>
               <option value="Locust">Locust</option>
             </select>
+
+            <p><div id="tool_explanation"></div></p>
 
           </div>
 
@@ -644,16 +662,16 @@
 
           <div class="jmeter-configuration">
             <p>
-              JMeter will be your analysis tool. Download the following two files, then proceed with the next steps.<br>
+              JMeter will be your analysis tool. Download the following file, then proceed with the next steps.<br>
               <button class="d-inline-block btn-primary" onclick="download('#jmeter_experiment', 'jmeter_experiment.jmx')">Download JMeter Experiment File</button>
               <!--<button class="d-inline-block btn-primary" onclick="download('#jmeter_properties', 'jmeter_properties.prop')">Download JMeter Properties File</button>-->
               <br>
             </p>
 
             <p>
-              If you have downloaded the two files you are ready to perform a loadtest evaluation of your system.
+              If you have downloaded the file you are ready to perform a loadtest evaluation of your system.
               <br>
-              Install <b>JMeter</b> with the following <a href="https://jmeter.apache.org/download_jmeter.cgi">instructions</a>.
+              Install <b>JMeter</b> with the following <a target="_blank" href="https://jmeter.apache.org/download_jmeter.cgi">instructions</a>.
               <br>
               Open a terminal, then type the following command into the terminal.
               <pre>
@@ -673,7 +691,7 @@
             <p>
               If you have downloaded the file you are ready to perform a loadtest evaluation of your system.
               <br>
-              Install <b>locust</b> with the following <a href="https://docs.locust.io/en/stable/installation.html">instructions</a>.
+              Install <b>locust</b> with the following <a target="_blank" href="https://docs.locust.io/en/stable/installation.html">instructions</a>.
               <br>
               Open a terminal, then type one of the following command into the terminal.
             <pre>
@@ -690,8 +708,7 @@
           <p>
             For the last step you have to get the <b>User Concern</b> by downloading it.
             <br>
-            If you don't mind to keep your User Concern, you can continue by clicking <a id="redirect" href="">here</a>
-            (you will not be able to use this concern later).
+            If you don't mind to keep your User Concern, you can continue by clicking <a target="_blank" id="redirect" href="">here</a>.
             <br>
             <br>
             <button class="btn-primary" onclick="download('#user_concern', 'user_concern.json')">Download the User Concern</button>

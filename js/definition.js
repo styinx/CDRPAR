@@ -29,6 +29,11 @@ function saveModel()
      */
     USER_CONCERN.analysis.tool = el_analysis_method.val() || "";
 
+    if(el_analysis_method.val())
+    {
+        $("#tool_explanation").html(REFS[el_analysis_method.val()]);
+    }
+
     /*
      * Set analysis meta data.
      */

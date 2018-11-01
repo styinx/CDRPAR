@@ -40,6 +40,7 @@ let USER_CONCERN = {
  */
 let QUERIES = {
     "What was the $Limit $Metric of the system, $Value $Unit after the experiment start?": {
+        example: "What was the minimum latency of the system, 5 minutes after the experiment start?",
         type:       "loadtest",
         parameters: {"Limit": "", "Metric": "", "Value": "", "Unit": ""},
         target:     "Metric",
@@ -47,6 +48,7 @@ let QUERIES = {
         format:     "The Limit Metric of the system was $1, Value Unit after the experiment start."
     },
     "What was the $Limit $Metric1 of the system when the $Metric2 was $Condition $Value?": {
+        example: "What was the maximum connection time of the system when the number of active users was <= 100?",
         type:       "loadtest",
         parameters: {"Limit": "", "Metric1": "", "Metric2": "", "Condition": "", "Value": ""},
         target:     "Metric1",
@@ -113,15 +115,30 @@ let LINKS = {
 };
 
 let REFS = {
-    "?": '<p><b>Diagram explanation:</b><ul>' +
-             '<li><span style="color: #FCFF55;"><b>&#9632;</b></span>&nbsp;&nbsp;Shows the metric in the requested time</li>' +
-             '<li><span style="color: #00C000"><b>- -</b></span>&nbsp;Shows minimum value of the metric</li>' +
-             '<li><span style="color: #00C000"><b>|</b></span>&nbsp;&nbsp;&nbsp;Shows timestamp when the minimum value of the metric was recorded</li>' +
-             '<li><span style="color: #FF8000"><b>- -</b></span>&nbsp;Shows average value of the metric</li>' +
-             '<li><span style="color: #FF0000"><b>- -</b></span>&nbsp;Shows maximum value of the metric</li>' +
-             '<li><span style="color: #FF0000"><b>|</b></span>&nbsp;&nbsp;&nbsp;Shows timestamp when the maximum value of the metric was recorded</li>' +
-             '<li><span style="color: #0080FF"><b>- -</b></span>&nbsp;Shows threshold value of the query</li>' +
-             '</ul></p>'
+    "?":      '<p><b>Diagram explanation:</b><ul>' +
+                  '<li><span style="color: #FCFF55;"><b>&#9632;</b></span>&nbsp;&nbsp;Shows the metric in the requested time</li>' +
+                  '<li><span style="color: #00C000"><b>- -</b></span>&nbsp;Shows minimum value of the metric</li>' +
+                  '<li><span style="color: #00C000"><b>|</b></span>&nbsp;&nbsp;&nbsp;Shows timestamp when the minimum value of the metric was recorded</li>' +
+                  '<li><span style="color: #FF8000"><b>- -</b></span>&nbsp;Shows average value of the metric</li>' +
+                  '<li><span style="color: #FF0000"><b>- -</b></span>&nbsp;Shows maximum value of the metric</li>' +
+                  '<li><span style="color: #FF0000"><b>|</b></span>&nbsp;&nbsp;&nbsp;Shows timestamp when the maximum value of the metric was recorded</li>' +
+                  '<li><span style="color: #0080FF"><b>- -</b></span>&nbsp;Shows threshold value of the query</li>' +
+                  '</ul></p>',
+    "JMeter": '<br><p>JMeter is a load testing performance analysis tool focused on web applications.<br>' +
+                  'Typical load test use cases include the following protocols/applications:<br>' +
+                  '<ul>' +
+                  '<li>HTTP </li>' +
+                  '<li>TCP</li>' +
+                  '<li>FTP </li>' +
+                  '<li>SOAP/REST </li>' +
+                  '<li>Java JDBC </li>' +
+                  '</ul><br>' +
+                  'JMeter simulates users which send requests via the desired protocol to the target system.</p>',
+    "Locust": '<br><p>' +
+                  'Locust is a load testing framework for web application. <br>' +
+                  'Test cases in Locust send HTTP request to the target system. ' +
+                  'The virtual users can be configured to produce load of a certain amount of time until the session is ended. ' +
+                  '</p>'
 };
 
 /**
@@ -163,7 +180,7 @@ let CONVERSION = {
     metric:    {
         "latency":                       "Latency",
         "response time":                 "responseTime",
-        "number of active users":               "allThreads",
+        "number of active users":        "allThreads",
         "connection time":               "Connect",
         "traffic":                       "bytes",
         "number of successful requests": "success"

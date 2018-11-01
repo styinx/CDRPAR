@@ -486,13 +486,20 @@ function valuesCheckbox(id)
 /**
  * Fills a select with the given values.
  */
-function fillSelect(id, values)
+function fillSelect(id, values, html_key)
 {
     let select = $("#" + id);
 
     for(let key in values)
     {
-        select.append("<option value='" + values[key] + "'>" + values[key] + "</option>")
+        if(html_key === true)
+        {
+            select.append("<option value='" + values[key] + "'>" + QUERIES[values[key]]["example"] + "</option>")
+        }
+        else
+        {
+            select.append("<option value='" + values[key] + "'>" + values[key] + "</option>")
+        }
     }
 }
 

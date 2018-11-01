@@ -75,7 +75,6 @@ class Report
             if(tool === "JMeter")
             {
                 loops = parseInt(USER_CONCERN.analysis.meta.loops) + 1;
-                loops = loops === "0" ? 1 : loops;
             }
             else if(tool === "Locust")
             {
@@ -88,11 +87,14 @@ class Report
                 "The chosen loadtest tool was " + linkSidebar(tool) + ".<br>" +
                 tool + " performed the loadtest on the domain " + bold(domain) + " with a load of " + bold(s(load, "user", true)) + ". ";
 
-            if(loops !== 0)
+            experiment_description += "<br> Each User sent ";
+            if(loops === 0)
             {
-                experiment_description += "<br> Users sent " + ((loops === -1) ?
-                                                                "requests until the end of the " + s(experiments, "experiment") + ". " :
-                                                                "exactly " + bold(s(loops, "request", true)) + ". ");
+                experiment_description += "requests until the end of the " + s(experiments, "experiment") + ". ";
+            }
+            else
+            {
+                experiment_description += "exactly " + bold(s(loops, "request", true)) + ". ";
             }
 
             if(min_wait !== 0 && max_wait !== 0)
