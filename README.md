@@ -5,19 +5,19 @@ Concern-Driven Reporting of Performance Analysis Results (Bachelor's Thesis)
 
 ```json
 {
-    query:    {
-        text:        "",
-        type:        "",
-        parameters:  {},
-        format:      "",
-        target:      "",
-        contstraint: ""
+    "query":    {
+        "text":        "",
+        "type":        "",
+        "parameters":  {},
+        "format":      "",
+        "target":      "",
+        "contstraint": ""
     },
-    type:     "",
-    analysis: {
-        tool:   "",
-        expert: false,
-        meta:   {}
+    "type":     "",
+    "analysis": {
+        "tool":   "",
+        "expert": false,
+        "meta":   {}
     }
 }
 ```
