@@ -81,6 +81,7 @@ function saveModel()
             .replace(/\$LC_MIN_WAIT/g, USER_CONCERN.analysis.meta.min_wait)
             .replace(/\$LC_MAX_WAIT/g, USER_CONCERN.analysis.meta.max_wait);
 
+        $("#locust-host").html("--host=" + USER_CONCERN.analysis.meta.domain);
         $("#locust-load").html("-r1 -c" + USER_CONCERN.analysis.meta.load);
         $("#locust-duration").html("-t" + USER_CONCERN.analysis.meta.duration + "s");
 
