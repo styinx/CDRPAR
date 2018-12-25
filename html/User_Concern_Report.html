@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>User Concern Report</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+  <script src="../js/jquery/jquery.min.js"></script>
+  <script src="../js/highcharts/highstock.js"></script>
+  <script src="../js/splitter/split.min.js"></script>
+  <script src="../js/bootstrap/bootstrap.bundle.min.js"></script>
+
+  <script src="../js/util.js"></script>
+  <script src="../js/query.js"></script>
+  <script src="../js/settings.js"></script>
+  <script src="../js/sparkline.js"></script>
+  <script src="../js/report.js"></script>
+
+
+  <link rel="stylesheet" href="../css/bootstrap/bootstrap.min.css">
+  <link rel="stylesheet" href="../css/query.css">
+  <link rel="stylesheet" href="../css/report.css">
+  <link rel="stylesheet" href="../css/sparkline.css">
+</head>
+<body>
+<script>
+  let query;
+  let content;
+  let sidebar;
+  let report;
+  let tooltip = true;
+
+  let el_loader;
+  let el_content;
+  let el_sidebar;
+  let el_tooltip;
+  let el_data_input_label;
+
+  function toggleTooltip() { tooltip = !tooltip; el_tooltip.tooltip(tooltip ? 'enable' : 'disable'); }
+
+  $(document).ready(function() {
+
+      el_loader = $("#loading");
+
+      Split(['#query-input', '#user-input'], {
+          sizes: [75, 25],
+          gutterSize: 8,
+          minSize: [800, 0],
+          cursor: 'col-resize'
+      });
+
+      Split(['#content', '#sidebar'], {
+          sizes: [75, 25],
+          gutterSize: 8,
+          minSize: [800, 0],
+          cursor: 'col-resize'
+      });
+
+      query = new Query($("#query"), "");
+      content = new Content($("#content"));
+      sidebar = new Sidebar($("#sidebar"));
+      report = new Report();
+
+      el_tooltip = $('[data-toggle="tooltip"]');
+      el_content = $('#content');
+      el_sidebar = $('#sidebar');
+      el_data_input_label = $("#data_input_label");
+
+      el_tooltip.tooltip();
+
+      let url = window.location.href;
+      if(url.indexOf('concern=') > -1)
+      {
+          let start = url.indexOf('concern=');
+          let stop = (url.indexOf('#') > -1 ? url.indexOf('#') - 1 : 0 || url.length) ;
+          USER_CONCERN = JSON.parse(decodeURI(url.substr(start + 8, stop - start - 7)));
+          $("#query").html(USER_CONCERN.query.text);
+          query.setQuery(USER_CONCERN.query.text);
+          query.setQueryBadgeValues();
+      }
+
+      if(USER_CONCERN.analysis.tool !== "")
+      {
+          el_data_input_label.html("Load a analysis result (" + USER_CONCERN.analysis.tool + ")" +
+              '<input id="data_input" type="file" class="d-none" onclick="upload(this.id, loadAnalysisData);">');
+      }
+  });
+</script>
+<div id="loading"><div id="loader"></div><i>processing</i></div>
+  <div class="main">
+    <div class="query-container">
+
+      <div id="query-input" class="split split-horizontal">
+        <div id="query">Here comes the query.</div>
+        <div id="limit-badge-pool" class="d-inline-block badge-pool" ondrop="drop(event);" ondragover="allowDrop(event);"></div>
+        <div id="metric-badge-pool" class="d-inline-block badge-pool" ondrop="drop(event);" ondragover="allowDrop(event);"></div>
+        <div id="service-badge-pool" class="d-inline-block badge-pool" ondrop="drop(event);" ondragover="allowDrop(event);"></div>
+        <div id="condition-badge-pool" class="d-inline-block badge-pool" ondrop="drop(event);" ondragover="allowDrop(event);"></div>
+        <div id="value-badge-pool" class="d-inline-block badge-pool" ondrop="drop(event);" ondragover="allowDrop(event);"></div>
+        <div id="unit-badge-pool" class="d-inline-block badge-pool" ondrop="drop(event);" ondragover="allowDrop(event);"></div>
+      </div>
+
+      <div id="user-input" class="split split-horizontal">
+        <div class="form-group">
+          <!--<label for="concern_input" id="concern_input_label" class="file-input btn btn-primary btn-file" data-toggle="tooltip" data-placement="bottom"-->
+                 <!--title="Here you can load an existing User Concern into the reporting tool.">-->
+            <!--Load a User Concern<input id="concern_input" type="file" class="d-none" onclick="upload(this.id, loadUserConcern);">-->
+          <!--</label>-->
+          <select class="custom-select" id="query_selection">
+            <option value="" selected disabled>Select a query that fit your needs.</option>
+            <optgroup label=""></optgroup>
+            <optgroup label="Extreme value inspection over time">
+              <option value="What was the $Limit $Metric of the system, $Value $Unit after the experiment start?">
+                What was the minimum latency of the system, 5 minutes after the experiment start?
+              </option>
+            </optgroup>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <!--<label for="data_input" id="data_input_label" class="file-input btn btn-primary btn-file" data-toggle="tooltip" data-placement="top"-->
+                 <!--title="In order to show data, the tool needs some performance data, which you can upload here.">-->
+            <!--Load a analysis result<input id="data_input" type="file" class="d-none" onclick="upload(this.id, loadAnalysisData);">-->
+          <!--</label>-->
+          <select class="custom-select" id="data_selection">
+            <option value="" selected disabled>Select a result from a performance analysis.</option>
+            <optgroup label=""></optgroup>
+            <optgroup label="JMeter">
+              <option value="">www.example.com tested over 1 minute with 100 users.</option>
+            </optgroup>
+            <optgroup label=""></optgroup>
+          </select>
+        </div>
+
+        <div class="custom-control custom-checkbox d-inline-block">
+          <input type="checkbox" class="custom-control-input" id="tooltips" value="true" onchange="toggleTooltip();">
+          <label class="custom-control-label" for="tooltips" data-toggle="tooltip" data-placement="bottom" title="Hides all tooltips.">
+            Disable Tooltips
+          </label>
+        </div>
+      </div>
+    </div>
+    <div class="wrap">
+      <div id="content" class="split split-horizontal"></div>
+      <div id="sidebar" class="split split-horizontal"></div>
+    </div>
+  </div>
+</body>
+</html>

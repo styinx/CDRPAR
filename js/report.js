@@ -56,7 +56,7 @@ class Report
             let start            = date(this.start_time, "%d.%m %H:%M:%S");
             let end              = date(this.stop_time, "%d.%m %H:%M:%S");
             this.experiment_time = this.stop_time - this.start_time;
-            let millis           = this.experiment_time
+            let millis           = this.experiment_time;
             let seconds          = Math.round(millis / 1000);
             let minutes          = Math.round(seconds / 60);
             let hours            = Math.round(seconds / 3600);
@@ -937,3 +937,13 @@ $(window).on("queryChanged", function()
         el_loader.hide();
     }
 });
+
+
+/**
+ * Functions for User_Concern_Report.html
+ */
+
+function setQuery(element)
+{
+
+}
