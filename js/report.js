@@ -52,7 +52,7 @@ class Report
             let time_key = "timeStamp";
 
             this.start_time      = parseFloat(this.analysis_tool.sorted[0][time_key]);
-            this.stop_time       = parseFloat(this.analysis_tool.sorted[this.analysis_tool.sorted.length - 1][time_key]);
+            this.stop_time       = parseFloat(this.analysis_tool.sorted[this.analysis_tool.sorted.length - 2][time_key]);
             let start            = date(this.start_time, "%d.%m %H:%M:%S");
             let end              = date(this.stop_time, "%d.%m %H:%M:%S");
             this.experiment_time = this.stop_time - this.start_time;
@@ -415,7 +415,7 @@ class AnalysisTool
             if(format !== undefined)
             {
                 let last  = null;
-                for(let index = 0; index < this.sorted.length; ++index)
+                for(let index = 0; index < this.sorted.length - 1; ++index)
                 {
                     let x = parseFloat(this.sorted[index][format]);
                     let y = parseFloat(this.sorted[index][key]);
@@ -723,7 +723,7 @@ class LocustResult extends AnalysisTool
         let first  = parseFloat(data[0]["timeStamp"]);
         let last   = first;
         let values = [];
-        for(let i = 0; i < data.length; ++i)
+        for(let i = 0; i < data.length - 1; ++i)
         {
             last = parseFloat(data[i][metric]);
 
@@ -937,13 +937,3 @@ $(window).on("queryChanged", function()
         el_loader.hide();
     }
 });
-
-
-/**
- * Functions for User_Concern_Report.html
- */
-
-function setQuery(element)
-{
-
-}

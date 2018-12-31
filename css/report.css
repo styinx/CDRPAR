@@ -107,6 +107,12 @@ iframe
     vertical-align: middle;
 }
 
+#query_selection, #data_selection
+{
+    margin: 5px 5% 5px 5%;
+    width: calc(100% - 10%);
+}
+
 .wrap
 {
     width:      100%;
@@ -181,6 +187,12 @@ iframe
     cursor:          pointer;
     text-decoration: underline;
     font-weight:     bold;
+}
+
+.chart-explanation
+{
+    float: right;
+    vertical-align:middle;
 }
 
 #loading

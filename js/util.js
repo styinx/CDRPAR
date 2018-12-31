@@ -207,15 +207,18 @@ function objValues(obj, numbers, key, value)
     let result = value ? {} : [], obj_len = obj.length;
     for(let i = 0; i < obj_len; ++i)
     {
-        if(value !== "" && value !== undefined)
+        if(obj[i])
         {
-            let k     = numbers ? Math.round(parseFloat(obj[i][key]) * 100) / 100 : obj[i][key];
-            let v     = numbers ? Math.round(parseFloat(obj[i][value]) * 100) / 100 : obj[i][value];
-            result[k] = v;
-        }
-        else
-        {
-            result.push(numbers ? Math.round(parseFloat(obj[i][key]) * 100) / 100 : obj[i][key]);
+            if(value !== "" && value !== undefined)
+            {
+                let k     = numbers ? Math.round(parseFloat(obj[i][key]) * 100) / 100 : obj[i][key];
+                let v     = numbers ? Math.round(parseFloat(obj[i][value]) * 100) / 100 : obj[i][value];
+                result[k.toString()] = v;
+            }
+            else
+            {
+                result.push(numbers ? Math.round(parseFloat(obj[i][key]) * 100) / 100 : obj[i][key]);
+            }
         }
     }
     return result;
@@ -556,7 +559,7 @@ function chartContainer(title, id)
         "       aria-expanded='true' aria-controls='collapseOne' title='Collapse diagram'>\n" +
         "    " + title + "\n" +
         "    </button>\n" +
-        "    <span data-toggle='tooltip' data-placement='bottom' title='Show diagram explanation.'>" + refSidebar("?") + "</span>\n" +
+        "    <span class='chart-explanation' data-toggle='tooltip' data-placement='bottom' title='Show diagram explanation.'>" + refSidebar("?") + "</span>\n" +
         "  </h5>\n" +
         "</div>\n" +
         "<div id='" + id + "-content' class='collapse show' aria-labelledby='" + id + "-heading'>\n" +
