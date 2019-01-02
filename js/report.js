@@ -348,7 +348,7 @@ class AnalysisTool
             }
         }
 
-        return parseFloat(data[0][metric]);
+        return parseFloat(data[0][metric]) * 100 / 100;
     }
 
     getTopic(metric)
@@ -556,7 +556,7 @@ class JMeterResult extends AnalysisTool
             }
             values.push(parseFloat(data[i][metric]));
         }
-        return parseFloat(data[0][metric]);
+        return Math.round(parseFloat(data[0][metric]) * 100) / 100;
     }
 
     getMetricByTimeFilter(metric, from, to)
@@ -756,7 +756,7 @@ class LocustResult extends AnalysisTool
             }
             values.push(parseFloat(data[i][metric]));
         }
-        return parseFloat(data[0][metric]);
+        return Math.round(parseFloat(data[0][metric]) * 100) / 100;
     }
 
     getMetricByTimeFilter(metric)
