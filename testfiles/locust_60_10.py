@@ -6,19 +6,21 @@ import csv
 def index(l):
     l.client.get("/")
 
-class ExperimentTaskSet(TaskSet):
+
+class MyTaskSet(TaskSet):
     tasks = [index]
 
 
-class Experiment(HttpLocust):
+class MyLocust(HttpLocust):
     host = "http://www.example.com"
     result_file = "locust_experiment_result.csv"
-    min_wait = 1000
-    max_wait = 2000
-    task_set = ExperimentTaskSet
+    min_wait = 3000
+    max_wait = 6000
+    task_set = MyTaskSet
     header = ["timeStamp", "service", "type", "success", "responseTime", "bytes"]
     footer = ["http://www.example.com"]
     data = []
+    last_entry = 0
 
     def __init__(self):
         super(MyLocust, self).__init__()
@@ -33,7 +35,10 @@ class Experiment(HttpLocust):
         self.save(request_type, name, response_time, 0, 0)
 
     def save(self, request_type, name, response_time, response_length, success):
-        self.data.append([int(round(time.time() * 1000)), name, request_type, success, response_time, response_length])
+        timestamp = int(round(time.time() * 1000))
+        if timestamp != self.last_entry:
+            self.data.append([timestamp, name, request_type, success, response_time, response_length])
+            self.last_entry = timestamp
 
     def write(self):
         with open(self.result_file, 'wb') as csv_file:
