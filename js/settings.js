@@ -251,7 +251,12 @@ let METRICS = {
     "responseTime": {
         unit:       "ms",
         type:       "spline",
-        definition: "TODO"
+        definition: "Response time is the total amount of time it takes to respond to a request for service. " +
+                        "That service can be anything from a memory fetch, to a disk IO, to a complex database query, or loading a full web page. " +
+                        "The response time is the sum of the service time and wait time. " +
+                        "The service time is the time it takes to do the work you requested. " +
+                        "For a given request the service time varies little as the workload increases – to do X amount of work it always takes X amount of time. " +
+                        "The wait time is how long the request had to wait in a queue before being serviced and it varies from zero, to a large multiple of the service time."
     }
 };
 
