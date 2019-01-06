@@ -87,8 +87,16 @@ iframe
 
 .badge-pool
 {
-    width: auto;
-    max-width: 80%;
+    margin: 5px;
+    width:          auto;
+    height:         auto;
+    overflow:       auto;
+    max-width:      300px;
+    min-height:     30px;
+    max-height:     200px;
+    text-align:     center;
+    vertical-align: middle;
+    cursor: pointer;
     display: none;
 }
 
