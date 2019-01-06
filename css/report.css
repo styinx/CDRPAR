@@ -117,8 +117,11 @@ iframe
 
 #query_selection, #data_selection
 {
-    margin: 5px 5% 5px 5%;
+    margin: 5px 5px 5px 5px;
     width: calc(100% - 10%);
+    max-width: 200px;
+    position: relative;
+    overflow: hidden;
 }
 
 .wrap

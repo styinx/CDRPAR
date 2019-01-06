@@ -890,6 +890,11 @@ function loadAnalysisData(format)
 
     ANALYSIS_DATA = format;
 
+    if(format.split("\n")[0].indexOf("service"))
+    {
+        USER_CONCERN.analysis.tool = "Locust";
+    }
+
     report.configureAnalysisTool();
 
     el_content.html("");
